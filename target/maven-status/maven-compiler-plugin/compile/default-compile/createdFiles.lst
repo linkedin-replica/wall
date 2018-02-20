@@ -1,0 +1,11 @@
+database/DatabaseInstance.class
+models/Bookmark.class
+models/Reply.class
+models/Command.class
+models/Like.class
+database/DatabaseHandler.class
+models/Post.class
+wall/LikeCommand.class
+database/ArangoHandler.class
+wall/UnlikeCommand.class
+models/Comment.class
