@@ -1,9 +1,8 @@
-package models;
+package com.linkedin.replica.wall.commands;
 
 import java.util.HashMap;
 
 public abstract class Command {
-
     protected HashMap<String, String> args;
 
     public Command(HashMap<String, String> args) {
