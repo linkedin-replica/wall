@@ -5,12 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.arangodb.ArangoDBException;
+import com.arangodb.entity.CollectionEntity;
 import redis.clients.jedis.Jedis;
 
 import com.arangodb.ArangoDB;
 
+
 public class DatabaseConnection {
-    private ArangoDB arangodb;
+    private ArangoDB arangoDB;
     private Jedis redis;
 
     private static DatabaseConnection instance;
@@ -20,7 +23,7 @@ public class DatabaseConnection {
         properties = new Properties();
         properties.load(new FileInputStream("config"));
 
-        arangodb = instantiateArrangoDB();
+        arangoDB = instantiateArrangoDB();
         redis = new Jedis();
     }
 
@@ -63,10 +66,41 @@ public class DatabaseConnection {
                 .build();
     }
 
+    /**
+     * Creates the wall db
+     */
+    private void createDatabase() {
+        String dbName = properties.getProperty("arangodb.name");
+        try {
+            arangoDB.createDatabase(dbName);
+            System.out.println("Database created: " + dbName);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create database: " + dbName + "; " + e.getMessage());
+        }
+    }
+
+    /**
+     * Creates the posts, comments, replies and likes collections
+     */
+    private void createCollections() {
+        String dbName = properties.getProperty("arangodb.name");
+        String [] collections = properties.getProperty("arangodb.user").split(",");
+        for(int i=0; i<collections.length; i++){
+            try {
+                CollectionEntity myArangoCollection = arangoDB.db(dbName).createCollection(collections[i]);
+                System.out.println("Collection created: " + myArangoCollection.getName());
+            } catch (ArangoDBException e) {
+                System.err.println("Failed to create collection: " + collections[i] + "; " + e.getMessage());
+            }
+        }
+
+    }
+
+
 
 
     public ArangoDB getArangodb() {
-        return arangodb;
+        return arangoDB;
     }
 
 

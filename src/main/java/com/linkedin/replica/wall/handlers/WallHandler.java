@@ -1,11 +1,11 @@
-package com.linkedin.replica.wall.doas;
+package com.linkedin.replica.wall.handlers;
 
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
 import java.util.List;
 
-public interface SearchDao {
+public interface WallHandler {
 
     /**
      * @return list of bookmarks
