@@ -1,12 +1,12 @@
-package com.linkedin.replica.wall.doas.impl;
+package com.linkedin.replica.wall.handlers.impl;
 
-import com.linkedin.replica.wall.doas.SearchDao;
+import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
 import java.util.List;
 
-public class RedisSearchDAO implements SearchDao {
+public class RedisWallHandler implements WallHandler {
     public List<Bookmark> getBookmarks() {
         return null;
     }
