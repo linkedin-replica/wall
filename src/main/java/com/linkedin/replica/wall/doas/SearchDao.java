@@ -2,7 +2,9 @@ package com.linkedin.replica.wall.doas;
 
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.Comment;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface SearchDao {
@@ -52,7 +54,7 @@ public interface SearchDao {
     /**
      * Add a comment
      */
-    public void addComment();
+    public void addComment(Comment comment) throws IOException, ClassNotFoundException;
 
     /**
      * Edit a comment

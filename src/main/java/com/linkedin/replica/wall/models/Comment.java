@@ -2,13 +2,14 @@ package com.linkedin.replica.wall.models;
 
 public class Comment {
 
-        private int commentId,authorId,parentPostId,likesCount,repliesCount;
+        private String commentId,authorId,parentPostId;
+        private int likesCount,repliesCount;
         private String [] images;
         private String [] urls;
-        private int [] mentions;
+        private String [] mentions;
         private String text,timeStamp;
 
-        public Comment(int commentId,int authorId,int parentPostId, int likesCount,int repliesCount, String [] images,String [] urls,int [] mentions, String text,String timeStamp){
+        public Comment(String commentId,String authorId,String parentPostId, int likesCount,int repliesCount, String [] images,String [] urls,String [] mentions, String text,String timeStamp){
 
             this.commentId = commentId;
             this.authorId = authorId;
@@ -23,27 +24,27 @@ public class Comment {
 
         }
 
-        public int getCommentId() {
+        public String getCommentId() {
             return commentId;
         }
 
-        public void setCommentId(int commentId) {
+        public void setCommentId(String commentId) {
             this.commentId = commentId;
         }
 
-        public int getAuthorId() {
+        public String getAuthorId() {
             return authorId;
         }
 
-        public void setAuthorId(int authorId) {
+        public void setAuthorId(String authorId) {
             this.authorId = authorId;
         }
 
-        public int getParentPostId() {
+        public String getParentPostId() {
             return parentPostId;
         }
 
-        public void setParentPostId(int parentPostId) {
+        public void setParentPostId(String parentPostId) {
             this.parentPostId = parentPostId;
         }
 
@@ -79,11 +80,11 @@ public class Comment {
             this.urls = urls;
         }
 
-        public int[] getMentions() {
+        public String[] getMentions() {
             return mentions;
         }
 
-        public void setMentions(int[] mentions) {
+        public void setMentions(String[] mentions) {
             this.mentions = mentions;
         }
 
