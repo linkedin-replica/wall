@@ -17,7 +17,7 @@ public class ArangoWallHandler implements WallHandler {
 
 
     public void addBookmark(Bookmark bookmark) {
-        BaseDocument user = DatabaseConnection.getInstance().getArangodb().db().collection("").getDocument("myKey",
+       // BaseDocument user = DatabaseConnection.getInstance().getArangodb().db().collection("").getDocument("myKey",
 
 
     }
