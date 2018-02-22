@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.handlers;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface WallHandler {
@@ -15,7 +16,7 @@ public interface WallHandler {
     /**
      * Add a bookmark
      */
-    public void addBookmark(Bookmark bookmark);
+    public void addBookmark(Bookmark bookmark) throws IOException, ClassNotFoundException;
 
     /**
      * Delete a bookmark
