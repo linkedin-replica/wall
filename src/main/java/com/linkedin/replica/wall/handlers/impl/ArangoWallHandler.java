@@ -1,10 +1,16 @@
 package com.linkedin.replica.wall.handlers.impl;
 
+import com.arangodb.ArangoDBException;
+import com.arangodb.entity.BaseDocument;
+import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
+import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 public class ArangoWallHandler implements WallHandler {
 
@@ -72,11 +78,76 @@ public class ArangoWallHandler implements WallHandler {
         return null;
     }
 
-    public void addLike() {
+    public void addLike(Like like) throws IOException, ClassNotFoundException {
+        BaseDocument likeDocument = new BaseDocument();
+        likeDocument.setKey(like.getLikeId());
+        likeDocument.addAttribute("likerId", like.getLikerId());
+        likeDocument.addAttribute("userName", like.getUserName());
+        likeDocument.addAttribute("headLine", like.getHeadLine());
+        likeDocument.addAttribute("imageUrl", like.getImageUrl());
+        likeDocument.addAttribute("likedPostId", like.getLikedPostId());
+        likeDocument.addAttribute("LikedCommentId", like.getLikedCommentId());
+        likeDocument.addAttribute("likedReplyId", like.getLikedReplyId());
+
+        try {
+            DatabaseConnection.getInstance().getArangodb().db("wall").collection("likes").insertDocument(likeDocument);
+            System.out.println("Document created");
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create document. " + e.getMessage());
+        }
+
+        if(like.getLikedPostId() != null){
+            //Todo:
+            // 1. get post: call getPosts()
+            // 2. update post object: add 1 to likes
+            // 3. update post document: call editPost()
+
+        }
+        else if(like.getLikedCommentId() != null){
+            //Todo:
+            // 1. get comment: call getComments()
+            // 2. update comment object: add 1 to likes
+            // 3. update comment document: call editComment()
+
+        }
+        else if(like.getLikedReplyId() != null){
+            //Todo:
+            // 1. get reply: call getReply()
+            // 2. update reply object: add 1 to reply
+            // 3. update reply document: call editReply()
+
+        }
+
 
     }
 
-    public void deleteLike() {
+    public void deleteLike(Like like) throws IOException, ClassNotFoundException {
+        try {
+            DatabaseConnection.getInstance().getArangodb().db("wall").collection("likes").deleteDocument(like.getLikeId());
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to delete document. " + e.getMessage());
+        }
+        if(like.getLikedPostId() != null){
+            //Todo:
+            // 1. get post: call getPosts()
+            // 2. update post object: subtract 1 from likes
+            // 3. update post document: call editPost()
+
+        }
+        else if(like.getLikedCommentId() != null){
+            //Todo:
+            // 1. get comment: call getComments()
+            // 2. update comment object: subtract 1 from likes
+            // 3. update comment document: call editComment()
+
+        }
+        else if(like.getLikedReplyId() != null){
+            //Todo:
+            // 1. get reply: call getReply()
+            // 2. update reply object: subtract 1 from reply
+            // 3. update reply document: call editReply()
+
+        }
 
     }
 }

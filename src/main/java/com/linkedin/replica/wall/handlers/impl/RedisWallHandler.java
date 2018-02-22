@@ -2,8 +2,10 @@ package com.linkedin.replica.wall.handlers.impl;
 
 import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
+import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
 
+import java.io.IOException;
 import java.util.List;
 
 public class RedisWallHandler implements WallHandler {
@@ -71,11 +73,12 @@ public class RedisWallHandler implements WallHandler {
         return null;
     }
 
-    public void addLike() {
+    public void addLike(Like like) {
 
     }
 
-    public void deleteLike() {
+    public void deleteLike(Like like) throws IOException, ClassNotFoundException {
 
     }
+
 }

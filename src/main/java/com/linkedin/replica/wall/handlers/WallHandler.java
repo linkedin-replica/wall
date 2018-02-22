@@ -1,8 +1,10 @@
 package com.linkedin.replica.wall.handlers;
 
 import com.linkedin.replica.wall.models.Bookmark;
+import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface WallHandler {
@@ -94,12 +96,16 @@ public interface WallHandler {
 
     /**
      * Add a like
+     * @param like
      */
-    public void addLike();
+    public void addLike(Like like) throws IOException, ClassNotFoundException;
 
     /**
      * Delete a like
+     * @param like
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
-    public void deleteLike();
+    public void deleteLike(Like like) throws IOException, ClassNotFoundException;
 
 }
