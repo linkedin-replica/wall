@@ -15,7 +15,7 @@ public interface WallHandler {
     /**
      * Add a bookmark
      */
-    public void addBookmark();
+    public void addBookmark(Bookmark bookmark);
 
     /**
      * Delete a bookmark

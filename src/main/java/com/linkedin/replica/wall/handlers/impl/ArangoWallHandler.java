@@ -1,20 +1,28 @@
 package com.linkedin.replica.wall.handlers.impl;
 
+import com.arangodb.entity.BaseDocument;
+import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
+import java.awt.print.Book;
 import java.util.List;
 
 public class ArangoWallHandler implements WallHandler {
-
     public List<Bookmark> getBookmarks() {
         return null;
     }
 
-    public void addBookmark() {
+
+
+    public void addBookmark(Bookmark bookmark) {
+        BaseDocument user = DatabaseConnection.getInstance().getArangodb().db().collection("").getDocument("myKey",
+
 
     }
+
+
 
     public void deleteBookmark() {
 

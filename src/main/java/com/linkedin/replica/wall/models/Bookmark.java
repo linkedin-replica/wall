@@ -1,7 +1,7 @@
 package com.linkedin.replica.wall.models;
 
 public class Bookmark {
-    static String  postId, userId;
+    private String  postId, userId;
     /**
      * bookmark constructor.
      */
@@ -10,6 +10,20 @@ public class Bookmark {
         this.userId = userId;
     }
 
-  
+    /**
+     *
+     * @return postId
+     */
+    public String getPostId() {
+        return postId;
+    }
+
+    /**
+     *
+     * @return bookmark userId
+     */
+    public String getUserId() {
+        return userId;
+    }
 }
 
