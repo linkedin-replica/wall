@@ -1,18 +1,34 @@
 package com.linkedin.replica.wall.handlers.impl;
 
+import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import com.arangodb.ArangoDB;
 
 public class ArangoWallHandler implements WallHandler {
+
+    ArangoDB arangoDB;
+    private Properties properties;
+
+
+    public ArangoWallHandler() throws IOException, ClassNotFoundException {
+        arangoDB = DatabaseConnection.getInstance().getArangodb();
+        properties = new Properties();
+        properties.load(new FileInputStream("config"));
+
+    }
 
     public List<Bookmark> getBookmarks() {
         return null;
@@ -79,18 +95,21 @@ public class ArangoWallHandler implements WallHandler {
     }
 
     public void addLike(Like like) throws IOException, ClassNotFoundException {
+        String dbName = properties.getProperty("arangodb.name");
+        String likesCollection = properties.getProperty("collections.likes.name");
+
         BaseDocument likeDocument = new BaseDocument();
         likeDocument.setKey(like.getLikeId());
         likeDocument.addAttribute("likerId", like.getLikerId());
-        likeDocument.addAttribute("userName", like.getUserName());
-        likeDocument.addAttribute("headLine", like.getHeadLine());
+        likeDocument.addAttribute("username", like.getUserName());
+        likeDocument.addAttribute("headline", like.getHeadLine());
         likeDocument.addAttribute("imageUrl", like.getImageUrl());
         likeDocument.addAttribute("likedPostId", like.getLikedPostId());
         likeDocument.addAttribute("LikedCommentId", like.getLikedCommentId());
         likeDocument.addAttribute("likedReplyId", like.getLikedReplyId());
 
         try {
-            DatabaseConnection.getInstance().getArangodb().db("wall").collection("likes").insertDocument(likeDocument);
+            arangoDB.db(dbName).collection(likesCollection).insertDocument(likeDocument);
             System.out.println("Document created");
         } catch (ArangoDBException e) {
             System.err.println("Failed to create document. " + e.getMessage());
@@ -122,8 +141,11 @@ public class ArangoWallHandler implements WallHandler {
     }
 
     public void deleteLike(Like like) throws IOException, ClassNotFoundException {
+        String dbName = properties.getProperty("arangodb.name");
+        String likesCollection = properties.getProperty("collections.likes.name");
+
         try {
-            DatabaseConnection.getInstance().getArangodb().db("wall").collection("likes").deleteDocument(like.getLikeId());
+            arangoDB.db(dbName).collection(likesCollection).deleteDocument(like.getLikeId());
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete document. " + e.getMessage());
         }
