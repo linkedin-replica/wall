@@ -2,6 +2,7 @@ package com.linkedin.replica.wall.handlers;
 
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.Reply;
 
 import java.util.List;
 
@@ -74,7 +75,7 @@ public interface WallHandler {
     /**
      * Add a reply
      */
-    public void addReply();
+    public void addReply(Reply reply);
 
     /**
      * Edit a reply
@@ -84,7 +85,7 @@ public interface WallHandler {
     /**
      * Delete a reply
      */
-    public void deleteReply();
+    public void deleteReply(Reply reply);
 
     /**
      *

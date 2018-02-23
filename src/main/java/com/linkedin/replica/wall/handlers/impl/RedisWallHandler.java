@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.handlers.impl;
 import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.Reply;
 
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class RedisWallHandler implements WallHandler {
         return null;
     }
 
-    public void addReply() {
+    public void addReply(Reply reply) {
 
     }
 
@@ -63,7 +64,7 @@ public class RedisWallHandler implements WallHandler {
 
     }
 
-    public void deleteReply() {
+    public void deleteReply(Reply reply) {
 
     }
 
