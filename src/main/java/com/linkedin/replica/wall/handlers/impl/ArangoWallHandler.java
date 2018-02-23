@@ -19,6 +19,7 @@ public class ArangoWallHandler implements DatabaseHandler {
     private ArangoDB arangoDB;
     private String dbName;
 
+
     public List<Bookmark> getBookmarks() {
         return null;
     }
@@ -144,6 +145,13 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     public String deleteLike() {
         return null;
+
+    }
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        DatabaseHandler arangoWallHandler = new ArangoWallHandler();
+
+        arangoWallHandler.addBookmark(new )
 
     }
 }
