@@ -1,18 +1,20 @@
 package com.linkedin.replica.wall.handlers.impl;
 
+import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
+import com.sun.xml.internal.rngom.parse.host.Base;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class ArangoWallHandler implements WallHandler {
 
@@ -77,11 +79,57 @@ public class ArangoWallHandler implements WallHandler {
 
     }
 
-    public List<Post> getReplies() {
-        return null;
+    public List<Reply> getReplies(String commentId) {
+        ArrayList<Reply> replies = new ArrayList<Reply>();
+        try {
+            String query = "FOR r IN " + repliesCollection + " FILTER r.parentCommentId == " + commentId + " RETURN r";
+            Map<String, Object> bindVars = new MapBuilder().put("name", "Homer").get();
+            ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                    BaseDocument.class);
+            cursor.forEachRemaining(replyDocument -> {
+                Reply reply;
+                String replyId = replyDocument.getKey();
+                String authorId = (String) replyDocument.getAttribute("authorId");
+                String parentPostId = (String) replyDocument.getAttribute("parentPostId");
+                String parentCommentId = (String) replyDocument.getAttribute("parentCommentId");
+                ArrayList<String> mentions = (ArrayList<String>) replyDocument.getAttribute("mentions");
+                Long likesCount = (Long) replyDocument.getAttribute("likesCount");
+                String text = (String) replyDocument.getAttribute("text");
+                Date timestamp = (Date) replyDocument.getAttribute("timestamp");
+                ArrayList<String> images = (ArrayList<String>) replyDocument.getAttribute("images");
+                ArrayList<String> urls = (ArrayList<String>) replyDocument.getAttribute("urls");
+
+
+                reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
+                replies.add(reply);
+                System.out.println("Key: " + replyDocument.getKey());
+            });
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get replies. " + e.getMessage());
+        }
+        return replies;
     }
 
+
     public void addReply(Reply reply) {
+        BaseDocument replyDocument = createReplyDocument(reply);
+        try {
+            arangoDB.db(dbName).collection(repliesCollection).insertDocument(replyDocument);
+            System.out.println("Reply created");
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to add reply. " + e.getMessage());
+        }
+        //Todo:
+        // 1. get comment: call getComments()
+        // 2. update comment object: add 1 to repliesCount
+        // 3. update comment document: call editComments()
+        // Do the same for posts
+
+
+
+    }
+
+    public BaseDocument createReplyDocument(Reply reply) {
         BaseDocument replyDocument = new BaseDocument();
         replyDocument.setKey(reply.getReplyId());
         replyDocument.addAttribute("authorId", reply.getAuthorId());
@@ -91,25 +139,20 @@ public class ArangoWallHandler implements WallHandler {
         replyDocument.addAttribute("likesCount", reply.getLikesCount());
         replyDocument.addAttribute("text", reply.getText());
         replyDocument.addAttribute("timestamp", reply.getTimestamp());
-        replyDocument.addAttribute("media", reply.getMedia());
-
-        try {
-            arangoDB.db(dbName).collection(repliesCollection).insertDocument(replyDocument);
-            System.out.println("Document created");
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to create document. " + e.getMessage());
-        }
-        //Todo:
-        // 1. get comment: call getComments()
-        // 2. update comment object: add 1 to repliesCount
-        // 3. update comment document: call editComments()
-        // ask if commentCount in posts should include replies
-
-
+        replyDocument.addAttribute("images", reply.getImages());
+        replyDocument.addAttribute("urls", reply.getUrls());
+        return replyDocument;
 
     }
 
-    public void editReply() {
+    public void editReply(Reply reply) {
+        BaseDocument replyDocument = createReplyDocument(reply);
+        try {
+            arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,replyDocument);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to update reply. " + e.getMessage());
+        }
+
 
     }
 
@@ -117,13 +160,13 @@ public class ArangoWallHandler implements WallHandler {
         try {
             arangoDB.db(dbName).collection(repliesCollection).deleteDocument(reply.getReplyId());
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete document. " + e.getMessage());
+            System.err.println("Failed to delete reply. " + e.getMessage());
         }
             //Todo:
             // 1. get comment: call getComments()
             // 2. update comment object: subtract 1 from repliesCount
             // 3. update comment document: call editComments()
-            // ask if commentCount in posts should include replies
+            // Do the same for posts
 
 
     }

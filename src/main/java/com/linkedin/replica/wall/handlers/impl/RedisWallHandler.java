@@ -52,7 +52,7 @@ public class RedisWallHandler implements WallHandler {
 
     }
 
-    public List<Post> getReplies() {
+    public List<Reply> getReplies(String commentId) {
         return null;
     }
 
@@ -60,7 +60,7 @@ public class RedisWallHandler implements WallHandler {
 
     }
 
-    public void editReply() {
+    public void editReply(Reply reply) {
 
     }
 

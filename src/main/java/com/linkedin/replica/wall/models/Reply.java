@@ -13,9 +13,10 @@ public class Reply {
     private Long likesCount;
     private String text;
     private Date timestamp;
-    private HashMap <String, String> media;  //Key: image - Value: url
+    private ArrayList<String> images;
+    private ArrayList <String> urls;
 
-    public Reply(String replyId, String authorId, String parentPostId, String parentCommentId, ArrayList<String> mentions, Long likesCount, String text, Date timestamp, HashMap<String, String> media) {
+    public Reply(String replyId, String authorId, String parentPostId, String parentCommentId, ArrayList<String> mentions, Long likesCount, String text, Date timestamp, ArrayList<String> images,  ArrayList<String> urls ) {
         this.replyId = replyId;
         this.authorId = authorId;
         this.parentPostId = parentPostId;
@@ -24,7 +25,8 @@ public class Reply {
         this.likesCount = likesCount;
         this.text = text;
         this.timestamp = timestamp;
-        this.media = media;
+        this.images = images;
+        this.urls = urls;
     }
 
     public String getReplyId() {
@@ -59,7 +61,11 @@ public class Reply {
         return timestamp;
     }
 
-    public HashMap<String, String> getMedia() {
-        return media;
+    public ArrayList<String> getImages() {
+        return images;
+    }
+
+    public ArrayList<String> getUrls() {
+        return urls;
     }
 }

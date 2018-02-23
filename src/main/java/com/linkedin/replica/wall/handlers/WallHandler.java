@@ -70,7 +70,7 @@ public interface WallHandler {
      *
      * @return list of replies
      */
-    public List<Post> getReplies();
+    public List<Reply> getReplies(String commentId);
 
     /**
      * Add a reply
@@ -80,7 +80,7 @@ public interface WallHandler {
     /**
      * Edit a reply
      */
-    public void editReply();
+    public void editReply(Reply reply);
 
     /**
      * Delete a reply
