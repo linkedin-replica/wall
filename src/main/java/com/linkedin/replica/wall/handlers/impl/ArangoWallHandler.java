@@ -187,7 +187,7 @@ public class ArangoWallHandler implements DatabaseHandler {
         ArrayList<Reply> replies = new ArrayList<Reply>();
         try {
             String query = "FOR r IN " + repliesCollection + " FILTER r.parentCommentId == " + commentId + " RETURN r";
-            Map<String, Object> bindVars = new MapBuilder().put("name", "Homer").get();
+            Map<String, Object> bindVars = new MapBuilder().put("parentCommentId", commentId).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     BaseDocument.class);
             cursor.forEachRemaining(replyDocument -> {
