@@ -6,7 +6,7 @@ import com.linkedin.replica.wall.models.Reply;
 
 import java.util.List;
 
-public interface WallHandler {
+public interface DatabaseHandler {
 
     /**
      * @return list of bookmarks
@@ -75,17 +75,17 @@ public interface WallHandler {
     /**
      * Add a reply
      */
-    public void addReply(Reply reply);
+    public String addReply(Reply reply);
 
     /**
      * Edit a reply
      */
-    public void editReply(Reply reply);
+    public String editReply(Reply reply);
 
     /**
      * Delete a reply
      */
-    public void deleteReply(Reply reply);
+    public String deleteReply(Reply reply);
 
     /**
      *

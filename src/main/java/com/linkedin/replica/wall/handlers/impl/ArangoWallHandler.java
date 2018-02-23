@@ -6,17 +6,16 @@ import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.WallHandler;
+import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
-import com.sun.xml.internal.rngom.parse.host.Base;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-public class ArangoWallHandler implements WallHandler {
+public class ArangoWallHandler implements DatabaseHandler {
 
     ArangoDB arangoDB;
     private Properties properties;
@@ -111,13 +110,16 @@ public class ArangoWallHandler implements WallHandler {
     }
 
 
-    public void addReply(Reply reply) {
+    public String addReply(Reply reply) {
+        String response = "";
         BaseDocument replyDocument = createReplyDocument(reply);
         try {
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(replyDocument);
             System.out.println("Reply created");
+            response = "Reply created";
         } catch (ArangoDBException e) {
             System.err.println("Failed to add reply. " + e.getMessage());
+            response = "Failed to add reply. " + e.getMessage();
         }
         //Todo:
         // 1. get comment: call getComments()
@@ -125,7 +127,7 @@ public class ArangoWallHandler implements WallHandler {
         // 3. update comment document: call editComments()
         // Do the same for posts
 
-
+        return response;
 
     }
 
@@ -145,29 +147,34 @@ public class ArangoWallHandler implements WallHandler {
 
     }
 
-    public void editReply(Reply reply) {
+    public String editReply(Reply reply) {
+        String response = "";
         BaseDocument replyDocument = createReplyDocument(reply);
         try {
             arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,replyDocument);
         } catch (ArangoDBException e) {
             System.err.println("Failed to update reply. " + e.getMessage());
+            response = "Failed to update reply. " + e.getMessage();
         }
+        return response;
 
 
     }
 
-    public void deleteReply(Reply reply) {
+    public String deleteReply(Reply reply) {
+        String response = "";
         try {
             arangoDB.db(dbName).collection(repliesCollection).deleteDocument(reply.getReplyId());
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete reply. " + e.getMessage());
+            response = "Failed to delete reply. " + e.getMessage();
         }
             //Todo:
             // 1. get comment: call getComments()
             // 2. update comment object: subtract 1 from repliesCount
             // 3. update comment document: call editComments()
             // Do the same for posts
-
+        return response;
 
     }
 
