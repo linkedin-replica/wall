@@ -41,38 +41,31 @@ public class RedisWallHandler implements WallHandler {
 
     }
 
-    public List<Post> getComments() {
+    /**
+     *
+     * @return list of comments
+     */
+    public List<Comment> getComments(String postID){
         return null;
     }
 
-    public void addComment(Comment comment) throws IOException, ClassNotFoundException {
+    /**
+     * Add a comment
+     */
+    public void addComment(Comment comment) throws IOException, ClassNotFoundException{
 
-        BaseDocument commentDocument = new BaseDocument();
-        commentDocument.setKey(comment.getCommentId());
-        commentDocument.addAttribute("authorID", comment.getAuthorId());
-        commentDocument.addAttribute("parentPostID", comment.getParentPostId());
-        commentDocument.addAttribute("likesCount", comment.getLikesCount());
-        commentDocument.addAttribute("repliesCount", comment.getRepliesCount());
-        commentDocument.addAttribute("images", comment.getImages());
-        commentDocument.addAttribute("urls", comment.getUrls());
-        commentDocument.addAttribute("mentions", comment.getMentions());
-        commentDocument.addAttribute("text", comment.getText());
-        commentDocument.addAttribute("timeStamp", comment.getTimeStamp());
-
-        try {
-            DatabaseConnection.getInstance().getArangodb().db("wall").collection("comments").insertDocument(commentDocument);
-            System.out.println("Document created");
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to create document. " + e.getMessage());
-        }
+    }
+    /**
+     * Edit a comment
+     */
+    public void editComment(Comment comment) throws IOException, ClassNotFoundException{
 
     }
 
-    public void editComment() {
-
-    }
-
-    public void deleteComment() {
+    /**
+     * Delete a comment
+     */
+    public void deleteComment(Comment comment)throws IOException, ClassNotFoundException{
 
     }
 

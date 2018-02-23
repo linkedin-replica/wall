@@ -49,7 +49,7 @@ public interface WallHandler {
      *
      * @return list of comments
      */
-    public List<Post> getComments();
+    public List<Comment> getComments(String postID);
 
     /**
      * Add a comment
@@ -58,12 +58,12 @@ public interface WallHandler {
     /**
      * Edit a comment
      */
-    public void editComment();
+    public void editComment(Comment comment) throws IOException, ClassNotFoundException;
 
     /**
      * Delete a comment
      */
-    public void deleteComment();
+    public void deleteComment(Comment comment)throws IOException, ClassNotFoundException;
 
 
     /**

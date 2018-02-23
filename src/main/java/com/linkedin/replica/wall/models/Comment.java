@@ -25,7 +25,7 @@ public class Comment {
         }
 
         public String getCommentId() {
-            return commentId;
+            return this.commentId;
         }
 
         public void setCommentId(String commentId) {
@@ -33,7 +33,7 @@ public class Comment {
         }
 
         public String getAuthorId() {
-            return authorId;
+            return this.authorId;
         }
 
         public void setAuthorId(String authorId) {
@@ -41,7 +41,7 @@ public class Comment {
         }
 
         public String getParentPostId() {
-            return parentPostId;
+            return this.parentPostId;
         }
 
         public void setParentPostId(String parentPostId) {
@@ -49,7 +49,7 @@ public class Comment {
         }
 
         public int getLikesCount() {
-            return likesCount;
+            return this.likesCount;
         }
 
         public void setLikesCount(int likesCount) {
@@ -57,7 +57,7 @@ public class Comment {
         }
 
         public int getRepliesCount() {
-            return repliesCount;
+            return this.repliesCount;
         }
 
         public void setRepliesCount(int repliesCount) {
@@ -65,7 +65,7 @@ public class Comment {
         }
 
         public String[] getImages() {
-            return images;
+            return this.images;
         }
 
         public void setImages(String[] images) {
@@ -73,7 +73,7 @@ public class Comment {
         }
 
         public String[] getUrls() {
-            return urls;
+            return this.urls;
         }
 
         public void setUrls(String[] urls) {
@@ -81,7 +81,7 @@ public class Comment {
         }
 
         public String[] getMentions() {
-            return mentions;
+            return this.mentions;
         }
 
         public void setMentions(String[] mentions) {
@@ -89,7 +89,7 @@ public class Comment {
         }
 
         public String getText() {
-            return text;
+            return this.text;
         }
 
         public void setText(String text) {
@@ -97,7 +97,7 @@ public class Comment {
         }
 
         public String getTimeStamp() {
-            return timeStamp;
+            return this.timeStamp;
         }
 
         public void setTimeStamp(String timeStamp) {
