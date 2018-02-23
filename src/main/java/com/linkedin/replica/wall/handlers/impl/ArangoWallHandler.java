@@ -5,10 +5,12 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.util.MapBuilder;
+
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Like;
+import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
 
@@ -23,7 +25,8 @@ public class ArangoWallHandler implements DatabaseHandler {
     private String dbName;
     String likesCollection;
     String repliesCollection;
-
+    String usersCollection;
+    String commentsCollection;
 
     public ArangoWallHandler() throws IOException, ClassNotFoundException {
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -32,10 +35,9 @@ public class ArangoWallHandler implements DatabaseHandler {
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
         repliesCollection = properties.getProperty("collections.replies.name");
-
+        usersCollection = properties.getProperty("collections.users.name");
+        commentsCollection = properties.getProperty("collections.comments.name");
     }
-
-
 
     public List<Bookmark> getBookmarks() {
         return null;
@@ -110,19 +112,75 @@ public class ArangoWallHandler implements DatabaseHandler {
         return null;
     }
 
-    public String addComment() {
-        return null;
+    public List<Comment> getComments(String postID) {
+        final ArrayList<Comment> comments = new ArrayList<Comment>();
+        try {
+            String query = "FOR l IN " + commentsCollection + " FILTER l.parentPostId == " + postID + " RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("parentPostID", postID).get();
+            ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
+            cursor.forEachRemaining(commentDocument -> {
+                Comment comment;
+                String commentID = commentDocument.getKey();
+                String authorID = (String) commentDocument.getAttribute("authorID");
+                String parentPostID = (String) commentDocument.getAttribute("parentPostID");
+                int likesCount = (Integer) commentDocument.getAttribute("likesCount");
+                int repliesCount = (Integer) commentDocument.getAttribute("repliesCount");
+                String [] images = (String []) commentDocument.getAttribute("images");
+                String [] urls = (String []) commentDocument.getAttribute("urls");
+                String [] mentions = (String []) commentDocument.getAttribute("mentions");
+                String text = (String) commentDocument.getAttribute("text");
+                String timeStamp = (String) commentDocument.getAttribute("timeStamp");
+                comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
+                comments.add(comment);
+                System.out.println("Key: " + commentDocument.getKey());
+            });
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to execute query. " + e.getMessage());
+        }
+        return comments;
+    }
+
+    public BaseDocument createCommentDoc(Comment comment){
+        BaseDocument commentDocument = new BaseDocument();
+        commentDocument.setKey(comment.getCommentId());
+        commentDocument.addAttribute("authorID", comment.getAuthorId());
+        commentDocument.addAttribute("parentPostID", comment.getParentPostId());
+        commentDocument.addAttribute("likesCount", comment.getLikesCount());
+        commentDocument.addAttribute("repliesCount", comment.getRepliesCount());
+        commentDocument.addAttribute("images", comment.getImages());
+        commentDocument.addAttribute("urls", comment.getUrls());
+        commentDocument.addAttribute("mentions", comment.getMentions());
+        commentDocument.addAttribute("text", comment.getText());
+        commentDocument.addAttribute("timeStamp", comment.getTimeStamp());
+        return commentDocument;
+    }
+
+    public void addComment(Comment comment) {
+        BaseDocument commentDocument = createCommentDoc(comment);
+        try {
+            arangoDB.db(dbName).collection("comments").insertDocument(commentDocument);
+            System.out.println("Document created");
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create document. " + e.getMessage());
+        }
 
     }
 
-    public String editComment() {
-        return null;
-
+    public void editComment(Comment comment) {
+        BaseDocument commentDocument = createCommentDoc(comment);
+        try {
+            arangoDB.db(dbName).collection("comments").updateDocument(comment.getCommentId(), commentDocument);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to update document. " + e.getMessage());
+        }
     }
 
-    public String deleteComment() {
-        return null;
-
+    public void deleteComment(Comment comment) {
+        try {
+            arangoDB.db(dbName).collection("comments").deleteDocument(comment.getCommentId());
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to delete document. " + e.getMessage());
+        }
     }
 
     public List<Reply> getReplies(String commentId) {
@@ -383,4 +441,6 @@ public class ArangoWallHandler implements DatabaseHandler {
         }
         return response;
     }
+
+
 }
