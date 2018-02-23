@@ -1,4 +1,8 @@
 arangodb.user=root
 arangodb.password=
 arangodb.name=wall
-collections.post.name=posts,comments,replies,likes,bookmarks
+collections.posts.name=Posts
+collections.comments.name=Comments
+collections.replies.name=Replies
+collections.likes.name=Likes
+collections.users.name=Users

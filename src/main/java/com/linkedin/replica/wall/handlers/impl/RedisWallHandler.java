@@ -1,12 +1,13 @@
 package com.linkedin.replica.wall.handlers.impl;
 
-import com.linkedin.replica.wall.handlers.WallHandler;
+import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
+import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
 
 import java.util.List;
 
-public class RedisWallHandler implements WallHandler {
+public class RedisWallHandler implements DatabaseHandler {
     public List<Bookmark> getBookmarks() {
         return null;
     }
@@ -67,15 +68,27 @@ public class RedisWallHandler implements WallHandler {
 
     }
 
-    public List<Post> getlikes() {
+    public List<Like> getPostLikes(String postId) {
         return null;
     }
 
-    public void addLike() {
-
+    public List<Like> getCommentLikes(String commentId) {
+        return null;
     }
 
-    public void deleteLike() {
-
+    public List<Like> getReplyLikes(String replyId) {
+        return null;
     }
+
+
+    public String addLike(Like like) {
+
+        return null;
+    }
+
+    public String deleteLike(Like like) {
+
+        return null;
+    }
+
 }

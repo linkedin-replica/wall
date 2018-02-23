@@ -1,16 +1,17 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.linkedin.replica.wall.commands.Command;
 
 public class EditReplyCommand extends Command{
 
-    public EditReplyCommand(HashMap<String, String> args) {
-        super(args);
+    public EditReplyCommand() {
+        super();
     }
 
-    public String execute() {
+    public LinkedHashMap<String, Object> execute() {
         return null;
     }
 }

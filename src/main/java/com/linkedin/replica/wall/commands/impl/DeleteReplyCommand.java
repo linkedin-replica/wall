@@ -1,16 +1,17 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.linkedin.replica.wall.commands.Command;
 
 public class DeleteReplyCommand extends Command{
 
-    public DeleteReplyCommand(HashMap<String, String> args) {
-        super(args);
+    public DeleteReplyCommand() {
+        super();
     }
 
-    public String execute() {
+    public LinkedHashMap<String, Object> execute() {
         return null;
     }
 }
