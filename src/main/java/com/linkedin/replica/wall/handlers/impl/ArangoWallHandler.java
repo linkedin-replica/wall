@@ -5,7 +5,7 @@ import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.WallHandler;
+import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 import com.arangodb.ArangoDB;
 
-public class ArangoWallHandler implements WallHandler {
+public class ArangoWallHandler implements DatabaseHandler {
 
     ArangoDB arangoDB;
     private Properties properties;
@@ -117,7 +117,7 @@ public class ArangoWallHandler implements WallHandler {
                 System.out.println("Key: " + likeDocument.getKey());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to execute query. " + e.getMessage());
+            System.err.println("Failed to get posts' likes." + e.getMessage());
         }
         return likes;
 
@@ -145,7 +145,7 @@ public class ArangoWallHandler implements WallHandler {
                 System.out.println("Key: " + likeDocument.getKey());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to execute query. " + e.getMessage());
+            System.err.println("Failed to get comments' likes." + e.getMessage());
         }
         return likes;
     }
@@ -172,13 +172,14 @@ public class ArangoWallHandler implements WallHandler {
                 System.out.println("Key: " + likeDocument.getKey());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to execute query. " + e.getMessage());
+            System.err.println("Failed to get replies' likes." + e.getMessage());
         }
         return likes;
     }
 
 
-    public void addLike(Like like) {
+    public String addLike(Like like) {
+        String response = "";
         BaseDocument likeDocument = new BaseDocument();
         likeDocument.setKey(like.getLikeId());
         likeDocument.addAttribute("likerId", like.getLikerId());
@@ -191,9 +192,11 @@ public class ArangoWallHandler implements WallHandler {
 
         try {
             arangoDB.db(dbName).collection(likesCollection).insertDocument(likeDocument);
-            System.out.println("Document created");
+            System.out.println("Like added");
+            response = "Like added";
         } catch (ArangoDBException e) {
-            System.err.println("Failed to create document. " + e.getMessage());
+            System.err.println("Failed to add a like. " + e.getMessage());
+            response = "Failed to add a like. " + e.getMessage();
         }
 
         if(like.getLikedPostId() != null){
@@ -217,15 +220,18 @@ public class ArangoWallHandler implements WallHandler {
             // 3. update reply document: call editReply()
 
         }
+        return response;
 
 
     }
 
-    public void deleteLike(Like like) {
+    public String deleteLike(Like like) {
+        String response = "";
         try {
             arangoDB.db(dbName).collection(likesCollection).deleteDocument(like.getLikeId());
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete document. " + e.getMessage());
+            System.err.println("Failed to delete a like. " + e.getMessage());
+            response = "Failed to delete a like. " + e.getMessage();
         }
         if(like.getLikedPostId() != null){
             //Todo:
@@ -248,6 +254,7 @@ public class ArangoWallHandler implements WallHandler {
             // 3. update reply document: call editReply()
 
         }
+        return response;
 
     }
 }
