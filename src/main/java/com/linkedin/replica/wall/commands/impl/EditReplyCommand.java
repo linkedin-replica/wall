@@ -17,7 +17,7 @@ public class EditReplyCommand extends Command{
     public LinkedHashMap<String, Object> execute() throws ParseException {
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
-        // call dbHandler to get results from db and add returned results to linkedHashMap
+        // call dbHandler to get results from db and add returned results to linkedHashMapM
         Reply reply;
         DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
         String replyId = request.get("replyId");
