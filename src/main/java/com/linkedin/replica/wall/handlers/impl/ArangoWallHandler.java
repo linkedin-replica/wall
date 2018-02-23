@@ -3,20 +3,18 @@ package com.linkedin.replica.wall.handlers.impl;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
-import com.arangodb.entity.DocumentUpdateEntity;
 import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.WallHandler;
+import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class ArangoWallHandler implements WallHandler {
+public class ArangoWallHandler implements DatabaseHandler {
     private Properties properties;
     private ArangoDB arangoDB;
     private String dbName;
@@ -32,11 +30,12 @@ public class ArangoWallHandler implements WallHandler {
         arangoDB = DatabaseConnection.getInstance().getArangodb();
     }
 
-    public void addBookmark(Bookmark bookmark) {
+    public String addBookmark(Bookmark bookmark) {
         String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
 
         String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
+        String message = "";
         try {
             BaseDocument user = arangoDB.db(dbName).collection(userCollection).
                     getDocument(getUserQuery, BaseDocument.class);
@@ -45,17 +44,21 @@ public class ArangoWallHandler implements WallHandler {
                 l = new ArrayList<Object>();
             l.add(bookmark);
             arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
+            message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
-            System.err.println("Failed to add bookmark. " + e.getMessage());
+            System.err.println("Failed to delete bookmark. " + e.getMessage());
+            message = "Failed to add bookmark. " + e.getMessage();
         }
+        return message;
     }
 
 
-    public void deleteBookmark(Bookmark bookmark) {
+    public String deleteBookmark(Bookmark bookmark) {
         String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
         String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
+        String message = "";
         try {
             BaseDocument user = arangoDB.db(dbName).collection(userCollection).
                     getDocument(getUserQuery, BaseDocument.class);
@@ -64,25 +67,31 @@ public class ArangoWallHandler implements WallHandler {
                 l = new ArrayList<Object>();
             l.remove(bookmark);
             arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
+            message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete bookmark. " + e.getMessage());
+            message = "Failed to delete bookmark";
         }
+        return message;
     }
 
     public List<Post> getPosts() {
         return null;
     }
 
-    public void addPost() {
+    public String addPost() {
+        return null;
 
     }
 
-    public void editPost() {
+    public String editPost() {
+        return null;
 
     }
 
-    public void deletePost() {
+    public String deletePost() {
+        return null;
 
     }
 
@@ -90,15 +99,18 @@ public class ArangoWallHandler implements WallHandler {
         return null;
     }
 
-    public void addComment() {
+    public String addComment() {
+        return null;
 
     }
 
-    public void editComment() {
+    public String editComment() {
+        return null;
 
     }
 
-    public void deleteComment() {
+    public String deleteComment() {
+        return null;
 
     }
 
@@ -106,15 +118,18 @@ public class ArangoWallHandler implements WallHandler {
         return null;
     }
 
-    public void addReply() {
+    public String addReply() {
+        return null;
 
     }
 
-    public void editReply() {
+    public String editReply() {
+        return null;
 
     }
 
-    public void deleteReply() {
+    public String deleteReply() {
+        return null;
 
     }
 
@@ -122,11 +137,13 @@ public class ArangoWallHandler implements WallHandler {
         return null;
     }
 
-    public void addLike() {
+    public String addLike() {
+        return null;
 
     }
 
-    public void deleteLike() {
+    public String deleteLike() {
+        return null;
 
     }
 }

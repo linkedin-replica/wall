@@ -5,7 +5,7 @@ public class Bookmark {
     /**
      * bookmark constructor.
      */
-    public Bookmark(String postId, String userId){
+    public Bookmark(String userId, String postId){
         this.postId = postId;
         this.userId = userId;
     }

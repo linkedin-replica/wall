@@ -1,6 +1,7 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.linkedin.replica.wall.commands.Command;
 
@@ -10,7 +11,7 @@ public class AddCommentCommand extends Command{
         super(args);
     }
 
-    public String execute() {
+    public LinkedHashMap<String, Object> execute() {
         return null;
     }
 }

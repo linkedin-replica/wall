@@ -6,7 +6,7 @@ import com.linkedin.replica.wall.models.Post;
 import java.io.IOException;
 import java.util.List;
 
-public interface WallHandler {
+public interface DatabaseHandler {
 
     /**
      * @return list of bookmarks
@@ -16,12 +16,12 @@ public interface WallHandler {
     /**
      * Add a bookmark
      */
-    public void addBookmark(Bookmark bookmark);
+    public String addBookmark(Bookmark bookmark);
 
     /**
      * Delete a bookmark
      */
-    public void deleteBookmark(Bookmark bookmark);
+    public String deleteBookmark(Bookmark bookmark);
 
     /**
      *
@@ -32,17 +32,17 @@ public interface WallHandler {
     /**
      * Add a post
      */
-    public void addPost();
+    public String addPost();
 
     /**
      * Edit a post
      */
-    public void editPost();
+    public String editPost();
 
     /**
      * Delete a post
      */
-    public void deletePost();
+    public String deletePost();
 
     /**
      *
@@ -53,17 +53,17 @@ public interface WallHandler {
     /**
      * Add a comment
      */
-    public void addComment();
+    public String addComment();
 
     /**
      * Edit a comment
      */
-    public void editComment();
+    public String editComment();
 
     /**
      * Delete a comment
      */
-    public void deleteComment();
+    public String deleteComment();
 
 
     /**
@@ -75,17 +75,17 @@ public interface WallHandler {
     /**
      * Add a reply
      */
-    public void addReply();
+    public String addReply();
 
     /**
      * Edit a reply
      */
-    public void editReply();
+    public String editReply();
 
     /**
      * Delete a reply
      */
-    public void deleteReply();
+    public String deleteReply();
 
     /**
      *
@@ -96,11 +96,11 @@ public interface WallHandler {
     /**
      * Add a like
      */
-    public void addLike();
+    public String addLike();
 
     /**
      * Delete a like
      */
-    public void deleteLike();
+    public String deleteLike();
 
 }

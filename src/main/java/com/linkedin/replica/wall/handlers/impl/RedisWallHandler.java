@@ -1,37 +1,43 @@
 package com.linkedin.replica.wall.handlers.impl;
 
-import com.linkedin.replica.wall.handlers.WallHandler;
+import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
 import java.util.List;
 
-public class RedisWallHandler implements WallHandler {
+public class RedisWallHandler implements DatabaseHandler {
     public List<Bookmark> getBookmarks() {
         return null;
     }
 
-    public void addBookmark() {
+    public String addBookmark(Bookmark bookmark) {
+        return null;
 
     }
 
-    public void deleteBookmark() {
+    public String deleteBookmark(Bookmark bookmark) {
+        return null;
 
     }
+
 
     public List<Post> getPosts() {
         return null;
     }
 
-    public void addPost() {
+    public String addPost() {
+        return null;
 
     }
 
-    public void editPost() {
+    public String editPost() {
+        return null;
 
     }
 
-    public void deletePost() {
+    public String deletePost() {
+        return null;
 
     }
 
@@ -39,15 +45,18 @@ public class RedisWallHandler implements WallHandler {
         return null;
     }
 
-    public void addComment() {
+    public String addComment() {
+        return null;
 
     }
 
-    public void editComment() {
+    public String editComment() {
+        return null;
 
     }
 
-    public void deleteComment() {
+    public String deleteComment() {
+        return null;
 
     }
 
@@ -55,15 +64,18 @@ public class RedisWallHandler implements WallHandler {
         return null;
     }
 
-    public void addReply() {
+    public String addReply() {
+        return null;
 
     }
 
-    public void editReply() {
+    public String editReply() {
+        return null;
 
     }
 
-    public void deleteReply() {
+    public String deleteReply() {
+        return null;
 
     }
 
@@ -71,11 +83,13 @@ public class RedisWallHandler implements WallHandler {
         return null;
     }
 
-    public void addLike() {
+    public String addLike() {
+        return null;
 
     }
 
-    public void deleteLike() {
+    public String deleteLike() {
+        return null;
 
     }
 }
