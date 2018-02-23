@@ -18,12 +18,12 @@ public interface DatabaseHandler {
     /**
      * Add a bookmark
      */
-    public void addBookmark();
+    public String addBookmark(Bookmark bookmark);
 
     /**
      * Delete a bookmark
      */
-    public void deleteBookmark();
+    public String deleteBookmark(Bookmark bookmark);
 
     /**
      *
@@ -34,17 +34,17 @@ public interface DatabaseHandler {
     /**
      * Add a post
      */
-    public void addPost();
+    public String addPost();
 
     /**
      * Edit a post
      */
-    public void editPost();
+    public String editPost();
 
     /**
      * Delete a post
      */
-    public void deletePost();
+    public String deletePost();
 
     /**
      *
@@ -55,17 +55,17 @@ public interface DatabaseHandler {
     /**
      * Add a comment
      */
-    public void addComment();
+    public String addComment();
 
     /**
      * Edit a comment
      */
-    public void editComment();
+    public String editComment();
 
     /**
      * Delete a comment
      */
-    public void deleteComment();
+    public String deleteComment();
 
 
     /**
@@ -122,5 +122,4 @@ public interface DatabaseHandler {
      * @param like
      */
     public String deleteLike(Like like);
-
 }

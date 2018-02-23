@@ -19,8 +19,6 @@ public class AddReplyCommand extends Command{
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
         // call dbHandler to get results from db and add returned results to linkedHashMap
-
-
         Reply reply;
         DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
         String replyId = request.get("replyId");

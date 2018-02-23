@@ -2,7 +2,6 @@ package com.linkedin.replica.wall.commands;
 
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 
-
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,13 +13,13 @@ public abstract class Command {
     public Command(){}
 
     /**
-     * Execute the command
+     * Execute the command.
      * @return The output (if any) of the command
      * 	LinkedHashMap preserve order of insertion so it will preserve this order when parsing to JSON
      */
     public abstract LinkedHashMap<String, Object> execute() throws ParseException;
 
-    public void setArgs(HashMap<String, String> request) {
+    public void setRequest(HashMap<String, String> request) {
         this.request = request;
     }
 

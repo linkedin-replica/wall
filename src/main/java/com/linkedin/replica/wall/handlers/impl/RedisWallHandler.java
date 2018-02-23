@@ -13,27 +13,33 @@ public class RedisWallHandler implements DatabaseHandler {
         return null;
     }
 
-    public void addBookmark() {
+    public String addBookmark(Bookmark bookmark) {
+        return null;
 
     }
 
-    public void deleteBookmark() {
+    public String deleteBookmark(Bookmark bookmark) {
+        return null;
 
     }
+
 
     public List<Post> getPosts() {
         return null;
     }
 
-    public void addPost() {
+    public String addPost() {
+        return null;
 
     }
 
-    public void editPost() {
+    public String editPost() {
+        return null;
 
     }
 
-    public void deletePost() {
+    public String deletePost() {
+        return null;
 
     }
 
@@ -41,15 +47,18 @@ public class RedisWallHandler implements DatabaseHandler {
         return null;
     }
 
-    public void addComment() {
+    public String addComment() {
+        return null;
 
     }
 
-    public void editComment() {
+    public String editComment() {
+        return null;
 
     }
 
-    public void deleteComment() {
+    public String deleteComment() {
+        return null;
 
     }
 
@@ -58,18 +67,15 @@ public class RedisWallHandler implements DatabaseHandler {
     }
 
     public String addReply(Reply reply) {
-
         return null;
     }
 
     public String editReply(Reply reply) {
         return null;
-
     }
 
     public String deleteReply(Reply reply) {
         return null;
-
     }
 
     public List<Like> getPostLikes(String postId) {
@@ -83,7 +89,6 @@ public class RedisWallHandler implements DatabaseHandler {
     public List<Like> getReplyLikes(String replyId) {
         return null;
     }
-
 
     public String addLike(Like like) {
 

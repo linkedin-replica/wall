@@ -18,9 +18,9 @@ import java.util.*;
 
 public class ArangoWallHandler implements DatabaseHandler {
 
-    ArangoDB arangoDB;
+    private ArangoDB arangoDB;
     private Properties properties;
-    String dbName;
+    private String dbName;
     String likesCollection;
     String repliesCollection;
 
@@ -35,31 +35,74 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     }
 
+
+
     public List<Bookmark> getBookmarks() {
         return null;
     }
 
-    public void addBookmark() {
+    public String addBookmark(Bookmark bookmark) {
+        String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
+        String userId = bookmark.getUserId();
 
+        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
+        String message = "";
+        try {
+            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
+                    getDocument(getUserQuery, BaseDocument.class);
+            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
+            if (l == null)
+                l = new ArrayList<Object>();
+            l.add(bookmark);
+            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
+            message = "Success to add bookmark";
+
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to delete bookmark. " + e.getMessage());
+            message = "Failed to add bookmark. " + e.getMessage();
+        }
+        return message;
     }
 
-    public void deleteBookmark() {
 
+    public String deleteBookmark(Bookmark bookmark) {
+        String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
+        String userId = bookmark.getUserId();
+        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
+        String message = "";
+        try {
+            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
+                    getDocument(getUserQuery, BaseDocument.class);
+            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
+            if (l == null)
+                l = new ArrayList<Object>();
+            l.remove(bookmark);
+            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
+            message = "Success to add bookmark";
+
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to delete bookmark. " + e.getMessage());
+            message = "Failed to delete bookmark";
+        }
+        return message;
     }
 
     public List<Post> getPosts() {
         return null;
     }
 
-    public void addPost() {
+    public String addPost() {
+        return null;
 
     }
 
-    public void editPost() {
+    public String editPost() {
+        return null;
 
     }
 
-    public void deletePost() {
+    public String deletePost() {
+        return null;
 
     }
 
@@ -67,15 +110,18 @@ public class ArangoWallHandler implements DatabaseHandler {
         return null;
     }
 
-    public void addComment() {
+    public String addComment() {
+        return null;
 
     }
 
-    public void editComment() {
+    public String editComment() {
+        return null;
 
     }
 
-    public void deleteComment() {
+    public String deleteComment() {
+        return null;
 
     }
 
@@ -109,7 +155,6 @@ public class ArangoWallHandler implements DatabaseHandler {
         }
         return replies;
     }
-
 
     public String addReply(Reply reply) {
         String response = "";
@@ -158,8 +203,6 @@ public class ArangoWallHandler implements DatabaseHandler {
             response = "Failed to update reply. " + e.getMessage();
         }
         return response;
-
-
     }
 
     public String deleteReply(Reply reply) {
@@ -339,6 +382,5 @@ public class ArangoWallHandler implements DatabaseHandler {
 
         }
         return response;
-
     }
 }

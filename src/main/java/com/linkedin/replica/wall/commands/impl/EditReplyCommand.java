@@ -36,6 +36,5 @@ public class EditReplyCommand extends Command{
         reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
         response.put("response", dbHandler.editReply(reply));
         return response;
-
     }
 }

@@ -1,6 +1,5 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.linkedin.replica.wall.commands.Command;
@@ -30,6 +29,5 @@ public class DeleteLikeCommand extends Command{
         // call dbHandler to get results from db and add returned results to linkedHashMap
         response.put("response", dbHandler.deleteLike(like));
         return response;
-
     }
 }
