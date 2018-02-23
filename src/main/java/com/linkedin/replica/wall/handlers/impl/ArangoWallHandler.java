@@ -73,8 +73,8 @@ public  class ArangoWallHandler implements WallHandler {
 
         final ArrayList<Comment> comments = new ArrayList<Comment>();
         try {
-            String query = "FOR l IN " + likesCollection + " FILTER l.parentPostId == " + postID + " RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("name", "Homer").get();
+            String query = "FOR l IN " + commentCollection + " FILTER l.parentPostId == " + postID + " RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("parentPostID", postID).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
             cursor.forEachRemaining(commentDocument -> {
                 Comment comment;
@@ -98,8 +98,7 @@ public  class ArangoWallHandler implements WallHandler {
         return comments;
     }
 
-    public void addComment(Comment comment) throws IOException, ClassNotFoundException {
-
+    public BaseDocument createCommentDoc(Comment comment){
         BaseDocument commentDocument = new BaseDocument();
         commentDocument.setKey(comment.getCommentId());
         commentDocument.addAttribute("authorID", comment.getAuthorId());
@@ -111,6 +110,13 @@ public  class ArangoWallHandler implements WallHandler {
         commentDocument.addAttribute("mentions", comment.getMentions());
         commentDocument.addAttribute("text", comment.getText());
         commentDocument.addAttribute("timeStamp", comment.getTimeStamp());
+        return commentDocument;
+    }
+
+    public void addComment(Comment comment) throws IOException, ClassNotFoundException {
+
+        BaseDocument commentDocument = createCommentDoc(comment);
+
 
         try {
             arangoDB.db(dbName).collection("comments").insertDocument(commentDocument);
@@ -124,18 +130,9 @@ public  class ArangoWallHandler implements WallHandler {
 
 
     public void editComment(Comment comment) throws IOException, ClassNotFoundException{
-        BaseDocument commentDocument = new BaseDocument();
-        commentDocument.addAttribute("authorID", comment.getAuthorId());
-        commentDocument.addAttribute("parentPostID", comment.getParentPostId());
-        commentDocument.addAttribute("likesCount", comment.getLikesCount());
-        commentDocument.addAttribute("repliesCount", comment.getRepliesCount());
-        commentDocument.addAttribute("images", comment.getImages());
-        commentDocument.addAttribute("urls", comment.getUrls());
-        commentDocument.addAttribute("mentions", comment.getMentions());
-        commentDocument.addAttribute("text", comment.getText());
-        commentDocument.addAttribute("timeStamp", comment.getTimeStamp());
+        BaseDocument commentDocument = createCommentDoc(comment);
         try {
-            arangoDB.db(dbName).collection("comments").updateDocument("myKey", commentDocument);
+            arangoDB.db(dbName).collection("comments").updateDocument(comment.getCommentId(), commentDocument);
         } catch (ArangoDBException e) {
             System.err.println("Failed to update document. " + e.getMessage());
         }
