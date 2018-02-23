@@ -108,10 +108,6 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     }
 
-    public List<Post> getComments() {
-        return null;
-    }
-
     public List<Comment> getComments(String postID) {
         final ArrayList<Comment> comments = new ArrayList<Comment>();
         try {
@@ -138,6 +134,29 @@ public class ArangoWallHandler implements DatabaseHandler {
             System.err.println("Failed to execute query. " + e.getMessage());
         }
         return comments;
+    }
+
+    public Comment getComment(String commentID) {
+        Comment comment = null;
+        try {
+            BaseDocument commentDocument = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentID,
+                    BaseDocument.class);
+            System.out.println("Key: " + commentDocument.getKey());
+            String authorID = (String) commentDocument.getAttribute("authorID");
+            String parentPostID = (String) commentDocument.getAttribute("parentPostID");
+            int likesCount = (Integer) commentDocument.getAttribute("likesCount");
+            int repliesCount = (Integer) commentDocument.getAttribute("repliesCount");
+            String [] images = (String []) commentDocument.getAttribute("images");
+            String [] urls = (String []) commentDocument.getAttribute("urls");
+            String [] mentions = (String []) commentDocument.getAttribute("mentions");
+            String text = (String) commentDocument.getAttribute("text");
+            String timeStamp = (String) commentDocument.getAttribute("timeStamp");
+            comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
+
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get comment: commentId; " + e.getMessage());
+        }
+        return comment;
     }
 
     public BaseDocument createCommentDoc(Comment comment){
@@ -214,6 +233,31 @@ public class ArangoWallHandler implements DatabaseHandler {
         return replies;
     }
 
+    public Reply getReply(String replyId) {
+        Reply reply = null;
+        try {
+            BaseDocument replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
+                    BaseDocument.class);
+            System.out.println("Key: " + replyDocument.getKey());
+            replyId = replyDocument.getKey();
+            String authorId = (String) replyDocument.getAttribute("authorId");
+            String parentPostId = (String) replyDocument.getAttribute("parentPostId");
+            String parentCommentId = (String) replyDocument.getAttribute("parentCommentId");
+            ArrayList<String> mentions = (ArrayList<String>) replyDocument.getAttribute("mentions");
+            Long likesCount = (Long) replyDocument.getAttribute("likesCount");
+            String text = (String) replyDocument.getAttribute("text");
+            Date timestamp = (Date) replyDocument.getAttribute("timestamp");
+            ArrayList<String> images = (ArrayList<String>) replyDocument.getAttribute("images");
+            ArrayList<String> urls = (ArrayList<String>) replyDocument.getAttribute("urls");
+
+            reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
+
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get reply: replyId; " + e.getMessage());
+        }
+        return reply;
+    }
+
     public String addReply(Reply reply) {
         String response = "";
         BaseDocument replyDocument = createReplyDocument(reply);
@@ -225,11 +269,18 @@ public class ArangoWallHandler implements DatabaseHandler {
             System.err.println("Failed to add reply. " + e.getMessage());
             response = "Failed to add reply. " + e.getMessage();
         }
+        Comment comment = getComment(reply.getParentCommentId());
+        if(comment !=null){
+            comment.setRepliesCount(comment.getRepliesCount() + 1);
+            editComment(comment);
+        }
+        else {
+            response = "Failed to update comment's reply count. ";
+        }
         //Todo:
-        // 1. get comment: call getComments()
-        // 2. update comment object: add 1 to repliesCount
-        // 3. update comment document: call editComments()
-        // Do the same for posts
+        // 1. get post: call getPost()
+        // 2. update post object: add 1 to commentsCount
+        // 3. update post document: call editPosts()
 
         return response;
 
@@ -271,11 +322,18 @@ public class ArangoWallHandler implements DatabaseHandler {
             System.err.println("Failed to delete reply. " + e.getMessage());
             response = "Failed to delete reply. " + e.getMessage();
         }
-            //Todo:
-            // 1. get comment: call getComments()
-            // 2. update comment object: subtract 1 from repliesCount
-            // 3. update comment document: call editComments()
-            // Do the same for posts
+        Comment comment = getComment(reply.getParentCommentId());
+        if(comment !=null){
+            comment.setRepliesCount(comment.getRepliesCount() - 1);
+            editComment(comment);
+        }
+        else {
+            response = "Failed to update comment's reply count. ";
+        }
+        //Todo:
+        // 1. get post: call getPost()
+        // 2. update post object: add 1 to commentsCount
+        // 3. update post document: call editPosts()
         return response;
 
     }
@@ -392,17 +450,25 @@ public class ArangoWallHandler implements DatabaseHandler {
 
         }
         else if(like.getLikedCommentId() != null){
-            //Todo:
-            // 1. get comment: call getComments()
-            // 2. update comment object: add 1 to likes
-            // 3. update comment document: call editComment()
+            Comment comment = getComment(like.getLikedCommentId());
+            if(comment !=null){
+                comment.setLikesCount(comment.getLikesCount() + 1);
+                editComment(comment);
+            }
+            else {
+                response = "Failed to update comment's like count. ";
+            }
 
         }
         else if(like.getLikedReplyId() != null){
-            //Todo:
-            // 1. get reply: call getReply()
-            // 2. update reply object: add 1 to reply
-            // 3. update reply document: call editReply()
+            Reply reply = getReply(like.getLikedReplyId());
+            if(reply !=null){
+                reply.setLikesCount(reply.getLikesCount() + 1);
+                editReply(reply);
+            }
+            else {
+                response = "Failed to update reply's like count. ";
+            }
 
         }
         return response;
@@ -426,17 +492,25 @@ public class ArangoWallHandler implements DatabaseHandler {
 
         }
         else if(like.getLikedCommentId() != null){
-            //Todo:
-            // 1. get comment: call getComments()
-            // 2. update comment object: subtract 1 from likes
-            // 3. update comment document: call editComment()
+            Comment comment = getComment(like.getLikedCommentId());
+            if(comment !=null){
+                comment.setLikesCount(comment.getLikesCount() - 1);
+                editComment(comment);
+            }
+            else {
+                response = "Failed to update comment's like count. ";
+            }
 
         }
         else if(like.getLikedReplyId() != null){
-            //Todo:
-            // 1. get reply: call getReply()
-            // 2. update reply object: subtract 1 from reply
-            // 3. update reply document: call editReply()
+            Reply reply = getReply(like.getLikedReplyId());
+            if(reply !=null){
+                reply.setLikesCount(reply.getLikesCount() - 1);
+                editReply(reply);
+            }
+            else {
+                response = "Failed to update reply's like count. ";
+            }
 
         }
         return response;

@@ -53,6 +53,10 @@ public class Reply {
         return likesCount;
     }
 
+    public void setLikesCount(Long likesCount) {
+        this.likesCount = likesCount;
+    }
+
     public String getText() {
         return text;
     }
