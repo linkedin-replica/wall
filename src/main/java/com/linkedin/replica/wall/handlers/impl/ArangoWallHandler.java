@@ -53,7 +53,21 @@ public class ArangoWallHandler implements WallHandler {
 
 
     public void deleteBookmark(Bookmark bookmark) {
+        String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
+        String userId = bookmark.getUserId();
+        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
+        try {
+            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
+                    getDocument(getUserQuery, BaseDocument.class);
+            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
+            if (l == null)
+                l = new ArrayList<Object>();
+            l.remove(bookmark);
+            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
 
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to delete bookmark. " + e.getMessage());
+        }
     }
 
     public List<Post> getPosts() {
