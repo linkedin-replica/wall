@@ -90,13 +90,34 @@ public interface WallHandler {
 
     /**
      *
-     * @return list of likes
+     * @return list of likes on a post
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
-    public List<Post> getlikes();
+    public List<Like> getPostLikes() throws IOException, ClassNotFoundException;
+
+    /**
+     *
+     * @return list of likes on a comment
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public List<Like> getCommentLikes() throws IOException, ClassNotFoundException;
+
+    /**
+     *
+     * @return list of likes on a reply
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public List<Like> getReplyLikes() throws IOException, ClassNotFoundException;
+
 
     /**
      * Add a like
      * @param like
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public void addLike(Like like) throws IOException, ClassNotFoundException;
 

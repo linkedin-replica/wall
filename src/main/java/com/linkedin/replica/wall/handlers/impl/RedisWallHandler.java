@@ -69,15 +69,24 @@ public class RedisWallHandler implements WallHandler {
 
     }
 
-    public List<Post> getlikes() {
+    public List<Like> getPostLikes() {
         return null;
     }
+
+    public List<Like> getCommentLikes() {
+        return null;
+    }
+
+    public List<Like> getReplyLikes() {
+        return null;
+    }
+
 
     public void addLike(Like like) {
 
     }
 
-    public void deleteLike(Like like) throws IOException, ClassNotFoundException {
+    public void deleteLike(Like like) {
 
     }
 
