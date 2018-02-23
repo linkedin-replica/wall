@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.handlers;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.Reply;
 
 import java.io.IOException;
 import java.util.List;
@@ -71,22 +72,22 @@ public interface DatabaseHandler {
      *
      * @return list of replies
      */
-    public List<Post> getReplies();
+    public List<Reply> getReplies(String commentId);
 
     /**
      * Add a reply
      */
-    public void addReply();
+    public String addReply(Reply reply);
 
     /**
      * Edit a reply
      */
-    public void editReply();
+    public String editReply(Reply reply);
 
     /**
      * Delete a reply
      */
-    public void deleteReply();
+    public String deleteReply(Reply reply);
 
     /**
      *

@@ -12,7 +12,6 @@ public class DeleteLikeCommand extends Command{
         super();
     }
 
-
     @Override
     public LinkedHashMap<String, Object> execute() {
         // create a LinkedHashMap to hold results
@@ -31,5 +30,6 @@ public class DeleteLikeCommand extends Command{
         // call dbHandler to get results from db and add returned results to linkedHashMap
         response.put("response", dbHandler.deleteLike(like));
         return response;
+
     }
 }

@@ -4,6 +4,7 @@ import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.Reply;
 
 import java.util.List;
 
@@ -52,19 +53,22 @@ public class RedisWallHandler implements DatabaseHandler {
 
     }
 
-    public List<Post> getReplies() {
+    public List<Reply> getReplies(String commentId) {
         return null;
     }
 
-    public void addReply() {
+    public String addReply(Reply reply) {
+
+        return null;
+    }
+
+    public String editReply(Reply reply) {
+        return null;
 
     }
 
-    public void editReply() {
-
-    }
-
-    public void deleteReply() {
+    public String deleteReply(Reply reply) {
+        return null;
 
     }
 
