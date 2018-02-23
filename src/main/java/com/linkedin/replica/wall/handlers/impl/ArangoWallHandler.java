@@ -284,7 +284,7 @@ public class ArangoWallHandler implements DatabaseHandler {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
             String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == " + postId + " RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("name", "Homer").get();
+            Map<String, Object> bindVars = new MapBuilder().put("likedPostId", postId).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     BaseDocument.class);
             cursor.forEachRemaining(likeDocument -> {
@@ -311,8 +311,8 @@ public class ArangoWallHandler implements DatabaseHandler {
     public List<Like> getCommentLikes(String commentId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
-            String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == " + commentId + " RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("name", "Homer").get();
+            String query = "FOR l IN " + likesCollection + " FILTER l.likedCommentId == " + commentId + " RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("likedCommentId", commentId).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     BaseDocument.class);
             cursor.forEachRemaining(likeDocument -> {
@@ -338,8 +338,8 @@ public class ArangoWallHandler implements DatabaseHandler {
     public List<Like> getReplyLikes(String replyId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
-            String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == " + replyId + " RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("name", "Homer").get();
+            String query = "FOR l IN " + likesCollection + " FILTER l.likedReplyId == " + replyId + " RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("likedReplyId", replyId).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     BaseDocument.class);
             cursor.forEachRemaining(likeDocument -> {
