@@ -1,46 +1,58 @@
 package com.linkedin.replica.wall.handlers.impl;
 
 import com.arangodb.ArangoDB;
+import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.entity.DocumentUpdateEntity;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class ArangoWallHandler implements WallHandler {
     private Properties properties;
     private ArangoDB arangoDB;
-    private  String dbName;
+    private String dbName;
 
     public List<Bookmark> getBookmarks() {
         return null;
     }
 
-    private ArangoWallHandler() throws IOException, ClassNotFoundException {
+    public ArangoWallHandler() throws IOException, ClassNotFoundException {
         properties = new Properties();
         properties.load(new FileInputStream("config"));
         dbName = properties.getProperty(properties.getProperty("collections.users.name"));
         arangoDB = DatabaseConnection.getInstance().getArangodb();
     }
-    public void addBookmark(Bookmark bookmark) throws IOException, ClassNotFoundException {
+
+    public void addBookmark(Bookmark bookmark) {
         String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
-        String query = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
 
-        BaseDocument user = arangoDB.db(dbName).collection(userCollection).
-                getDocument(query, BaseDocument.class);
+        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
+        try {
+            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
+                    getDocument(getUserQuery, BaseDocument.class);
+            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
+            if (l == null)
+                l = new ArrayList<Object>();
+            l.add(bookmark);
+            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
 
-
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to add bookmark. " + e.getMessage());
+        }
     }
 
 
-
-    public void deleteBookmark() {
+    public void deleteBookmark(Bookmark bookmark) {
 
     }
 

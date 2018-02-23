@@ -16,12 +16,12 @@ public interface WallHandler {
     /**
      * Add a bookmark
      */
-    public void addBookmark(Bookmark bookmark) throws IOException, ClassNotFoundException;
+    public void addBookmark(Bookmark bookmark);
 
     /**
      * Delete a bookmark
      */
-    public void deleteBookmark();
+    public void deleteBookmark(Bookmark bookmark);
 
     /**
      *
