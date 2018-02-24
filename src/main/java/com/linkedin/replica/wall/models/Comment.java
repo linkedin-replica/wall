@@ -1,15 +1,17 @@
 package com.linkedin.replica.wall.models;
 
+import java.util.ArrayList;
+
 public class Comment {
 
         private String commentId,authorId,parentPostId;
         private int likesCount,repliesCount;
-        private String [] images;
-        private String [] urls;
-        private String [] mentions;
+        private ArrayList<String> images;
+        private ArrayList<String> urls;
+        private ArrayList<String> mentions;
         private String text,timeStamp;
 
-        public Comment(String commentId,String authorId,String parentPostId, int likesCount,int repliesCount, String [] images,String [] urls,String [] mentions, String text,String timeStamp){
+        public Comment(String commentId,String authorId,String parentPostId, int likesCount,int repliesCount, ArrayList<String> images,ArrayList<String> urls,ArrayList<String> mentions, String text,String timeStamp){
 
             this.commentId = commentId;
             this.authorId = authorId;
@@ -64,27 +66,27 @@ public class Comment {
             this.repliesCount = repliesCount;
         }
 
-        public String[] getImages() {
+        public ArrayList<String> getImages() {
             return this.images;
         }
 
-        public void setImages(String[] images) {
+        public void setImages(ArrayList<String> images) {
             this.images = images;
         }
 
-        public String[] getUrls() {
+        public ArrayList<String> getUrls() {
             return this.urls;
         }
 
-        public void setUrls(String[] urls) {
+        public void setUrls(ArrayList<String> urls) {
             this.urls = urls;
         }
 
-        public String[] getMentions() {
+        public ArrayList<String> getMentions() {
             return this.mentions;
         }
 
-        public void setMentions(String[] mentions) {
+        public void setMentions(ArrayList<String> mentions) {
             this.mentions = mentions;
         }
 

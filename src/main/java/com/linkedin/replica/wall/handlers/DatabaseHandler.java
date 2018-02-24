@@ -1,13 +1,13 @@
 package com.linkedin.replica.wall.handlers;
 
 import com.linkedin.replica.wall.models.Bookmark;
-import com.linkedin.replica.wall.models.Comment;
+import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Post;
-
+import com.linkedin.replica.wall.models.Comment;
 import java.io.IOException;
 import java.util.List;
 
-public interface WallHandler {
+public interface DatabaseHandler {
 
     /**
      * @return list of bookmarks
@@ -54,16 +54,17 @@ public interface WallHandler {
     /**
      * Add a comment
      */
-    public void addComment(Comment comment) throws IOException, ClassNotFoundException;
+    public String addComment(Comment comment) throws IOException, ClassNotFoundException;
+
     /**
      * Edit a comment
      */
-    public void editComment(Comment comment) throws IOException, ClassNotFoundException;
+    public String editComment(Comment comment)throws IOException, ClassNotFoundException;
 
     /**
      * Delete a comment
      */
-    public void deleteComment(Comment comment)throws IOException, ClassNotFoundException;
+    public String deleteComment(Comment comment)throws IOException, ClassNotFoundException;
 
 
     /**
@@ -89,18 +90,36 @@ public interface WallHandler {
 
     /**
      *
-     * @return list of likes
+     * @param postId
+     * @return list of posts' likes
      */
-    public List<Post> getlikes();
+    public List<Like> getPostLikes(String postId);
+
+    /**
+     *
+     * @param commentId
+     * @return list of comments' likes
+     */
+    public List<Like> getCommentLikes(String commentId);
+
+    /**
+     *
+     * @param replyId
+     * @return list of replies' likes
+     */
+    public List<Like> getReplyLikes(String replyId);
+
 
     /**
      * Add a like
+     * @param like
      */
-    public void addLike();
+    public String addLike(Like like);
 
     /**
      * Delete a like
+     * @param like
      */
-    public void deleteLike();
+    public String deleteLike(Like like);
 
 }
