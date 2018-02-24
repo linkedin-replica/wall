@@ -5,7 +5,7 @@ import com.linkedin.replica.wall.models.Post;
 
 import java.util.List;
 
-public interface WallHandler {
+public interface DatabaseHandler {
 
     /**
      * @return list of bookmarks
