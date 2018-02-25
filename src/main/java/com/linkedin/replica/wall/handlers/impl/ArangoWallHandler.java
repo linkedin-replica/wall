@@ -18,8 +18,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-public class ArangoWallHandler implements DatabaseHandler {
-
+public  class ArangoWallHandler implements DatabaseHandler {
     private ArangoDB arangoDB;
     private Properties properties;
     private String dbName;
@@ -95,17 +94,14 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     public String addPost() {
         return null;
-
     }
 
     public String editPost() {
         return null;
-
     }
 
     public String deletePost() {
         return null;
-
     }
 
     public List<Comment> getComments(String postID) {
@@ -121,9 +117,9 @@ public class ArangoWallHandler implements DatabaseHandler {
                 String parentPostID = (String) commentDocument.getAttribute("parentPostID");
                 int likesCount = (Integer) commentDocument.getAttribute("likesCount");
                 int repliesCount = (Integer) commentDocument.getAttribute("repliesCount");
-                String [] images = (String []) commentDocument.getAttribute("images");
-                String [] urls = (String []) commentDocument.getAttribute("urls");
-                String [] mentions = (String []) commentDocument.getAttribute("mentions");
+                ArrayList<String> images = (ArrayList<String>) commentDocument.getAttribute("images");
+                ArrayList<String> urls = (ArrayList<String>) commentDocument.getAttribute("urls");
+                ArrayList<String> mentions = (ArrayList<String>) commentDocument.getAttribute("mentions");
                 String text = (String) commentDocument.getAttribute("text");
                 String timeStamp = (String) commentDocument.getAttribute("timeStamp");
                 comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
@@ -146,9 +142,9 @@ public class ArangoWallHandler implements DatabaseHandler {
             String parentPostID = (String) commentDocument.getAttribute("parentPostID");
             int likesCount = (Integer) commentDocument.getAttribute("likesCount");
             int repliesCount = (Integer) commentDocument.getAttribute("repliesCount");
-            String [] images = (String []) commentDocument.getAttribute("images");
-            String [] urls = (String []) commentDocument.getAttribute("urls");
-            String [] mentions = (String []) commentDocument.getAttribute("mentions");
+            ArrayList<String> images = (ArrayList<String>) commentDocument.getAttribute("images");
+            ArrayList<String> urls = (ArrayList<String>) commentDocument.getAttribute("urls");
+            ArrayList<String> mentions = (ArrayList<String>) commentDocument.getAttribute("mentions");
             String text = (String) commentDocument.getAttribute("text");
             String timeStamp = (String) commentDocument.getAttribute("timeStamp");
             comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
@@ -174,32 +170,42 @@ public class ArangoWallHandler implements DatabaseHandler {
         return commentDocument;
     }
 
-    public void addComment(Comment comment) {
+    public String addComment(Comment comment) {
+        String response = "";
         BaseDocument commentDocument = createCommentDoc(comment);
         try {
             arangoDB.db(dbName).collection("comments").insertDocument(commentDocument);
-            System.out.println("Document created");
+            response = "Comment Created";
         } catch (ArangoDBException e) {
-            System.err.println("Failed to create document. " + e.getMessage());
+            response = "Failed to add comment. " + e.getMessage();
         }
+        return response;
 
     }
 
-    public void editComment(Comment comment) {
+    public String editComment(Comment comment) {
+        String response = "";
         BaseDocument commentDocument = createCommentDoc(comment);
         try {
             arangoDB.db(dbName).collection("comments").updateDocument(comment.getCommentId(), commentDocument);
+
         } catch (ArangoDBException e) {
-            System.err.println("Failed to update document. " + e.getMessage());
+            System.err.println("Failed to update comment. " + e.getMessage());
+            response = "Failed to update comment. " + e.getMessage();
         }
+        return response;
     }
 
-    public void deleteComment(Comment comment) {
+    public String deleteComment(Comment comment) {
+        String response="";
         try {
             arangoDB.db(dbName).collection("comments").deleteDocument(comment.getCommentId());
+
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete document. " + e.getMessage());
+            response = "Failed to delete comment";
         }
+        return response;
     }
 
     public List<Reply> getReplies(String commentId) {

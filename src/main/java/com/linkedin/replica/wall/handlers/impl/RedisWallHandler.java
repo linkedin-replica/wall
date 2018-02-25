@@ -29,17 +29,14 @@ public class RedisWallHandler implements DatabaseHandler {
 
     public String addPost() {
         return null;
-
     }
 
     public String editPost() {
         return null;
-
     }
 
     public String deletePost() {
         return null;
-
     }
 
     /**
@@ -53,21 +50,21 @@ public class RedisWallHandler implements DatabaseHandler {
     /**
      * Add a comment
      */
-    public void addComment(Comment comment) {
-
+    public String addComment(Comment comment) {
+    return null;
     }
     /**
      * Edit a comment
      */
-    public void editComment(Comment comment) {
-
+    public String editComment(Comment comment) {
+    return null;
     }
 
     /**
      * Delete a comment
      */
-    public void deleteComment(Comment comment){
-
+    public String deleteComment(Comment comment){
+        return null;
     }
 
     public List<Reply> getReplies(String commentId) {
