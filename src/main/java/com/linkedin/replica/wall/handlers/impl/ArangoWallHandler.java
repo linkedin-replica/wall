@@ -28,6 +28,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     String dbName;
     String likesCollection;
     String commentCollection;
+    String postCollection;
 
     public ArangoWallHandler() throws IOException, ClassNotFoundException {
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -36,6 +37,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
         commentCollection = properties.getProperty("collections.comments.name");
+        postCollection = properties.getProperty("collections.posts.name");
 
     }
 
@@ -51,25 +53,110 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
     }
 
-    public List<Post> getPosts() {
-        return null;
+    public BaseDocument createPostDoc(Post post){
+        BaseDocument postDocument = new BaseDocument();
+        postDocument.setKey(post.getPostID());
+        postDocument.addAttribute("authorID", post.getAuthorID());
+        postDocument.addAttribute("type", post.getType());
+        postDocument.addAttribute("companyID", post.getCompanyID());
+        postDocument.addAttribute("privacy", post.getPrivacy());
+        postDocument.addAttribute("text", post.getText());
+        postDocument.addAttribute("timeStamp", post.getTimeStamp());
+        postDocument.addAttribute("isCompanyPost", post.isCompanyPost());
+        postDocument.addAttribute("isPrior", post.isPrior());
+        postDocument.addAttribute("hashtags", post.getHashtags());
+        postDocument.addAttribute("mentions", post.getMentions());
+        postDocument.addAttribute("images", post.getImages());
+        postDocument.addAttribute("videos", post.getVideos());
+        postDocument.addAttribute("urls", post.getUrls());
+        postDocument.addAttribute("shares", post.getShares());
+        postDocument.addAttribute("likesCount", post.getUrls());
+        postDocument.addAttribute("commentsCount", post.getShares());
+
+        return postDocument;
     }
 
-    public void addPost() {
+    public List<Post> getPosts(String userID) {
 
+        final ArrayList<Post> posts = new ArrayList<Post>();
+        try {
+            String query = "FOR l IN " + postCollection + " FILTER l.authorID == " + userID + " RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("authorID", userID).get();
+            ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
+            cursor.forEachRemaining(postDocument -> {
+                Post post;
+                String postID = postDocument.getKey();
+                String authorID = (String) postDocument.getAttribute("authorID");
+                String type = (String) postDocument.getAttribute("type");
+                String companyID = (String) postDocument.getAttribute("companyID");
+                String privacy = (String) postDocument.getAttribute("privacy");
+                String text = (String) postDocument.getAttribute("text");
+                String timeStamp = (String) postDocument.getAttribute("timeStamp" );
+                boolean isCompanyPost = (boolean) postDocument.getAttribute("isCompanypost");
+                boolean isPrior = (boolean) postDocument.getAttribute("isPrior" );
+                ArrayList<String> hashtags = (ArrayList<String>) postDocument.getAttribute("hashtags");
+                ArrayList<String> mentions = (ArrayList<String>) postDocument.getAttribute("mentions");
+                ArrayList<String> images = (ArrayList<String>) postDocument.getAttribute("images");
+                ArrayList<String> videos = (ArrayList<String>) postDocument.getAttribute("videos");
+                ArrayList<String> urls = (ArrayList<String>) postDocument.getAttribute("urls");
+                ArrayList<String> shares = (ArrayList<String>) postDocument.getAttribute("shares");
+                int likesCount = (Integer) postDocument.getAttribute("likesCount");
+                int commentsCount = (Integer) postDocument.getAttribute("commentsCount");
+
+
+
+                post = new Post(postID, authorID, type, companyID, privacy, text, timeStamp,isCompanyPost,isPrior,
+                        hashtags, mentions,images,videos,urls,shares,likesCount,commentsCount);
+                posts.add(post);
+                System.out.println("Key: " + postDocument.getKey());
+            });
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to execute query. " + e.getMessage());
+        }
+        return posts;
     }
 
-    public void editPost() {
+    public String addPost(Post post) throws IOException, ClassNotFoundException{
+        String response = "";
+        BaseDocument postDocument = createPostDoc(post);
 
+        try {
+            arangoDB.db(dbName).collection("posts").insertDocument(postDocument);
+            response = "Post Created";
+        } catch (ArangoDBException e) {
+            response = "Failed to add post. " + e.getMessage();
+        }
+        return response;
     }
 
-    public void deletePost() {
+    public String editPost(Post post) throws IOException, ClassNotFoundException{
 
+        String response = "";
+        BaseDocument postDocument = createPostDoc(post);
+        try {
+            arangoDB.db(dbName).collection("posts").updateDocument(post.getPostID(), postDocument);
+
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to update post. " + e.getMessage());
+            response = "Failed to update post. " + e.getMessage();
+        }
+        return response;
     }
 
-    public List<Post> getComments() {
-        return null;
+    public String deletePost(Post post) throws IOException, ClassNotFoundException{
+
+        String response="";
+        try {
+            arangoDB.db(dbName).collection("posts").deleteDocument(post.getPostID());
+
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to delete post. " + e.getMessage());
+            response = "Failed to delete post";
+        }
+        return response;
     }
+
+
 
     public List<Comment> getComments(String postID) {
 
@@ -207,6 +294,42 @@ public  class ArangoWallHandler implements DatabaseHandler {
     }
 
     public void deleteLike() {
+
+    }
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        DatabaseHandler arangoWallHandler = new ArangoWallHandler();
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("config"));
+        String dbName = properties.getProperty(properties.getProperty("arangodb.name"));
+        ArangoDB arangoDB = DatabaseConnection.getInstance().getArangodb();
+
+       // UserProfile userProfile = new UserProfile("khly@gmail.com", "Mohamed", "Khaled");
+        BaseDocument myObject = new BaseDocument();
+        myObject.setKey("se7s");
+        myObject.addAttribute("email", "khly@gmail.com");
+        myObject.addAttribute("firstName", "Mohamed");
+        myObject.addAttribute("lastName", "Khaled");
+        System.out.println("3ww");
+        try {
+            arangoDB.db(dbName).collection("Users").insertDocument(myObject);
+            System.out.println("Document created");
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create document. " + e.getMessage());
+        }
+
+        try {
+            BaseDocument myUpdatedDocument = arangoDB.db(dbName).collection("Users").getDocument("se7s",
+                    BaseDocument.class);
+            System.out.println("Key: " + myUpdatedDocument.getKey());
+            System.out.println("firstName: " + myUpdatedDocument.getAttribute("firstName"));
+            System.out.println("lastName: " + myUpdatedDocument.getAttribute("lastName"));
+            System.out.println("email: " + myUpdatedDocument.getAttribute("email"));
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get document: myKey; " + e.getMessage());
+        }
+
+        System.out.println();
 
     }
 

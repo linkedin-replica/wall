@@ -28,22 +28,22 @@ public interface DatabaseHandler {
      *
      * @return list of posts
      */
-    public List<Post> getPosts();
+    public List<Post> getPosts(String userID);
 
     /**
      * Add a post
      */
-    public void addPost();
+    public String addPost(Post post) throws IOException, ClassNotFoundException;
 
     /**
      * Edit a post
      */
-    public void editPost();
+    public String editPost(Post post)throws IOException, ClassNotFoundException;
 
     /**
      * Delete a post
      */
-    public void deletePost();
+    public String deletePost(Post post)throws IOException, ClassNotFoundException;
 
     /**
      *
