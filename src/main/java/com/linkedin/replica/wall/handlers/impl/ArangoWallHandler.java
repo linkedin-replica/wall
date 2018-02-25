@@ -31,7 +31,7 @@ public class ArangoWallHandler implements DatabaseHandler {
     public ArangoWallHandler() throws IOException, ClassNotFoundException {
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         properties = new Properties();
-        properties.load(new FileInputStream("config"));
+        properties.load(new FileInputStream("db_config"));
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
         repliesCollection = properties.getProperty("collections.replies.name");

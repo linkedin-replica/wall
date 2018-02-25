@@ -21,7 +21,7 @@ public class DatabaseConnection {
 
     private DatabaseConnection() throws FileNotFoundException, IOException, ClassNotFoundException{
         properties = new Properties();
-        properties.load(new FileInputStream("config"));
+        properties.load(new FileInputStream("db_config"));
 
         arangoDB = instantiateArrangoDB();
         redis = new Jedis();
@@ -103,8 +103,14 @@ public class DatabaseConnection {
 
     }
 
+    public void closeConnections() {
+        if(arangoDB != null)
+            arangoDB.shutdown();
 
+        if(redis != null)
+            redis.shutdown();
 
+    }
 
     public ArangoDB getArangodb() {
         return arangoDB;

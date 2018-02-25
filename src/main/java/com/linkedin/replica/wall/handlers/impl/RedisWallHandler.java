@@ -2,6 +2,8 @@ package com.linkedin.replica.wall.handlers.impl;
 
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.*;
+import com.linkedin.replica.wall.models.Bookmark;
+import com.linkedin.replica.wall.models.Post;
 
 import java.util.List;
 
