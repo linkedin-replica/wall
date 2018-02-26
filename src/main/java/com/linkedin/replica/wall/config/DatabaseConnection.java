@@ -79,29 +79,6 @@ public class DatabaseConnection {
         }
     }
 
-    /**
-     * create collection with name of corresponding name.
-     */
-    private void createCollection(String name) {
-        String dbName = properties.getProperty("arangodb.name");
-            try {
-                CollectionEntity myArangoCollection = arangoDB.db(dbName).createCollection(name);
-                System.out.println("Collection created: " + myArangoCollection.getName());
-            } catch (ArangoDBException e) {
-                System.err.println("Failed to create collection: " + name + "; " + e.getMessage());
-            }
-        }
-
-    /**
-     * Creates the posts, comments, replies and likes collections
-     */
-    private void createAllCollections(){
-        createCollection(properties.getProperty("collections.posts.name"));
-        createCollection(properties.getProperty("collections.comments.name"));
-        createCollection(properties.getProperty("collections.replies.name"));
-        createCollection(properties.getProperty("collections.users.name"));
-
-    }
 
     public void closeConnections() {
         if(arangoDB != null)

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -13,9 +14,15 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.linkedin.replica.wall.config.DatabaseConnection;
+import com.linkedin.replica.wall.models.Post;
 
 public class DatabaseSeed {
     private static Properties properties;
+    private String dbName;
+    private String likesCollection;
+    private String repliesCollection;
+    private String commentsCollection;
+    private String usersCollection;
 
     public DatabaseSeed() throws FileNotFoundException, IOException{
         properties = new Properties();
@@ -26,16 +33,18 @@ public class DatabaseSeed {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/posts"));
         ArangoDB arangoDB = DatabaseConnection.getInstance().getArangodb();
         String dbName = properties.getProperty("arangodb.name");
-        String collectionName = properties.getProperty("collection.posts.name");
+        String postsCollectionName = properties.getProperty("collections.posts.name");
+
+
 
         try{
-            arangoDB.db(dbName).createCollection(collectionName);
+            arangoDB.db(dbName).createCollection(postsCollectionName);
 
         }catch(ArangoDBException ex){
             // check if exception was raised because that database was not created
             if(ex.getErrorNum() == 1228){
                 arangoDB.createDatabase(dbName);
-                arangoDB.db(dbName).createCollection(collectionName);
+                arangoDB.db(dbName).createCollection(postsCollectionName);
             }else{
                 throw ex;
             }
@@ -44,13 +53,27 @@ public class DatabaseSeed {
         BaseDocument newDoc;
 
         for(String text : lines){
-            newDoc = new BaseDocument();
-            newDoc.addAttribute("authorId", counter+"");
-            newDoc.addAttribute("text", text);
-            System.out.println("fdsgffdsgdf");
-            arangoDB.db(dbName).collection(collectionName).insertDocument(newDoc);
-            System.out.println("New user document insert with key = " + newDoc.getId());
-            counter++;
+//            newDoc = new BaseDocument();
+//            newDoc.addAttribute("post", counter+"");
+//            newDoc.addAttribute("text", text);
+            ArrayList<String> x =  new ArrayList<String>() ;
+            x.add("y");
+            Post post = new Post("1", "2", "3",
+                    "4", "5", "yara", "7",
+                    true, true, x, x,
+                    x, x, x, x, 7,
+                    6);
+            //arangoDB.db(dbName).collection(postsCollectionName).insertDocument(newDoc);
+
+//            newDoc = new BaseDocument();
+//            newDoc.addAttribute("post", post);
+            arangoDB.db(dbName).collection(postsCollectionName).insertDocument(post);
+
+
+            System.out.println("New post document insert with key = ");
+
+            //arangoDB.db(dbName).collection(postsCollectionName).getDocument();
+            //counter++;
         }
     }
 
@@ -88,7 +111,7 @@ public class DatabaseSeed {
 
     public void deleteAllPosts() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
         String dbName = properties.getProperty("arangodb.name");
-        String collectionName = properties.getProperty("collection.posts.name");
+        String collectionName = properties.getProperty("collections.posts.name");
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(collectionName).drop();
         System.out.println("Post collection is dropped");
     }
@@ -107,6 +130,7 @@ public class DatabaseSeed {
 
     public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
         DatabaseSeed db = new DatabaseSeed();
+        db.deleteAllPosts();
         try {
             db.insertPosts();
         } catch (IOException e) {
