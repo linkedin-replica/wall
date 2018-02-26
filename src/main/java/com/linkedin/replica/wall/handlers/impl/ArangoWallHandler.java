@@ -13,6 +13,7 @@ import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.models.UserProfile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     String usersCollection;
     String commentsCollection;
     String postsCollection;
+
 
     public ArangoWallHandler() throws IOException, ClassNotFoundException {
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -77,6 +79,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
         try {
             BaseDocument user = arangoDB.db(dbName).collection(userCollection).
                     getDocument(getUserQuery, BaseDocument.class);
+
             List<Object> l = (List<Object>) user.getAttribute("bookmarks");
             if (l == null)
                 l = new ArrayList<Object>();
@@ -518,7 +521,6 @@ public  class ArangoWallHandler implements DatabaseHandler {
         return likes;
     }
 
-
     public String addLike(Like like) {
         String response = "";
         BaseDocument likeDocument = new BaseDocument();
@@ -614,41 +616,39 @@ public  class ArangoWallHandler implements DatabaseHandler {
         return response;
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        DatabaseHandler arangoWallHandler = new ArangoWallHandler();
-        Properties properties = new Properties();
-        properties.load(new FileInputStream("config"));
-        String dbName = properties.getProperty(properties.getProperty("arangodb.name"));
-        ArangoDB arangoDB = DatabaseConnection.getInstance().getArangodb();
-
-       // UserProfile userProfile = new UserProfile("khly@gmail.com", "Mohamed", "Khaled");
-        BaseDocument myObject = new BaseDocument();
-        myObject.setKey("se7s");
-        myObject.addAttribute("email", "khly@gmail.com");
-        myObject.addAttribute("firstName", "Mohamed");
-        myObject.addAttribute("lastName", "Khaled");
-        System.out.println("3ww");
-        try {
-            arangoDB.db(dbName).collection("Users").insertDocument(myObject);
-            System.out.println("Document created");
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to create document. " + e.getMessage());
-        }
-
-        try {
-            BaseDocument myUpdatedDocument = arangoDB.db(dbName).collection("Users").getDocument("se7s",
-                    BaseDocument.class);
-            System.out.println("Key: " + myUpdatedDocument.getKey());
-            System.out.println("firstName: " + myUpdatedDocument.getAttribute("firstName"));
-            System.out.println("lastName: " + myUpdatedDocument.getAttribute("lastName"));
-            System.out.println("email: " + myUpdatedDocument.getAttribute("email"));
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to get document: myKey; " + e.getMessage());
-        }
-
-        System.out.println();
-
-    }
-
-
+//    public static void main(String[] args) throws IOException, ClassNotFoundException {
+//        DatabaseHandler arangoWallHandler = new ArangoWallHandler();
+//        Properties properties = new Properties();
+//        properties.load(new FileInputStream("config"));
+//        String dbName = properties.getProperty(properties.getProperty("arangodb.name"));
+//        ArangoDB arangoDB = DatabaseConnection.getInstance().getArangodb();
+////       // UserProfile userProfile = new UserProfile("khly@gmail.com", "Mohamed", "Khaled");
+//        UserProfile userProfile = new UserProfile("khly@gmail.com", "Mohamed", "Khaled");
+//        BaseDocument myObject = new BaseDocument();
+//        myObject.setKey("se7s");
+//        myObject.addAttribute("email", "khly@gmail.com");
+//        myObject.addAttribute("firstName", "Mohamed");
+//        myObject.addAttribute("lastName", "Khaled");
+//        System.out.println("3ww");
+//        try {
+//            arangoDB.db(dbName).collection("Users").insertDocument(myObject);
+//            System.out.println("Document created");
+//        } catch (ArangoDBException e) {
+//            System.err.println("Failed to create document. " + e.getMessage());
+//        }
+//
+//        try {
+//            BaseDocument myUpdatedDocument = arangoDB.db(dbName).collection("Users").getDocument("se7s",
+//                    BaseDocument.class);
+//            System.out.println("Key: " + myUpdatedDocument.getKey());
+//            System.out.println("firstName: " + myUpdatedDocument.getAttribute("firstName"));
+//            System.out.println("lastName: " + myUpdatedDocument.getAttribute("lastName"));
+//            System.out.println("email: " + myUpdatedDocument.getAttribute("email"));
+//        } catch (ArangoDBException e) {
+//            System.err.println("Failed to get document: myKey; " + e.getMessage());
+//        }
+//
+//        System.out.println();
+//
+//    }
 }
