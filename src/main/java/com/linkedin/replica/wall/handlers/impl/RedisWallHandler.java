@@ -23,19 +23,19 @@ public class RedisWallHandler implements DatabaseHandler {
     }
 
 
-    public List<Post> getPosts() {
+    public List<Post> getPosts(String userId) {
         return null;
     }
 
-    public String addPost() {
+    public String addPost(Post post) {
         return null;
     }
 
-    public String editPost() {
+    public String editPost(Post post) {
         return null;
     }
 
-    public String deletePost() {
+    public String deletePost(Post post) {
         return null;
     }
 

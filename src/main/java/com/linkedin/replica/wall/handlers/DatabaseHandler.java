@@ -26,22 +26,24 @@ public interface DatabaseHandler {
      *
      * @return list of posts
      */
-    public List<Post> getPosts();
+    public List<Post> getPosts(String userID);
 
     /**
      * Add a post
      */
-    public String addPost();
+
+    public String addPost(Post post);
 
     /**
      * Edit a post
      */
-    public String editPost();
+
+    public String editPost(Post post);
 
     /**
      * Delete a post
      */
-    public String deletePost();
+    public String deletePost(Post post);
 
     /**
      *
