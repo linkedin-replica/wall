@@ -21,7 +21,7 @@ public class DatabaseConnection {
 
     private DatabaseConnection() throws FileNotFoundException, IOException, ClassNotFoundException{
         properties = new Properties();
-        properties.load(new FileInputStream("config"));
+        properties.load(new FileInputStream("db_config"));
 
         arangoDB = instantiateArrangoDB();
         redis = new Jedis();
@@ -79,25 +79,15 @@ public class DatabaseConnection {
         }
     }
 
-    /**
-     * Creates the posts, comments, replies and likes collections
-     */
-    private void createCollections() {
-        String dbName = properties.getProperty("arangodb.name");
-        String [] collections = properties.getProperty("arangodb.user").split(",");
-        for(int i=0; i<collections.length; i++){
-            try {
-                CollectionEntity myArangoCollection = arangoDB.db(dbName).createCollection(collections[i]);
-                System.out.println("Collection created: " + myArangoCollection.getName());
-            } catch (ArangoDBException e) {
-                System.err.println("Failed to create collection: " + collections[i] + "; " + e.getMessage());
-            }
-        }
+
+    public void closeConnections() {
+        if(arangoDB != null)
+            arangoDB.shutdown();
+
+        if(redis != null)
+            redis.shutdown();
 
     }
-
-
-
 
     public ArangoDB getArangodb() {
         return arangoDB;
