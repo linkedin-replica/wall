@@ -230,23 +230,23 @@ public class DatabaseSeed {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        DatabaseSeed db = new DatabaseSeed();
-        db.deleteAllPosts();
-        db.deleteAllUsers();
-        db.deleteAllComments();
-        db.deleteAllLikes();
-        db.deleteAllReplies();
-        try {
-            db.insertPosts();
-            db.insertUsers();
-            db.insertComments();
-            db.insertLikes();
-            db.insertReplies();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) throws IOException, ClassNotFoundException {
+//        DatabaseSeed db = new DatabaseSeed();
+//        db.deleteAllPosts();
+//        db.deleteAllUsers();
+//        db.deleteAllComments();
+//        db.deleteAllLikes();
+//        db.deleteAllReplies();
+//        try {
+//            db.insertPosts();
+//            db.insertUsers();
+//            db.insertComments();
+//            db.insertLikes();
+//            db.insertReplies();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
