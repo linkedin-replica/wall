@@ -30,6 +30,9 @@ public class ArangoHandlerTest {
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
+        dbSeed.insertReplies();
+        dbSeed.insertLikes();
+        dbSeed.insertComments();
     }
 
  //   @Test
@@ -70,11 +73,14 @@ public class ArangoHandlerTest {
 //    }
 //
 
-//    @AfterClass
-//    public static void tearDown() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
-//        dbSeed.deleteAllUsers();
-//        dbSeed.deleteAllPosts();
-//        Wall.shutdown();
-//    }
+    @AfterClass
+    public static void tearDown() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
+        dbSeed.deleteAllLikes();
+        Wall.shutdown();
+    }
 
 }

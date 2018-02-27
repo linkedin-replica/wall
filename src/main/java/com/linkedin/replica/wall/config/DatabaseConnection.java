@@ -24,7 +24,7 @@ public class DatabaseConnection {
         properties.load(new FileInputStream("db_config"));
 
         arangoDB = instantiateArrangoDB();
-        redis = new Jedis();
+        //redis = new Jedis();
     }
 
     /**

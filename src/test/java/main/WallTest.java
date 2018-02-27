@@ -25,7 +25,7 @@ public class WallTest {
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, SQLException{
         // startup SearchEngine
-        String[] args = {"src/main/resources/database_config", "src/main/resources/command_config", "src/main/resources/arango_names"};
+        String[] args = {"db_config", "src/main/resources/command_config"};
         Wall.start(args);
         service = new WallService();
 
