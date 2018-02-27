@@ -130,6 +130,7 @@ public class DatabaseSeed {
 
     public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
         DatabaseSeed db = new DatabaseSeed();
+        System.out.println("hereee");
         db.deleteAllPosts();
         try {
             db.insertPosts();
