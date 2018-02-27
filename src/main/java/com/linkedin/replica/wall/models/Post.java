@@ -1,177 +1,113 @@
 package com.linkedin.replica.wall.models;
 
-import java.util.ArrayList;
-
 public class Post {
 
-    private String postID,authorID,type,companyID,privacy,text,timeStamp;
-    private boolean isCompanyPost,isPrior;
-    private ArrayList<String> hashtags,mentions,images,videos,urls,shares;
-    private int likesCount,commentsCount;
+    private String postId;
+    private String authorId;
+    private String type;
+    private String companyId;
+    private String privacy;
+    private String text;
+    private String hashtags;
+    private String mentions;
+    private String likesCount;
+    private String images;
+    private String videos;
+    private String urls;
+    private String commentsCount;
+    private String shares;
+    private String timestamp;
 
-    public Post(String postID, String authorID, String type, String companyID, String privacy, String text,
-                String timeStamp, boolean isCompanyPost, boolean isPrior, ArrayList<String> hashtags,
-                ArrayList<String> mentions, ArrayList<String> images,ArrayList<String> videos,
-                ArrayList<String> urls, ArrayList<String> shares, int likesCount, int commentsCount){
+    private boolean isCompanyPost;
+    private boolean isPrior;
 
-        this.postID = postID;
-        this.authorID = authorID;
+    public Post(String postId, String authorId,String type, String companyId, String privacy, String text, String hashtags, String mentions, String likesCount, String images, String videos, String urls, String commentsCount, String shares, String timestamp, boolean isCompanyPost, boolean isPrior){
+
+        this.postId = postId;
+        this.authorId = authorId;
         this.type = type;
-        this.companyID = companyID;
+        this.companyId = companyId;
         this.privacy = privacy;
-        this.text =text;
-        this.timeStamp = timeStamp;
-        this.isCompanyPost = isCompanyPost;
-        this.isPrior = isPrior;
+        this.text = text;
         this.hashtags = hashtags;
         this.mentions = mentions;
+        this.likesCount = likesCount;
         this.images = images;
         this.videos = videos;
         this.urls = urls;
-        this.shares = shares;
-        this.likesCount = likesCount;
         this.commentsCount = commentsCount;
+        this.shares = shares;
+        this.timestamp = timestamp;
+        this.isCompanyPost = isCompanyPost;
+        this.isPrior = isPrior;
 
     }
 
-    public String getPostID() {
-        return this.postID;
+    public String getPostId(){
+        return postId;
     }
 
-    public void setPostID(String postID) {
-        this.postID = postID;
+    public String getAuthorId() {
+        return authorId;
     }
 
-    public String getAuthorID() {
-        return this.authorID;
+    public String getType(){
+        return type;
     }
 
-    public void setAuthorID(String authorID) {
-        this.authorID = authorID;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getCompanyID() {
-        return this.companyID;
-    }
-
-    public void setCompanyID(String companyID) {
-        this.companyID = companyID;
+    public String getCompanyId() {
+        return companyId;
     }
 
     public String getPrivacy() {
-        return this.privacy;
-    }
-
-    public void setPrivacy(String privacy) {
-        this.privacy = privacy;
+        return privacy;
     }
 
     public String getText() {
-        return this.text;
+        return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public String getHashtags(){
+        return hashtags;
     }
 
-    public String getTimeStamp() {
-        return this.timeStamp;
+    public String getMentions() {
+        return mentions;
     }
 
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public String getLikesCount() {
+        return likesCount;
+    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public String getVideos() {
+        return videos;
+    }
+
+    public String getUrls() {
+        return urls;
+    }
+
+    public String getCommentsCount() {
+        return commentsCount;
+    }
+
+    public String getShares() {
+        return shares;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 
     public boolean isCompanyPost() {
-        return this.isCompanyPost;
-    }
-
-    public void setCompanyPost(boolean companyPost) {
-        isCompanyPost = companyPost;
+        return isCompanyPost;
     }
 
     public boolean isPrior() {
-        return this.isPrior;
-    }
-
-    public void setPrior(boolean prior) {
-        isPrior = prior;
-    }
-
-    public ArrayList<String> getHashtags() {
-        return this.hashtags;
-    }
-
-    public void setHashtags(ArrayList<String> hashtags) {
-        this.hashtags = hashtags;
-    }
-
-    public ArrayList<String> getMentions() {
-        return this.mentions;
-    }
-
-    public void setMentions(ArrayList<String> mentions) {
-        this.mentions = mentions;
-    }
-
-    public ArrayList<String> getImages() {
-        return this.images;
-    }
-
-    public void setImages(ArrayList<String> images) {
-        this.images = images;
-    }
-
-    public ArrayList<String> getVideos() {
-        return this.videos;
-    }
-
-    public void setVideos(ArrayList<String> videos) {
-        this.videos = videos;
-    }
-
-    public ArrayList<String> getUrls() {
-        return this.urls;
-    }
-
-    public void setUrls(ArrayList<String> urls) {
-        this.urls = urls;
-    }
-
-    public ArrayList<String> getShares() {
-        return this.shares;
-    }
-
-    public void setShares(ArrayList<String> shares) {
-        this.shares = shares;
-    }
-
-    public int getLikesCount() {
-        return this.likesCount;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
-    }
-
-    public int getCommentsCount() {
-        return this.commentsCount;
-    }
-
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
+        return isPrior;
     }
 }
-
-
-
-
-

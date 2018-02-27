@@ -95,105 +95,112 @@ public  class ArangoWallHandler implements DatabaseHandler {
     }
 
     public BaseDocument createPostDoc(Post post){
-        BaseDocument postDocument = new BaseDocument();
-        postDocument.setKey(post.getPostID());
-        postDocument.addAttribute("authorID", post.getAuthorID());
-        postDocument.addAttribute("type", post.getType());
-        postDocument.addAttribute("companyID", post.getCompanyID());
-        postDocument.addAttribute("privacy", post.getPrivacy());
-        postDocument.addAttribute("text", post.getText());
-        postDocument.addAttribute("timeStamp", post.getTimeStamp());
-        postDocument.addAttribute("isCompanyPost", post.isCompanyPost());
-        postDocument.addAttribute("isPrior", post.isPrior());
-        postDocument.addAttribute("hashtags", post.getHashtags());
-        postDocument.addAttribute("mentions", post.getMentions());
-        postDocument.addAttribute("images", post.getImages());
-        postDocument.addAttribute("videos", post.getVideos());
-        postDocument.addAttribute("urls", post.getUrls());
-        postDocument.addAttribute("shares", post.getShares());
-        postDocument.addAttribute("likesCount", post.getUrls());
-        postDocument.addAttribute("commentsCount", post.getShares());
+        BaseDocument postDoc = new BaseDocument();
 
-        return postDocument;
+        postDoc.setKey(post.getPostId());
+        postDoc.addAttribute("authorId", post.getAuthorId());
+        postDoc.addAttribute("type", post.getType());
+        postDoc.addAttribute("companyId", post.getCompanyId());
+        postDoc.addAttribute("privacy", post.getPrivacy());
+        postDoc.addAttribute("text", post.getText());
+        postDoc.addAttribute("hashtags", post.getHashtags());
+        postDoc.addAttribute("mentions", post.getMentions());
+        postDoc.addAttribute("likesCount", post.getLikesCount());
+        postDoc.addAttribute("images", post.getImages());
+        postDoc.addAttribute("videos", post.getVideos());
+        postDoc.addAttribute("urls", post.getUrls());
+        postDoc.addAttribute("commentsCount", post.getCommentsCount());
+        postDoc.addAttribute("shares", post.getShares());
+        postDoc.addAttribute("timestamp", post.getTimestamp());
+        postDoc.addAttribute("isCompanyPost", post.isCompanyPost());
+        postDoc.addAttribute("isPrior", post.isPrior());
+
+        return postDoc;
+
     }
 
     public List<Post> getPosts(String userID) {
 
+
         final ArrayList<Post> posts = new ArrayList<Post>();
         try {
-            String query = "FOR l IN " + postsCollection + " FILTER l.authorID == " + userID + " RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("authorID", userID).get();
+            String query = "FOR l IN " + postsCollection + " FILTER l.authorId == " + userID + " RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("authorId", userID).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
             cursor.forEachRemaining(postDocument -> {
                 Post post;
-                String postID = postDocument.getKey();
-                String authorID = (String) postDocument.getAttribute("authorID");
+                String postId = postDocument.getKey();
+                String authorId = (String) postDocument.getAttribute("authorId");
                 String type = (String) postDocument.getAttribute("type");
-                String companyID = (String) postDocument.getAttribute("companyID");
+                String companyId = (String) postDocument.getAttribute("companyId");
                 String privacy = (String) postDocument.getAttribute("privacy");
-                String text = (String) postDocument.getAttribute("text");
-                String timeStamp = (String) postDocument.getAttribute("timeStamp" );
-                boolean isCompanyPost = (boolean) postDocument.getAttribute("isCompanypost");
-                boolean isPrior = (boolean) postDocument.getAttribute("isPrior" );
-                ArrayList<String> hashtags = (ArrayList<String>) postDocument.getAttribute("hashtags");
-                ArrayList<String> mentions = (ArrayList<String>) postDocument.getAttribute("mentions");
-                ArrayList<String> images = (ArrayList<String>) postDocument.getAttribute("images");
-                ArrayList<String> videos = (ArrayList<String>) postDocument.getAttribute("videos");
-                ArrayList<String> urls = (ArrayList<String>) postDocument.getAttribute("urls");
-                ArrayList<String> shares = (ArrayList<String>) postDocument.getAttribute("shares");
-                int likesCount = (Integer) postDocument.getAttribute("likesCount");
-                int commentsCount = (Integer) postDocument.getAttribute("commentsCount");
+                String text  = (String) postDocument.getAttribute("text");
+                String hashtags = (String) postDocument.getAttribute("hashtags");
+                String mentions = (String) postDocument.getAttribute("mentions");
+                String likesCount = (String) postDocument.getAttribute("likesCount");
+                String images = (String) postDocument.getAttribute("images");
+                String videos =  (String) postDocument.getAttribute("videos");
+                String urls = (String) postDocument.getAttribute("urls");
+                String commentsCount = (String) postDocument.getAttribute("commentsCount");
+                String shares = (String) postDocument.getAttribute("shares");
+                String timestamp = (String) postDocument.getAttribute("timestamp");
 
+                boolean isCompanyPost = (boolean) postDocument.getAttribute("isCompanyPost");
+                boolean isPrior = (boolean) postDocument.getAttribute("isPrior");
 
-
-                post = new Post(postID, authorID, type, companyID, privacy, text, timeStamp,isCompanyPost,isPrior,
-                        hashtags, mentions,images,videos,urls,shares,likesCount,commentsCount);
+                post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, shares, timestamp, isCompanyPost, isPrior);
                 posts.add(post);
                 System.out.println("Key: " + postDocument.getKey());
             });
         } catch (ArangoDBException e) {
             System.err.println("Failed to execute query. " + e.getMessage());
         }
-        return posts;
+        return null;
     }
 
     public String addPost(Post post) {
-        String response = "";
-        BaseDocument postDocument = createPostDoc(post);
+            String response = "";
+            BaseDocument addDoc = createPostDoc(post);
+            try {
+                arangoDB.db(dbName).collection(postsCollection).insertDocument(addDoc);
+                System.out.println("Post Created");
+                response = "Post Created";
+            }catch (ArangoDBException e){
+                System.err.println("Failed to add Post " + e.getMessage());
+                response = "Failed to add Post " + e.getMessage();
+            }
 
-        try {
-            arangoDB.db(dbName).collection("posts").insertDocument(postDocument);
-            response = "Post Created";
-        } catch (ArangoDBException e) {
-            response = "Failed to add post. " + e.getMessage();
-        }
         return response;
     }
 
     public String editPost(Post post) {
-
         String response = "";
-        BaseDocument postDocument = createPostDoc(post);
-        try {
-            arangoDB.db(dbName).collection("posts").updateDocument(post.getPostID(), postDocument);
-
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to update post. " + e.getMessage());
-            response = "Failed to update post. " + e.getMessage();
+        BaseDocument editPost = createPostDoc(post);
+        try{
+            arangoDB.db(dbName).collection(postsCollection).updateDocument(post.getPostId() , editPost);
+            System.out.println("Post Updated");
+            response = "Post Updated";
+        } catch (ArangoDBException e){
+            System.err.println("Failed to Update Post " + e.getMessage());
+            response = "Failed to Update Post " + e.getMessage();
         }
+
         return response;
     }
 
     public String deletePost(Post post) {
+        String response;
+        BaseDocument deletePost = createPostDoc(post);
 
-        String response="";
         try {
-            arangoDB.db(dbName).collection("posts").deleteDocument(post.getPostID());
-
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to delete post. " + e.getMessage());
-            response = "Failed to delete post";
+            arangoDB.db(dbName).collection(postsCollection).deleteDocument(post.getPostId());
+            System.out.println("Post Deleted");
+            response = "Post Deleted";
+        } catch (ArangoDBException e){
+            System.err.println("Failed to Delete Post " + e.getMessage());
+            response = "Failed to Delete Post " + e.getMessage();
         }
+
         return response;
     }
 
