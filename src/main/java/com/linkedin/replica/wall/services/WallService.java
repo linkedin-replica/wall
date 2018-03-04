@@ -34,7 +34,7 @@ public class WallService {
 
         public  LinkedHashMap<String, Object> serve(String commandName, HashMap<String, String> request) throws ClassNotFoundException, InstantiationException, IllegalAccessException, ParseException {
             String commandClassName = commandsPackageName + "." + prop.getProperty(commandName + ".command");
-            String handlerClassName = dbHandlerPackageName + "." + prop.getProperty(commandName+ ".dbHandler");
+            String handlerClassName = dbHandlerPackageName + "." + prop.getProperty(commandName+ ".handlers");
 
             // load class of type command and create an instance
             Class c = Class.forName(commandClassName);
