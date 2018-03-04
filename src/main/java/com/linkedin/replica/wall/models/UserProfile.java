@@ -1,7 +1,7 @@
 package com.linkedin.replica.wall.models;
 
 public class UserProfile {
-    private String key;
+    private String userId;
     private String email;
     private String firstName;
     private String lastName;
@@ -10,19 +10,20 @@ public class UserProfile {
         super();
     }
 
-    public UserProfile(String email, String firstName, String lastName) {
+    public UserProfile(String userId, String email, String firstName, String lastName) {
         this();
+        this.userId = userId;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public String getKey() {
-        return key;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {
@@ -52,7 +53,7 @@ public class UserProfile {
     @Override
     public String toString() {
         return "UserProfile {" +
-                "key='" + key + '\'' +
+                "key='" + userId + '\'' +
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
