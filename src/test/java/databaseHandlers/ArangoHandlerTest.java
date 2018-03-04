@@ -120,24 +120,23 @@ public class ArangoHandlerTest {
         request.put("imageUrl", "urlX");
         LinkedHashMap<String, Object> response = wallService.serve("addLike", request);
         String [] message = ((String) response.get("response")).split(",");
-        if(message[0].equals("Like added")) {
-            String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @postId  && l.likerId == @likerId RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("postId", "99").get();
-            bindVars.put("likerId", "100");
-            ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                    Like.class);
-            List<Like> retrievedLikes = new ArrayList<Like>();
-            while (cursor.hasNext())
-                retrievedLikes.add(cursor.next());
-            System.out.println(retrievedLikes.size() + retrievedLikes.get(0).toString());
-            assertEquals("Only one like should have the likerId and postId", 1, retrievedLikes.size());
+        String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @postId  && l.likerId == @likerId RETURN l";
+        Map<String, Object> bindVars = new MapBuilder().put("postId", "99").get();
+        bindVars.put("likerId", "100");
+        ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                Like.class);
+        List<Like> retrievedLikes = new ArrayList<Like>();
+        while (cursor.hasNext())
+            retrievedLikes.add(cursor.next());
+        System.out.println(retrievedLikes.size() + retrievedLikes.get(0).toString());
+        assertEquals("Only one like should have the likerId and postId", 1, retrievedLikes.size());
 
-        }
+
     }
 
     @Test
     public void testDeleteLikes() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
-
+//
 
     }
 

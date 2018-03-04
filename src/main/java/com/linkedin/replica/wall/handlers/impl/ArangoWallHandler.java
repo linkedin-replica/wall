@@ -158,6 +158,18 @@ public  class ArangoWallHandler implements DatabaseHandler {
         return posts;
     }
 
+    public Post getPost(String postId) {
+        Post post = null;
+        try {
+            post = arangoDB.db(dbName).collection(postsCollection).getDocument(postId,
+                    Post.class);
+            // System.out.println("Key: " + commentDocument.getCommentId());
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get post: postId; " + e.getMessage());
+        }
+        return post;
+    }
+
     public String addPost(Post post) {
         String response = "";
         BaseDocument postDocument = createPostDoc(post);
@@ -231,7 +243,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public Comment getComment(String commentID) {
         Comment comment = null;
         try {
-            Comment commentDocument = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentID,
+            comment = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentID,
                     Comment.class);
            // System.out.println("Key: " + commentDocument.getCommentId());
         } catch (ArangoDBException e) {
@@ -327,7 +339,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public Reply getReply(String replyId) {
         Reply reply = null;
         try {
-            Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
+            reply = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
                     Reply.class);
 //            System.out.println("Key: " + replyDocument.getReplyId());
         } catch (ArangoDBException e) {
@@ -491,10 +503,15 @@ public  class ArangoWallHandler implements DatabaseHandler {
         }
 
         if(like.getLikedPostId() != null){
-            //Todo:
-            // 1. get post: call getPosts()
-            // 2. update post object: add 1 to likes
-            // 3. update post document: call editPost()
+            Post post = getPost(like.getLikedPostId());
+            if(post !=null){
+                post.setLikesCount(post.getLikesCount() + 1);
+                editPost(post);
+            }
+            else {
+                response = "Failed to update post's like count. ";
+            }
+
 
         }
         else if(like.getLikedCommentId() != null){
@@ -533,10 +550,14 @@ public  class ArangoWallHandler implements DatabaseHandler {
             response = "Failed to delete a like. " + e.getMessage();
         }
         if(like.getLikedPostId() != null){
-            //Todo:
-            // 1. get post: call getPosts()
-            // 2. update post object: subtract 1 from likes
-            // 3. update post document: call editPost()
+            Post post = getPost(like.getLikedPostId());
+            if(post !=null){
+                post.setLikesCount(post.getLikesCount() - 1);
+                editPost(post);
+            }
+            else {
+                response = "Failed to update post's like count. ";
+            }
 
         }
         else if(like.getLikedCommentId() != null){
