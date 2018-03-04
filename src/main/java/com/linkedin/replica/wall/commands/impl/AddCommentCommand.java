@@ -22,9 +22,9 @@ public class AddCommentCommand extends Command{
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
         Comment comment;
-        String commentID = request.get("commentID");
-        String authorID = request.get("authorID");
-        String parentPostID = request.get("parentPostID");
+        String commentId = request.get("commentId");
+        String authorId = request.get("authorId");
+        String parentPostId = request.get("parentPostId");
         Integer likesCount = Integer.parseInt(request.get("likesCount"));
         Integer repliesCount = Integer.parseInt(request.get("repliesCount"));
         ArrayList<String> images = new ArrayList<String>(Arrays.asList(request.get("images").split(",")));
@@ -32,7 +32,7 @@ public class AddCommentCommand extends Command{
         ArrayList<String> mentions = new ArrayList<String>(Arrays.asList(request.get("mentions").split(",")));
         String text = request.get("text");
         String timeStamp = request.get("timeStamp");
-        comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
+        comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
 
         // call dbHandler to get results from db and add returned results to linkedHashMap
         response.put("response", dbHandler.addComment(comment));

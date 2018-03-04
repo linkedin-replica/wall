@@ -14,6 +14,7 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.linkedin.replica.wall.config.DatabaseConnection;
+import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.*;
 
 public class DatabaseSeed {
@@ -25,6 +26,7 @@ public class DatabaseSeed {
     private String commentsCollection;
     private String postsCollection;
     private String usersCollection;
+    private ArangoWallHandler dbHandler;
 
     public DatabaseSeed() throws FileNotFoundException, IOException, ClassNotFoundException {
         properties = new Properties();
@@ -77,7 +79,6 @@ public class DatabaseSeed {
     }
 
     public void insertComments() throws IOException, ClassNotFoundException {
-        List<String> lines = Files.readAllLines(Paths.get("src/test/resources/comments"));
         try{
             arangoDB.db(dbName).createCollection(commentsCollection);
 
@@ -90,21 +91,15 @@ public class DatabaseSeed {
                 throw ex;
             }
         }
-        int counter = 1;
-        BaseDocument newDoc;
-        ArrayList<String> x =  new ArrayList<String>() ;
-        x.add("y");
-        for(String text : lines) {
-            Comment comment = new Comment(counter + "", "3", "1", 45, 34, x, x, x, text, "11");
-            newDoc = new BaseDocument();
-            newDoc.setKey(comment.getCommentId());
-            newDoc.addAttribute("comment", comment);
-            arangoDB.db(dbName).collection(commentsCollection).insertDocument(newDoc);
-            System.out.println("New comment document insert with key = ");
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), BaseDocument.class);
-            System.out.println("comment: " + retrievedDoc.toString());
-            counter++;
-        }
+          for(int i = 0; i < 10; i++){
+            Comment comment  = new Comment("Comment no. "+i+"",i+1+"",i+2+"",i+3,i+4,null,null,null,"Comment Text","Time stamp");
+              dbHandler.addComment(comment);
+              System.out.println("New comment document insert with key = ");
+              Comment retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), Comment.class);
+              System.out.println(retrievedDoc.toString());
+          }
+
+
     }
 
     public void insertReplies() throws IOException, ClassNotFoundException {
