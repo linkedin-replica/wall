@@ -48,15 +48,16 @@ public  class ArangoWallHandler implements DatabaseHandler {
         return null;
     }
 
-    /*
-       method to update user's bookmarks list bby adding new bookmark.
+    /**
+     *  method to update user's bookmarks list by adding new bookmark.
+     * @param bookmark to be added.
+     * @return message tells whether the process is successful or failed.
      */
     public String addBookmark(Bookmark bookmark) {
         String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
 
         String message = "";
-        Map<String, Object> mbindVars = new MapBuilder().put("userId", userId).get();
         try {
             UserProfile user =  arangoDB.db(dbName).collection(userCollection).getDocument(userId, UserProfile.class );
             ArrayList<Bookmark> bookmarkList = user.getBookmarks();
@@ -66,35 +67,39 @@ public  class ArangoWallHandler implements DatabaseHandler {
             message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete bookmark. " + e.getMessage());
+            System.err.println("Failed to add bookmark. " + e.getMessage());
             message = "Failed to add bookmark. " + e.getMessage();
         }
         return message;
     }
 
-
+    /**
+     *  method to update user's bookmarks list by deleting new bookmark.
+     * @param bookmark to be deleted
+     * @return message tells whether the process is successful or failed.
+     */
     public String deleteBookmark(Bookmark bookmark) {
         String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
-        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
+
         String message = "";
         try {
-            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
-                    getDocument(getUserQuery, BaseDocument.class);
-
-            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
-            if (l == null)
-                l = new ArrayList<Object>();
-            l.remove(bookmark);
-            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
+            UserProfile user =  arangoDB.db(dbName).collection(userCollection).getDocument(userId, UserProfile.class );
+            ArrayList<Bookmark> bookmarkList = user.getBookmarks();
+            bookmarkList.remove(bookmark);
+            user.setBookmarks(bookmarkList);
+            arangoDB.db(dbName).collection(userCollection).updateDocument(userId, user);
             message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete bookmark. " + e.getMessage());
-            message = "Failed to delete bookmark";
+            message = "Failed to delete bookmark. " + e.getMessage();
         }
         return message;
     }
+
+
+    
 
     public BaseDocument createPostDoc(Post post){
         BaseDocument postDocument = new BaseDocument();
