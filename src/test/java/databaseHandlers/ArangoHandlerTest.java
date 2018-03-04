@@ -49,7 +49,7 @@ public class ArangoHandlerTest {
         String postId = "1";
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("likedPostId", postId);
-        LinkedHashMap<String, Object> response = wallService.serve("GetPostLikesCommand", request);
+        LinkedHashMap<String, Object> response = wallService.serve("getPostLikes", request);
         List<Like> postLikes = (List<Like>) response.get("response");
         System.out.println(postLikes.get(0).toString());
 
