@@ -442,22 +442,22 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public List<Like> getPostLikes(String postId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
-            String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == " + postId + " RETURN l";
+            String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @likedPostId RETURN l";
             Map<String, Object> bindVars = new MapBuilder().put("likedPostId", postId).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     BaseDocument.class);
             cursor.forEachRemaining(likeDocument -> {
-                Like like;
-                String likeId = likeDocument.getKey();
-                String likerId = (String) likeDocument.getAttribute("likerId");
-                String userName = (String) likeDocument.getAttribute("username");
-                String headLine = (String) likeDocument.getAttribute("headline");
-                String imageUrl = (String) likeDocument.getAttribute("imageUrl");
-                String likedPostId = (String) likeDocument.getAttribute("likedPostId");
-                String likedCommentId = (String) likeDocument.getAttribute("likedCommentId");
-                String likedReplyId = (String) likeDocument.getAttribute("likedReplyId");
-                like = new Like(likeId, likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
-                likes.add(like);
+                //Like like;
+
+//                String likerId = (String) likeDocument.getAttribute("likerId");
+//                String userName = (String) likeDocument.getAttribute("userName");
+//                String headLine = (String) likeDocument.getAttribute("headLine");
+//                String imageUrl = (String) likeDocument.getAttribute("imageUrl");
+//                String likedPostId = (String) likeDocument.getAttribute("likedPostId");
+//                String likedCommentId = (String) likeDocument.getAttribute("likedCommentId");
+//                String likedReplyId = (String) likeDocument.getAttribute("likedReplyId");
+//                like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
+                //likes.add(like);
                 System.out.println("Key: " + likeDocument.getKey());
             });
         } catch (ArangoDBException e) {
@@ -470,7 +470,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public List<Like> getCommentLikes(String commentId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
-            String query = "FOR l IN " + likesCollection + " FILTER l.likedCommentId == " + commentId + " RETURN l";
+            String query = "FOR l IN " + likesCollection + " FILTER l.likedCommentId == @likedCommentId RETURN l";
             Map<String, Object> bindVars = new MapBuilder().put("likedCommentId", commentId).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     BaseDocument.class);
@@ -484,7 +484,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
                 String likedPostId = (String) likeDocument.getAttribute("likedPostId");
                 String likedCommentId = (String) likeDocument.getAttribute("likedCommentId");
                 String likedReplyId = (String) likeDocument.getAttribute("likedReplyId");
-                like = new Like(likeId, likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
+                like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
                 likes.add(like);
                 System.out.println("Key: " + likeDocument.getKey());
             });
@@ -497,7 +497,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public List<Like> getReplyLikes(String replyId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
-            String query = "FOR l IN " + likesCollection + " FILTER l.likedReplyId == " + replyId + " RETURN l";
+            String query = "FOR l IN " + likesCollection + " FILTER l.likedReplyId == @likedReplyId RETURN l";
             Map<String, Object> bindVars = new MapBuilder().put("likedReplyId", replyId).get();
             ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     BaseDocument.class);
@@ -511,7 +511,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
                 String likedPostId = (String) likeDocument.getAttribute("likedPostId");
                 String likedCommentId = (String) likeDocument.getAttribute("likedCommentId");
                 String likedReplyId = (String) likeDocument.getAttribute("likedReplyId");
-                like = new Like(likeId, likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
+                like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
                 likes.add(like);
                 System.out.println("Key: " + likeDocument.getKey());
             });
@@ -615,40 +615,4 @@ public  class ArangoWallHandler implements DatabaseHandler {
         }
         return response;
     }
-
-//    public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        DatabaseHandler arangoWallHandler = new ArangoWallHandler();
-//        Properties properties = new Properties();
-//        properties.load(new FileInputStream("config"));
-//        String dbName = properties.getProperty(properties.getProperty("arangodb.name"));
-//        ArangoDB arangoDB = DatabaseConnection.getInstance().getArangodb();
-////       // UserProfile userProfile = new UserProfile("khly@gmail.com", "Mohamed", "Khaled");
-//        UserProfile userProfile = new UserProfile("khly@gmail.com", "Mohamed", "Khaled");
-//        BaseDocument myObject = new BaseDocument();
-//        myObject.setKey("se7s");
-//        myObject.addAttribute("email", "khly@gmail.com");
-//        myObject.addAttribute("firstName", "Mohamed");
-//        myObject.addAttribute("lastName", "Khaled");
-//        System.out.println("3ww");
-//        try {
-//            arangoDB.db(dbName).collection("Users").insertDocument(myObject);
-//            System.out.println("Document created");
-//        } catch (ArangoDBException e) {
-//            System.err.println("Failed to create document. " + e.getMessage());
-//        }
-//
-//        try {
-//            BaseDocument myUpdatedDocument = arangoDB.db(dbName).collection("Users").getDocument("se7s",
-//                    BaseDocument.class);
-//            System.out.println("Key: " + myUpdatedDocument.getKey());
-//            System.out.println("firstName: " + myUpdatedDocument.getAttribute("firstName"));
-//            System.out.println("lastName: " + myUpdatedDocument.getAttribute("lastName"));
-//            System.out.println("email: " + myUpdatedDocument.getAttribute("email"));
-//        } catch (ArangoDBException e) {
-//            System.err.println("Failed to get document: myKey; " + e.getMessage());
-//        }
-//
-//        System.out.println();
-//
-//    }
 }

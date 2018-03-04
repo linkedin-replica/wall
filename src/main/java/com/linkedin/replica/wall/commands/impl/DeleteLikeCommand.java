@@ -24,7 +24,7 @@ public class DeleteLikeCommand extends Command{
         String likedPostId = request.get("likedPostId");
         String likedCommentId = request.get("likedCommentId");
         String likedReplyId = request.get("likedReplyId");
-        like = new Like(likeId, likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
+        like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
 
         // call dbHandler to get results from db and add returned results to linkedHashMap
         response.put("response", dbHandler.deleteLike(like));

@@ -13,6 +13,8 @@ import java.util.Properties;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.entity.DocumentCreateEntity;
+import com.arangodb.entity.DocumentEntity;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.models.*;
 
@@ -152,18 +154,16 @@ public class DatabaseSeed {
                 throw ex;
             }
         }
-        BaseDocument newDoc;
         ArrayList<String> x =  new ArrayList<String>() ;
         x.add("y");
         for(int i = 1 ; i<11; i++) {
-            Like like = new Like(i + "", "3", "1", "45", "8", "Yara", "Yara, Safa and 3 others", "url");
-            newDoc = new BaseDocument();
-            newDoc.setKey(like.getLikeId());
-            newDoc.addAttribute("like", like);
-            arangoDB.db(dbName).collection(likesCollection).insertDocument(newDoc);
+            Like like = new Like( "3", "1", "45", "8", "Yara", "Yara, Safa and 3 others", "url");
+            DocumentCreateEntity likeDoc =  arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
             System.out.println("New like document insert with key = ");
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(likesCollection).getDocument(like.getLikeId(), BaseDocument.class);
-            System.out.println("likes: " + retrievedDoc.toString());
+            System.out.println(likeDoc.getKey());
+            Like retrievedDoc = arangoDB.db(dbName).collection(likesCollection).getDocument(likeDoc.getKey(), Like.class);
+            System.out.println(retrievedDoc);
+            System.out.println("likes: " + retrievedDoc.getLikedPostId());
         }
     }
 

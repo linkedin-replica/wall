@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.arangodb.entity.DocumentCreateEntity;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.main.Wall;
@@ -23,7 +24,7 @@ public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
 
     @BeforeClass
-    public static void setup() throws ClassNotFoundException, IOException, SQLException{
+    public static void setup() throws ClassNotFoundException, IOException {
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
         Wall.start(args);
@@ -35,26 +36,26 @@ public class ArangoHandlerTest {
         dbSeed.insertLikes();
         dbSeed.insertComments();
     }
+//
+    @Test
+    public void testGetPostLikes() throws ClassNotFoundException, IOException {
+        String postId = "1";
+        DatabaseHandler dbHandler = new ArangoWallHandler();
+        List<Like> likesResponse = dbHandler.getPostLikes(postId);
+        System.out.println(likesResponse.get(0).getHeadLine());
 
-//    @Test
-//    public void testGetPostLikes() throws FileNotFoundException, ClassNotFoundException, IOException {
-//        String postId = "1";
-//        DatabaseHandler dbHandler = new ArangoWallHandler();
-//        List<Like> likesResponse = dbHandler.getPostLikes(postId);
-//        System.out.println(likesResponse.size());
-//
-//        boolean check = false;
-//        for(Like like : likesResponse){
-//            if(like.getLikedPostId().equals(postId))
-//                check = true;
-//
-//            assertEquals("Wrong Fetched Like as the likedPostId does not match the postId.", true, check);
-//            check = false;
-//        }
-//    }
+        boolean check = false;
+        for(Like like : likesResponse){
+            if(like.getLikedPostId().equals(postId))
+                check = true;
+
+            assertEquals("Wrong Fetched Like as the likedPostId does not match the postId.", true, check);
+            check = false;
+        }
+    }
 //
 //    @Test
-//    public void testGetCommentLikes() throws FileNotFoundException, ClassNotFoundException, IOException {
+//    public void testGetCommentLikes() throws ClassNotFoundException, IOException {
 //        String commentId = "45";
 //        DatabaseHandler dbHandler = new ArangoWallHandler();
 //        List<Like> likesResponse = dbHandler.getCommentLikes(commentId);
@@ -72,7 +73,7 @@ public class ArangoHandlerTest {
 //    }
 //
 //    @Test
-//    public void testGetReplyLikes() throws FileNotFoundException, ClassNotFoundException, IOException {
+//    public void testGetReplyLikes() throws ClassNotFoundException, IOException {
 //        String replyId = "8";
 //        DatabaseHandler dbHandler = new ArangoWallHandler();
 //        List<Like> likesResponse = dbHandler.getReplyLikes(replyId);
@@ -88,7 +89,7 @@ public class ArangoHandlerTest {
 //    }
 
     @AfterClass
-    public static void tearDown() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
+    public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException{
         dbSeed.deleteAllUsers();
         dbSeed.deleteAllPosts();
         dbSeed.deleteAllReplies();
