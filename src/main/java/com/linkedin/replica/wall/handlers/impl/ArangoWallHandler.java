@@ -416,6 +416,17 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
     }
 
+    public Like getLike(String likeId) {
+        Like like = null;
+        try {
+            Like likeDocument = arangoDB.db(dbName).collection(likesCollection).getDocument(likeId,
+                    Like.class);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get like: likeId; " + e.getMessage());
+        }
+        return like;
+    }
+
     public List<Like> getPostLikes(String postId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
@@ -473,7 +484,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
         try {
             DocumentCreateEntity likeDoc =  arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
             System.out.println("Like added");
-            response = "Like added";
+            response = "Like added" + "," + likeDoc.getKey();
         } catch (ArangoDBException e) {
             System.err.println("Failed to add a like. " + e.getMessage());
             response = "Failed to add a like. " + e.getMessage();

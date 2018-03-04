@@ -1,22 +1,20 @@
 package databaseHandlers;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
+import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
-import com.arangodb.entity.DocumentCreateEntity;
-import com.linkedin.replica.wall.handlers.DatabaseHandler;
+import com.arangodb.util.MapBuilder;
+import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.main.Wall;
 import com.linkedin.replica.wall.models.Like;
-import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.services.WallService;
-import javafx.geometry.Pos;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,6 +26,10 @@ import static org.junit.Assert.assertEquals;
 public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
     private static WallService wallService;
+    private static Properties properties;
+    private static ArangoDB arangoDB;
+    private static String dbName;
+    private static String  likesCollection;
 
 
     @BeforeClass
@@ -36,6 +38,11 @@ public class ArangoHandlerTest {
         String[] args = {"db_config", "src/main/resources/command_config"};
         Wall.start(args);
         wallService = new WallService();
+        arangoDB = DatabaseConnection.getInstance().getArangodb();
+        properties = new Properties();
+        properties.load(new FileInputStream("db_config"));
+        dbName = properties.getProperty("arangodb.name");
+        likesCollection = properties.getProperty("collections.likes.name");
 
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
@@ -112,17 +119,27 @@ public class ArangoHandlerTest {
         request.put("headLine", "Yara and 5 others");
         request.put("imageUrl", "urlX");
         LinkedHashMap<String, Object> response = wallService.serve("addLike", request);
-        String message = (String) response.get("response");
-        boolean check = false;
-        if(message.equals("Like added"))
-           check = true;
-        assertEquals(message, true, check);
+        String [] message = ((String) response.get("response")).split(",");
+        if(message[0].equals("Like added")) {
+            String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @postId  && l.likerId == @likerId RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("postId", "99").get();
+            bindVars.put("likerId", "100");
+            ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                    Like.class);
+            List<Like> retrievedLikes = new ArrayList<Like>();
+            while (cursor.hasNext())
+                retrievedLikes.add(cursor.next());
+            System.out.println(retrievedLikes.size() + retrievedLikes.get(0).toString());
+            assertEquals("Only one like should have the likerId and postId", 1, retrievedLikes.size());
+
+        }
     }
 
-//    @Test
-//    public void testDeleteLikes() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
-//        
-//    }
+    @Test
+    public void testDeleteLikes() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+
+
+    }
 
 
     @AfterClass
