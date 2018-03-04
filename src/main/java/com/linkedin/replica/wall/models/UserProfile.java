@@ -1,10 +1,16 @@
 package com.linkedin.replica.wall.models;
 
+import com.arangodb.entity.DocumentField;
+
+import java.util.ArrayList;
+
 public class UserProfile {
+    @DocumentField(DocumentField.Type.KEY)
     private String userId;
     private String email;
     private String firstName;
     private String lastName;
+    private ArrayList<Bookmark> bookmarks;
 
     public UserProfile() {
         super();
@@ -16,7 +22,12 @@ public class UserProfile {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.bookmarks = new ArrayList<>();
     }
+
+    public ArrayList<Bookmark> getBookmarks(){return this.bookmarks;}
+
+    public void setBookmarks(ArrayList<Bookmark> bookmarks){this.bookmarks = bookmarks;}
 
     public String getUserId() {
         return userId;

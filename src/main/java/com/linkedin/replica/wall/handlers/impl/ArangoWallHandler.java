@@ -15,6 +15,7 @@ import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.models.UserProfile;
 
+import java.awt.print.Book;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
@@ -47,20 +48,21 @@ public  class ArangoWallHandler implements DatabaseHandler {
         return null;
     }
 
+    /*
+       method to update user's bookmarks list bby adding new bookmark.
+     */
     public String addBookmark(Bookmark bookmark) {
         String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
 
-        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
         String message = "";
+        Map<String, Object> mbindVars = new MapBuilder().put("userId", userId).get();
         try {
-            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
-                    getDocument(getUserQuery, BaseDocument.class);
-            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
-            if (l == null)
-                l = new ArrayList<Object>();
-            l.add(bookmark);
-            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
+            UserProfile user =  arangoDB.db(dbName).collection(userCollection).getDocument(userId, UserProfile.class );
+            ArrayList<Bookmark> bookmarkList = user.getBookmarks();
+            bookmarkList.add(bookmark);
+            user.setBookmarks(bookmarkList);
+            arangoDB.db(dbName).collection(userCollection).updateDocument(userId, user);
             message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
