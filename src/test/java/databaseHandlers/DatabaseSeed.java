@@ -5,10 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
@@ -16,11 +13,13 @@ import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.DocumentCreateEntity;
 import com.arangodb.entity.DocumentEntity;
 import com.linkedin.replica.wall.config.DatabaseConnection;
+import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.*;
 
 public class DatabaseSeed {
     private static Properties properties;
     private ArangoDB arangoDB;
+    ArangoWallHandler dbHandler;
     private String dbName;
     private String likesCollection;
     private String repliesCollection;
@@ -29,6 +28,7 @@ public class DatabaseSeed {
     private String usersCollection;
 
     public DatabaseSeed() throws FileNotFoundException, IOException, ClassNotFoundException {
+        dbHandler = new ArangoWallHandler();
         properties = new Properties();
         properties.load(new FileInputStream("db_config"));
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -154,16 +154,29 @@ public class DatabaseSeed {
                 throw ex;
             }
         }
-        ArrayList<String> x =  new ArrayList<String>() ;
-        x.add("y");
+        String [] userNames = new String [] {"Mohammed", "Nada", "Rana", "Safa", "Yara"};
+        Random rand;
         for(int i = 1 ; i<11; i++) {
-            Like like = new Like( "3", "1", "45", "8", "Yara", "Yara, Safa and 3 others", "url");
-            DocumentCreateEntity likeDoc =  arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
+            rand = new Random();
+            String likerId = "12";
+            String likedPostId = null;
+            String likedCommentId = null;
+            String likedReplyId = null;
+            if(i%3 == 0){
+                likedPostId = "15";
+            } else if (i%3 == 1) {
+                likedCommentId = "16";
+            } else {
+                likedReplyId = "18";
+            }
+            String userName = userNames[rand.nextInt(5)];
+            String headLine = userNames[rand.nextInt(5)] + ", " + userNames[rand.nextInt(5)] + " and 2 others";
+            String imageUrl = "url" + i;
+            Like like = new Like( likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine, imageUrl);
+            dbHandler.addLike(like);
             System.out.println("New like document insert with key = ");
-            System.out.println(likeDoc.getKey());
-            Like retrievedDoc = arangoDB.db(dbName).collection(likesCollection).getDocument(likeDoc.getKey(), Like.class);
-            System.out.println(retrievedDoc);
-            System.out.println("likes: " + retrievedDoc.getLikedPostId());
+            Like retrievedDoc = arangoDB.db(dbName).collection(likesCollection).getDocument(like.getLikeId(), Like.class);
+            System.out.println(retrievedDoc.toString());
         }
     }
 

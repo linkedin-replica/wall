@@ -233,7 +233,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
         try {
             Comment commentDocument = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentID,
                     Comment.class);
-            System.out.println("Key: " + commentDocument.getCommentId());
+           // System.out.println("Key: " + commentDocument.getCommentId());
         } catch (ArangoDBException e) {
             System.err.println("Failed to get comment: commentId; " + e.getMessage());
         }
@@ -329,7 +329,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
         try {
             Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
                     Reply.class);
-            System.out.println("Key: " + replyDocument.getReplyId());
+//            System.out.println("Key: " + replyDocument.getReplyId());
         } catch (ArangoDBException e) {
             System.err.println("Failed to get reply: replyId; " + e.getMessage());
         }

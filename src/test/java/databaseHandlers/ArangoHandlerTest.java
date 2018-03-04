@@ -37,21 +37,21 @@ public class ArangoHandlerTest {
         wallService = new WallService();
 
         dbSeed = new DatabaseSeed();
-        dbSeed.insertUsers();
-        dbSeed.insertPosts();
-        dbSeed.insertReplies();
+        //dbSeed.insertUsers();
+        //dbSeed.insertPosts();
+        //dbSeed.insertReplies();
         dbSeed.insertLikes();
-        dbSeed.insertComments();
+        //dbSeed.insertComments();
     }
 //
     @Test
     public void testGetPostLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
-        String postId = "1";
+        String postId = "15";
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("likedPostId", postId);
         LinkedHashMap<String, Object> response = wallService.serve("getPostLikes", request);
         List<Like> postLikes = (List<Like>) response.get("response");
-        System.out.println(postLikes.get(0).toString());
+        System.out.println(postLikes.size());
         boolean check = false;
         for(Like like : postLikes){
             if(like.getLikedPostId().equals(postId))
@@ -64,7 +64,7 @@ public class ArangoHandlerTest {
 
     @Test
     public void testGetCommentLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
-        String commentId = "45";
+        String commentId = "16";
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("likedCommentId", commentId);
         LinkedHashMap<String, Object> response = wallService.serve("getCommentLikes", request);
@@ -83,7 +83,7 @@ public class ArangoHandlerTest {
 
     @Test
     public void testGetReplyLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
-        String replyId = "8";
+        String replyId = "18";
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("likedReplyId", replyId);
         LinkedHashMap<String, Object> response = wallService.serve("getReplyLikes", request);
@@ -102,10 +102,10 @@ public class ArangoHandlerTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException{
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
-        dbSeed.deleteAllReplies();
-        dbSeed.deleteAllComments();
+        //dbSeed.deleteAllUsers();
+        //dbSeed.deleteAllPosts();
+        //dbSeed.deleteAllReplies();
+        //dbSeed.deleteAllComments();
         dbSeed.deleteAllLikes();
         Wall.shutdown();
     }
