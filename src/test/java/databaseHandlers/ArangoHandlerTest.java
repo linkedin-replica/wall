@@ -52,7 +52,6 @@ public class ArangoHandlerTest {
         LinkedHashMap<String, Object> response = wallService.serve("getPostLikes", request);
         List<Like> postLikes = (List<Like>) response.get("response");
         System.out.println(postLikes.get(0).toString());
-
         boolean check = false;
         for(Like like : postLikes){
             if(like.getLikedPostId().equals(postId))
@@ -62,40 +61,44 @@ public class ArangoHandlerTest {
             check = false;
         }
     }
-//
-//    @Test
-//    public void testGetCommentLikes() throws ClassNotFoundException, IOException {
-//        String commentId = "45";
-//        DatabaseHandler dbHandler = new ArangoWallHandler();
-//        List<Like> likesResponse = dbHandler.getCommentLikes(commentId);
-//        System.out.println(dbHandler.getCommentLikes(commentId));
-//        System.out.println(likesResponse.size());
-//
-//        boolean check = false;
-//        for(Like like : likesResponse){
-//            if(like.getLikedCommentId().equals(commentId))
-//                check = true;
-//
-//            assertEquals("Wrong Fetched Like as the likedCommentId does not match the commentId.", true, check);
-//            check = false;
-//        }
-//    }
-//
-//    @Test
-//    public void testGetReplyLikes() throws ClassNotFoundException, IOException {
-//        String replyId = "8";
-//        DatabaseHandler dbHandler = new ArangoWallHandler();
-//        List<Like> likesResponse = dbHandler.getReplyLikes(replyId);
-//        System.out.println(likesResponse.size());
-//        boolean check = false;
-//        for(Like like : likesResponse){
-//            if(like.getLikedReplyId().equals(replyId))
-//                check = true;
-//
-//            assertEquals("Wrong Fetched Like as the likedReplyId does not match the replyId.", true, check);
-//            check = false;
-//        }
-//    }
+
+    @Test
+    public void testGetCommentLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
+        String commentId = "45";
+        HashMap<String,String> request = new HashMap<String,String>();
+        request.put("likedCommentId", commentId);
+        LinkedHashMap<String, Object> response = wallService.serve("getCommentLikes", request);
+        List<Like> commentLikes = (List<Like>) response.get("response");
+        System.out.println(commentLikes.get(0).toString());
+        System.out.println(commentLikes.size());
+        boolean check = false;
+        for(Like like : commentLikes){
+            if(like.getLikedCommentId().equals(commentId))
+                check = true;
+
+            assertEquals("Wrong Fetched Like as the likedCommentId does not match the commentId.", true, check);
+            check = false;
+        }
+    }
+
+    @Test
+    public void testGetReplyLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
+        String replyId = "8";
+        HashMap<String,String> request = new HashMap<String,String>();
+        request.put("likedReplyId", replyId);
+        LinkedHashMap<String, Object> response = wallService.serve("getReplyLikes", request);
+        List<Like> replyLikes = (List<Like>) response.get("response");
+        System.out.println(replyLikes.get(0).toString());
+        System.out.println(replyLikes.size());
+        boolean check = false;
+        for(Like like : replyLikes){
+            if(like.getLikedReplyId().equals(replyId))
+                check = true;
+
+            assertEquals("Wrong Fetched Like as the likedReplyId does not match the replyId.", true, check);
+            check = false;
+        }
+    }
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException{

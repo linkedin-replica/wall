@@ -16,7 +16,7 @@ public class GetCommentLikesCommand extends Command{
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
 
         // call dbHandler to get results from db and add returned results to linkedHashMap
-        response.put("response", dbHandler.getPostLikes(request.get("likedCommentId")));
+        response.put("response", dbHandler.getCommentLikes(request.get("likedCommentId")));
         return response;
     }
 }
