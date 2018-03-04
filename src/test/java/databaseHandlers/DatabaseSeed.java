@@ -19,7 +19,7 @@ import com.linkedin.replica.wall.models.*;
 public class DatabaseSeed {
     private static Properties properties;
     private ArangoDB arangoDB;
-    ArangoWallHandler dbHandler;
+    private ArangoWallHandler dbHandler;
     private String dbName;
     private String likesCollection;
     private String repliesCollection;

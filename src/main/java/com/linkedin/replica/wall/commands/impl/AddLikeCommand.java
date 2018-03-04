@@ -19,8 +19,8 @@ public class AddLikeCommand extends Command{
         Like like;
         //String likeId = request.get("likeId");
         String likerId = request.get("likerId");
-        String userName = request.get("username");
-        String headLine = request.get("headline");
+        String userName = request.get("userName");
+        String headLine = request.get("headLine");
         String imageUrl = request.get("imageUrl");
         String likedPostId = request.get("likedPostId");
         String likedCommentId = request.get("likedCommentId");

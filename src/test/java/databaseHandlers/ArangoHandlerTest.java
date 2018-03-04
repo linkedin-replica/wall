@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.arangodb.ArangoDB;
 import com.arangodb.entity.DocumentCreateEntity;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
@@ -37,15 +38,15 @@ public class ArangoHandlerTest {
         wallService = new WallService();
 
         dbSeed = new DatabaseSeed();
-        //dbSeed.insertUsers();
-        //dbSeed.insertPosts();
-        //dbSeed.insertReplies();
+        dbSeed.insertUsers();
+        dbSeed.insertPosts();
+        dbSeed.insertReplies();
         dbSeed.insertLikes();
-        //dbSeed.insertComments();
+        dbSeed.insertComments();
     }
-//
+
     @Test
-    public void testGetPostLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
+    public void testGetPostLikes() throws ClassNotFoundException, IllegalAccessException, ParseException, InstantiationException {
         String postId = "15";
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("likedPostId", postId);
@@ -57,13 +58,13 @@ public class ArangoHandlerTest {
             if(like.getLikedPostId().equals(postId))
                 check = true;
 
-            assertEquals("Wrong Fetched Like as the likedPostId does not match the postId.", true, check);
+            assertEquals("Incorrect like retrieved as the likedPostId does not match the postId.", true, check);
             check = false;
         }
     }
 
     @Test
-    public void testGetCommentLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
+    public void testGetCommentLikes() throws ClassNotFoundException, IllegalAccessException, ParseException, InstantiationException {
         String commentId = "16";
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("likedCommentId", commentId);
@@ -76,13 +77,13 @@ public class ArangoHandlerTest {
             if(like.getLikedCommentId().equals(commentId))
                 check = true;
 
-            assertEquals("Wrong Fetched Like as the likedCommentId does not match the commentId.", true, check);
+            assertEquals("Incorrect like retrieved as the likedCommentId does not match the commentId.", true, check);
             check = false;
         }
     }
 
     @Test
-    public void testGetReplyLikes() throws ClassNotFoundException, IOException, IllegalAccessException, ParseException, InstantiationException {
+    public void testGetReplyLikes() throws ClassNotFoundException, IllegalAccessException, ParseException, InstantiationException {
         String replyId = "18";
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("likedReplyId", replyId);
@@ -95,17 +96,41 @@ public class ArangoHandlerTest {
             if(like.getLikedReplyId().equals(replyId))
                 check = true;
 
-            assertEquals("Wrong Fetched Like as the likedReplyId does not match the replyId.", true, check);
+            assertEquals("Incorrect like retrieved as the likedReplyId does not match the replyId.", true, check);
             check = false;
         }
     }
 
+    @Test
+    public void testAddLikes() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        HashMap<String,String> request = new HashMap<String,String>();
+        request.put("likerId", "100");
+        request.put("likedPostId", "99");
+        request.put("likedCommentId", null);
+        request.put("likedReplyId", null);
+        request.put("userName", "Yara");
+        request.put("headLine", "Yara and 5 others");
+        request.put("imageUrl", "urlX");
+        LinkedHashMap<String, Object> response = wallService.serve("addLike", request);
+        String message = (String) response.get("response");
+        boolean check = false;
+        if(message.equals("Like added"))
+           check = true;
+        assertEquals(message, true, check);
+    }
+
+//    @Test
+//    public void testDeleteLikes() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+//        
+//    }
+
+
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException{
-        //dbSeed.deleteAllUsers();
-        //dbSeed.deleteAllPosts();
-        //dbSeed.deleteAllReplies();
-        //dbSeed.deleteAllComments();
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
         dbSeed.deleteAllLikes();
         Wall.shutdown();
     }
