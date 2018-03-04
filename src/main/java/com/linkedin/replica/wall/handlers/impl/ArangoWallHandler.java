@@ -231,20 +231,9 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public Comment getComment(String commentID) {
         Comment comment = null;
         try {
-            BaseDocument commentDocument = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentID,
-                    BaseDocument.class);
-            System.out.println("Key: " + commentDocument.getKey());
-            String authorID = (String) commentDocument.getAttribute("authorID");
-            String parentPostID = (String) commentDocument.getAttribute("parentPostID");
-            int likesCount = (Integer) commentDocument.getAttribute("likesCount");
-            int repliesCount = (Integer) commentDocument.getAttribute("repliesCount");
-            ArrayList<String> images = (ArrayList<String>) commentDocument.getAttribute("images");
-            ArrayList<String> urls = (ArrayList<String>) commentDocument.getAttribute("urls");
-            ArrayList<String> mentions = (ArrayList<String>) commentDocument.getAttribute("mentions");
-            String text = (String) commentDocument.getAttribute("text");
-            String timeStamp = (String) commentDocument.getAttribute("timeStamp");
-            comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
-
+            Comment commentDocument = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentID,
+                    Comment.class);
+            System.out.println("Key: " + commentDocument.getCommentId());
         } catch (ArangoDBException e) {
             System.err.println("Failed to get comment: commentId; " + e.getMessage());
         }
@@ -338,22 +327,9 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public Reply getReply(String replyId) {
         Reply reply = null;
         try {
-            BaseDocument replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
-                    BaseDocument.class);
-            System.out.println("Key: " + replyDocument.getKey());
-            replyId = replyDocument.getKey();
-            String authorId = (String) replyDocument.getAttribute("authorId");
-            String parentPostId = (String) replyDocument.getAttribute("parentPostId");
-            String parentCommentId = (String) replyDocument.getAttribute("parentCommentId");
-            ArrayList<String> mentions = (ArrayList<String>) replyDocument.getAttribute("mentions");
-            Long likesCount = (Long) replyDocument.getAttribute("likesCount");
-            String text = (String) replyDocument.getAttribute("text");
-            Date timestamp = (Date) replyDocument.getAttribute("timestamp");
-            ArrayList<String> images = (ArrayList<String>) replyDocument.getAttribute("images");
-            ArrayList<String> urls = (ArrayList<String>) replyDocument.getAttribute("urls");
-
-            reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
-
+            Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
+                    Reply.class);
+            System.out.println("Key: " + replyDocument.getReplyId());
         } catch (ArangoDBException e) {
             System.err.println("Failed to get reply: replyId; " + e.getMessage());
         }
