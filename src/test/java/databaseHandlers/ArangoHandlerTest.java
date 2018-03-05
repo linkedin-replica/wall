@@ -1,15 +1,17 @@
 package databaseHandlers;
 
+import java.awt.print.Book;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
+import com.arangodb.ArangoDB;
+import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.main.Wall;
+import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.UserProfile;
 import javafx.geometry.Pos;
@@ -23,6 +25,17 @@ import static org.junit.Assert.assertEquals;
 
 public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
+    private static DatabaseHandler arangoWallHandler;
+    private static ArangoDB arangoDB;
+    private static Properties properties;
+    private String dbName;
+    private String likesCollection;
+    private String repliesCollection;
+    private String commentsCollection;
+    private String postsCollection;
+    private String usersCollection;
+    private ArrayList<UserProfile> insertedUsers;
+
 
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, SQLException{
@@ -31,6 +44,9 @@ public class ArangoHandlerTest {
         Wall.start(args);
 
         dbSeed = new DatabaseSeed();
+        arangoWallHandler = new ArangoWallHandler();
+        arangoDB = DatabaseConnection.getInstance().getArangodb();
+
         dbSeed.insertUsers();
         dbSeed.insertPosts();
         dbSeed.insertReplies();
@@ -38,19 +54,33 @@ public class ArangoHandlerTest {
         dbSeed.insertComments();
     }
 
+    @Test
+    public void testAddBookmark() throws IOException, ClassNotFoundException {
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        String postId = "P123";
+
+        int bookmarkNo = user.getBookmarks().size() + 1;
+        Bookmark bookmark = new Bookmark(userId, postId);
+        arangoWallHandler.addBookmark(bookmark);
+
+        UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
+        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
+        Bookmark retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
+        assertEquals("size of bookmarks should increased by one", updatedBookmarks.size() , bookmarkNo);
+        assertEquals("userID should be the same in the inserted bookmark", retrievedBookmark.getUserId(), bookmark.getUserId());
+        assertEquals("postID should be the same in the inserted bookmark", retrievedBookmark.getPostId(), bookmark.getPostId());
+    }
+
 //    @Test
-//    public void testAddBookmark() throws IOException, ClassNotFoundException {
-//        DatabaseHandler dbHandler = new ArangoWallHandler();
-//        String userId = "U123";
+//    public void testDeleteBookmark(){
+//        UserProfile user = dbSeed.getInsertedUsers().get(0);
+//        String userId = user.getUserId();
 //        String postId = "P123";
-//        UserProfile user = new UserProfile(userId, )
-//
-//
 //
 //
 //
 //    }
-
 
  //   @Test
 //    public void testSearchUsers() throws FileNotFoundException, ClassNotFoundException, IOException, SQLException{

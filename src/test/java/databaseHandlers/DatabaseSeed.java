@@ -26,6 +26,7 @@ public class DatabaseSeed {
     private String commentsCollection;
     private String postsCollection;
     private String usersCollection;
+    private ArrayList<UserProfile> insertedUsers;
 
     public DatabaseSeed() throws FileNotFoundException, IOException, ClassNotFoundException {
         properties = new Properties();
@@ -37,7 +38,7 @@ public class DatabaseSeed {
         commentsCollection = properties.getProperty("collections.comments.name");
         postsCollection = properties.getProperty("collections.posts.name");
         usersCollection = properties.getProperty("collections.users.name");
-
+        insertedUsers = new ArrayList<>();
 
     }
 
@@ -108,6 +109,8 @@ public class DatabaseSeed {
         }
     }
 
+
+
     public void insertReplies() throws IOException, ClassNotFoundException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/replies"));
         try{
@@ -168,6 +171,11 @@ public class DatabaseSeed {
         }
     }
 
+    /**
+     * seed collection Users in db with dummy data.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public void insertUsers() throws IOException, ClassNotFoundException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/users"));
         try{
@@ -189,13 +197,21 @@ public class DatabaseSeed {
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
             UserProfile user = new UserProfile(counter + "", email, firstName, lastName);
-
+            insertedUsers.add(user);
             arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
             System.out.println("New user document insert with key = " + user.getUserId());
             counter++;
             UserProfile retrievedUser= arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
             System.out.println("user: " + retrievedUser.toString());
         }
+    }
+
+    /**
+     * return list of inserted users.
+     * @return
+     */
+    public ArrayList<UserProfile> getInsertedUsers(){
+        return  this.insertedUsers;
     }
 
     public void deleteAllPosts() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
