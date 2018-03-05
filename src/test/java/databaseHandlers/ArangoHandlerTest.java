@@ -3,12 +3,15 @@ package databaseHandlers;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.main.Wall;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.UserProfile;
 import javafx.geometry.Pos;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,6 +37,20 @@ public class ArangoHandlerTest {
         dbSeed.insertLikes();
         dbSeed.insertComments();
     }
+
+//    @Test
+//    public void testAddBookmark() throws IOException, ClassNotFoundException {
+//        DatabaseHandler dbHandler = new ArangoWallHandler();
+//        String userId = "U123";
+//        String postId = "P123";
+//        UserProfile user = new UserProfile(userId, )
+//
+//
+//
+//
+//
+//    }
+
 
  //   @Test
 //    public void testSearchUsers() throws FileNotFoundException, ClassNotFoundException, IOException, SQLException{

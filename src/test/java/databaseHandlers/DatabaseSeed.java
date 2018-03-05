@@ -13,6 +13,7 @@ import java.util.Properties;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.entity.DocumentCreateEntity;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.models.*;
 
@@ -181,22 +182,19 @@ public class DatabaseSeed {
             }
         }
         int counter = 1;
-        BaseDocument newDoc;
         String[] arr;
         for(String text : lines){
             arr = text.split(" ");
-            newDoc = new BaseDocument();
             String firstName = arr[0];
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
             UserProfile user = new UserProfile(counter + "", email, firstName, lastName);
-            newDoc.setKey(user.getUserId());
-            newDoc.addAttribute("user", user);
-            arangoDB.db(dbName).collection(usersCollection).insertDocument(newDoc);
-            System.out.println("New user document insert with key = " + newDoc.getId());
+
+            arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
+            System.out.println("New user document insert with key = " + user.getUserId());
             counter++;
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), BaseDocument.class);
-            System.out.println("user: " + retrievedDoc.toString());
+            UserProfile retrievedUser= arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
+            System.out.println("user: " + retrievedUser.toString());
         }
     }
 
@@ -232,17 +230,17 @@ public class DatabaseSeed {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         DatabaseSeed db = new DatabaseSeed();
-        db.deleteAllPosts();
+      //  db.deleteAllPosts();
         db.deleteAllUsers();
-        db.deleteAllComments();
-        db.deleteAllLikes();
-        db.deleteAllReplies();
+//        db.deleteAllComments();
+//        db.deleteAllLikes();
+//        db.deleteAllReplies();
         try {
-            db.insertPosts();
+         //   db.insertPosts();
             db.insertUsers();
-            db.insertComments();
-            db.insertLikes();
-            db.insertReplies();
+//            db.insertComments();
+//            db.insertLikes();
+//            db.insertReplies();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

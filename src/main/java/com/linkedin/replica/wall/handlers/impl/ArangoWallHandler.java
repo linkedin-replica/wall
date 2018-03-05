@@ -75,7 +75,6 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     /**
      * method to update user's bookmarks list by deleting new bookmark.
-     *
      * @param bookmark to be deleted
      * @return message tells whether the process is successful or failed.
      */
@@ -101,7 +100,7 @@ public class ArangoWallHandler implements DatabaseHandler {
     /**
      * method to get user's bookmarks.
      * @param userId
-     * @return list of user's bookmarks.
+     * @return list of users bookmarks.
      */
 
     public List<Bookmark> getUserBookmarks(String userId) {
