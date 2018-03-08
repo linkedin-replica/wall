@@ -1,10 +1,13 @@
 package com.linkedin.replica.wall.models;
 
+import com.arangodb.entity.DocumentField;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
 public class Reply {
+    @DocumentField(DocumentField.Type.KEY)
     private String replyId;
     private String authorId;
     private String parentPostId;

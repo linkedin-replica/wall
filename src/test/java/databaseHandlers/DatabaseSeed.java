@@ -14,12 +14,14 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.linkedin.replica.wall.config.DatabaseConnection;
+import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.*;
 
 public class DatabaseSeed {
     private static Properties properties;
     private ArangoDB arangoDB;
     private String dbName;
+    private ArangoWallHandler dbHandler;
     private String likesCollection;
     private String repliesCollection;
     private String commentsCollection;
@@ -28,6 +30,7 @@ public class DatabaseSeed {
 
     public DatabaseSeed() throws FileNotFoundException, IOException, ClassNotFoundException {
         properties = new Properties();
+        dbHandler = new ArangoWallHandler();
         properties.load(new FileInputStream("db_config"));
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         dbName = properties.getProperty("arangodb.name");
@@ -42,6 +45,7 @@ public class DatabaseSeed {
 
     public void insertPosts() throws IOException, ClassNotFoundException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/posts"));
+        System.out.println("posts inserted");
         try{
             arangoDB.db(dbName).createCollection(postsCollection);
 
@@ -50,7 +54,9 @@ public class DatabaseSeed {
             if(ex.getErrorNum() == 1228){
                 arangoDB.createDatabase(dbName);
                 arangoDB.db(dbName).createCollection(postsCollection);
+                System.out.println("collection created");
             }else{
+                System.out.println("exception");
                 throw ex;
             }
         }
@@ -58,6 +64,7 @@ public class DatabaseSeed {
         BaseDocument newDoc;
         ArrayList<String> x =  new ArrayList<String>() ;
         x.add("y");
+        System.out.println("before loop");
         for(String text : lines){
             Post post = new Post(counter + "", "2", "3",
                     "4", "5", text, "7",
@@ -111,6 +118,7 @@ public class DatabaseSeed {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/replies"));
         try{
             arangoDB.db(dbName).createCollection(repliesCollection);
+            System.out.println("Replies inserted");
 
         }catch(ArangoDBException ex){
             // check if exception was raised because that database was not created
@@ -122,16 +130,12 @@ public class DatabaseSeed {
             }
         }
         int counter = 1;
-        BaseDocument newDoc;
         ArrayList<String> x =  new ArrayList<String>() ;
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
             Reply reply = new Reply(counter + "", "3", "1", "45", x, 45L, text, date, x, x);
-            newDoc = new BaseDocument();
-            newDoc.setKey(reply.getReplyId());
-            newDoc.addAttribute("reply", reply);
-            arangoDB.db(dbName).collection(repliesCollection).insertDocument(newDoc);
+            arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             System.out.println("New Reply document insert with key = ");
             BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);
             System.out.println("reply: " + retrievedDoc.toString());
@@ -231,23 +235,24 @@ public class DatabaseSeed {
     }
 
 
-//    public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        DatabaseSeed db = new DatabaseSeed();
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        DatabaseSeed db = new DatabaseSeed();
 //        db.deleteAllPosts();
 //        db.deleteAllUsers();
 //        db.deleteAllComments();
 //        db.deleteAllLikes();
 //        db.deleteAllReplies();
-//        try {
-//            db.insertPosts();
-//            db.insertUsers();
-//            db.insertComments();
-//            db.insertLikes();
-//            db.insertReplies();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
+        try {
+            db.insertPosts();
+            db.insertUsers();
+            db.insertComments();
+            db.insertLikes();
+            db.insertReplies();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            System.out.println("exception");
+            e.printStackTrace();
+        }
+    }
 }

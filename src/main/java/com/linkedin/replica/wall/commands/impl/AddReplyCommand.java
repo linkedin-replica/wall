@@ -18,9 +18,12 @@ public class AddReplyCommand extends Command{
     public LinkedHashMap<String, Object> execute() throws ParseException {
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
+        System.out.println("EXECUTEEEE");
         // call dbHandler to get results from db and add returned results to linkedHashMap
         Reply reply;
-        DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+
+        //DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         String replyId = request.get("replyId");
         String authorId = request.get("authorId");
         String parentPostId = request.get("parentPostId");
