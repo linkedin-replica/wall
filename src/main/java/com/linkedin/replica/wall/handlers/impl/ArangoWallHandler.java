@@ -431,7 +431,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public Like getLike(String likeId) {
         Like like = null;
         try {
-            Like likeDocument = arangoDB.db(dbName).collection(likesCollection).getDocument(likeId,
+            like = arangoDB.db(dbName).collection(likesCollection).getDocument(likeId,
                     Like.class);
         } catch (ArangoDBException e) {
             System.err.println("Failed to get like: likeId; " + e.getMessage());
