@@ -110,8 +110,8 @@ public class ArangoWallHandler implements DatabaseHandler {
      * @return list of users bookmarks.
      */
 
-    public List<Bookmark> getBookmarks(String userId) {
-         List<Bookmark> ans = new ArrayList<>();
+    public ArrayList<Bookmark> getBookmarks(String userId) {
+         ArrayList<Bookmark> ans = new ArrayList<>();
         String message = "";
         try {
             UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
