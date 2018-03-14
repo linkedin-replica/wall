@@ -58,6 +58,11 @@ public class ArangoHandlerTest {
         dbSeed.insertComments();
     }
 
+    /**
+     * testing Adding bookmark function
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Test
     public void testAddBookmark() throws IOException, ClassNotFoundException {
         UserProfile user = dbSeed.getInsertedUsers().get(0);
@@ -74,7 +79,9 @@ public class ArangoHandlerTest {
         assertEquals("postID should be the same in the inserted bookmark", retrievedBookmark.getPostId(), bookmark.getPostId());
     }
 
-
+    /**
+     * test DeleteBookmark function
+     */
     @Test
     public void testDeleteBookmark(){
         UserProfile user = dbSeed.getInsertedUsers().get(0);
@@ -89,6 +96,9 @@ public class ArangoHandlerTest {
 
     }
 
+    /**
+     * testing getBookmarks function
+     */
     @Test
     public void testGetBookmarks(){
         UserProfile user = dbSeed.getInsertedUsers().get(0);
@@ -110,7 +120,7 @@ public class ArangoHandlerTest {
     }
 
 
- //   @Test
+//    @Test
 //    public void testSearchUsers() throws FileNotFoundException, ClassNotFoundException, IOException, SQLException{
 //        String searchKey = "hm";
 //        DatabaseHandler dbHandler = new ArangoWallHandler();
@@ -146,16 +156,16 @@ public class ArangoHandlerTest {
 //            check = false;
 //        }
 //    }
-//
+
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
-      //  dbSeed.deleteAllUsers();
-     //   dbSeed.deleteAllPosts();
-//        dbSeed.deleteAllReplies();
-//        dbSeed.deleteAllComments();
-//        dbSeed.deleteAllLikes();
-       // Wall.shutdown();
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
+        dbSeed.deleteAllLikes();
+        Wall.shutdown();
     }
 
 }
