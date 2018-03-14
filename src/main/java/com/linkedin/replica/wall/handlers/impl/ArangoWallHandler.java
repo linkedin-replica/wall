@@ -4,6 +4,8 @@ import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.entity.DocumentCreateEntity;
+import com.arangodb.entity.DocumentUpdateEntity;
 import com.arangodb.util.MapBuilder;
 
 import com.linkedin.replica.wall.config.DatabaseConnection;
@@ -94,31 +96,6 @@ public  class ArangoWallHandler implements DatabaseHandler {
         return message;
     }
 
-    public BaseDocument createPostDoc(Post post){
-        BaseDocument postDoc = new BaseDocument();
-
-        postDoc.setKey(post.getPostId());
-        postDoc.addAttribute("authorId", post.getAuthorId());
-        postDoc.addAttribute("type", post.getType());
-        postDoc.addAttribute("companyId", post.getCompanyId());
-        postDoc.addAttribute("privacy", post.getPrivacy());
-        postDoc.addAttribute("text", post.getText());
-        postDoc.addAttribute("hashtags", post.getHashtags());
-        postDoc.addAttribute("mentions", post.getMentions());
-        postDoc.addAttribute("likesCount", post.getLikesCount());
-        postDoc.addAttribute("images", post.getImages());
-        postDoc.addAttribute("videos", post.getVideos());
-        postDoc.addAttribute("urls", post.getUrls());
-        postDoc.addAttribute("commentsCount", post.getCommentsCount());
-        postDoc.addAttribute("shares", post.getShares());
-        postDoc.addAttribute("timestamp", post.getTimestamp());
-        postDoc.addAttribute("isCompanyPost", post.isCompanyPost());
-        postDoc.addAttribute("isPrior", post.isPrior());
-
-        return postDoc;
-
-    }
-
     public List<Post> getPosts(String userID) {
 
 
@@ -126,31 +103,10 @@ public  class ArangoWallHandler implements DatabaseHandler {
         try {
             String query = "FOR l IN " + postsCollection + " FILTER l.authorId == " + userID + " RETURN l";
             Map<String, Object> bindVars = new MapBuilder().put("authorId", userID).get();
-            ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
-            cursor.forEachRemaining(postDocument -> {
-                Post post;
-                String postId = postDocument.getKey();
-                String authorId = (String) postDocument.getAttribute("authorId");
-                String type = (String) postDocument.getAttribute("type");
-                String companyId = (String) postDocument.getAttribute("companyId");
-                String privacy = (String) postDocument.getAttribute("privacy");
-                String text  = (String) postDocument.getAttribute("text");
-                String hashtags = (String) postDocument.getAttribute("hashtags");
-                String mentions = (String) postDocument.getAttribute("mentions");
-                String likesCount = (String) postDocument.getAttribute("likesCount");
-                String images = (String) postDocument.getAttribute("images");
-                String videos =  (String) postDocument.getAttribute("videos");
-                String urls = (String) postDocument.getAttribute("urls");
-                String commentsCount = (String) postDocument.getAttribute("commentsCount");
-                String shares = (String) postDocument.getAttribute("shares");
-                String timestamp = (String) postDocument.getAttribute("timestamp");
-
-                boolean isCompanyPost = (boolean) postDocument.getAttribute("isCompanyPost");
-                boolean isPrior = (boolean) postDocument.getAttribute("isPrior");
-
-                post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, shares, timestamp, isCompanyPost, isPrior);
+            ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+            cursor.forEachRemaining(post -> {
                 posts.add(post);
-                System.out.println("Key: " + postDocument.getKey());
+                System.out.println("Key: " + post.getPostId());
             });
         } catch (ArangoDBException e) {
             System.err.println("Failed to execute query. " + e.getMessage());
@@ -160,9 +116,8 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
     public String addPost(Post post) {
             String response = "";
-            BaseDocument addDoc = createPostDoc(post);
             try {
-                arangoDB.db(dbName).collection(postsCollection).insertDocument(addDoc);
+                DocumentCreateEntity addDoc =  arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
                 System.out.println("Post Created");
                 response = "Post Created";
             }catch (ArangoDBException e){
@@ -175,9 +130,8 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
     public String editPost(Post post) {
         String response = "";
-        BaseDocument editPost = createPostDoc(post);
         try{
-            arangoDB.db(dbName).collection(postsCollection).updateDocument(post.getPostId() , editPost);
+            DocumentUpdateEntity editPost =  arangoDB.db(dbName).collection(postsCollection).updateDocument(post.getPostId() , post);
             System.out.println("Post Updated");
             response = "Post Updated";
         } catch (ArangoDBException e){
@@ -190,7 +144,6 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
     public String deletePost(Post post) {
         String response;
-        BaseDocument deletePost = createPostDoc(post);
 
         try {
             arangoDB.db(dbName).collection(postsCollection).deleteDocument(post.getPostId());

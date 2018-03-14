@@ -61,16 +61,16 @@ public class DatabaseSeed {
         for(String text : lines){
             Post post = new Post(counter + "", "2", "3",
                     "4", "5", text, "7",
-                    true, true, x, x,
-                    x, x, x, x, 7,
-                    6);
+                    "", 2,  "", "",
+                    "", 3, "", "", true,
+                    true);
             newDoc = new BaseDocument();
-            newDoc.setKey(post.getPostID());
+            newDoc.setKey(post.getPostId());
             newDoc.addAttribute("post", post);
 
             arangoDB.db(dbName).collection(postsCollection).insertDocument(newDoc);
             System.out.println("New post document insert with key = ");
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostID(), BaseDocument.class);
+            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostId(), BaseDocument.class);
             System.out.println("post: " + retrievedDoc.toString());
             counter ++;
         }

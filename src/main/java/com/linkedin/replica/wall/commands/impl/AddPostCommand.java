@@ -33,11 +33,11 @@ public class AddPostCommand extends Command{
         String text = request.get("text");
         String hashtags = request.get("hashtags");
         String mentions = request.get("mentions");
-        String likesCount = request.get("likesCount");
+        int likesCount = Integer.parseInt(request.get("likesCount"));
         String images = request.get("images");
         String videos = request.get("videos");
         String urls = request.get("urls");
-        String commentsCount = request.get("commentsCount");
+        int commentsCount = Integer.parseInt(request.get("commentsCount"));
         String shares = request.get("shares");
         String timestamp = request.get("timestamp");
 
