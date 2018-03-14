@@ -11,15 +11,12 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.DocumentCreateEntity;
-import com.arangodb.entity.DocumentEntity;
 import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.*;
 
 public class DatabaseSeed {
     private static Properties properties;
     private ArangoDB arangoDB;
-    private ArangoWallHandler dbHandler;
     private String dbName;
     private String likesCollection;
     private String repliesCollection;
@@ -27,8 +24,7 @@ public class DatabaseSeed {
     private String postsCollection;
     private String usersCollection;
 
-    public DatabaseSeed() throws FileNotFoundException, IOException, ClassNotFoundException {
-        dbHandler = new ArangoWallHandler();
+    public DatabaseSeed() throws IOException, ClassNotFoundException {
         properties = new Properties();
         properties.load(new FileInputStream("db_config"));
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -42,7 +38,7 @@ public class DatabaseSeed {
 
     }
 
-    public void insertPosts() throws IOException, ClassNotFoundException {
+    public void insertPosts() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/posts"));
         try{
             arangoDB.db(dbName).createCollection(postsCollection);
@@ -78,7 +74,7 @@ public class DatabaseSeed {
         }
     }
 
-    public void insertComments() throws IOException, ClassNotFoundException {
+    public void insertComments() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/comments"));
         try{
             arangoDB.db(dbName).createCollection(commentsCollection);
@@ -109,7 +105,7 @@ public class DatabaseSeed {
         }
     }
 
-    public void insertReplies() throws IOException, ClassNotFoundException {
+    public void insertReplies() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/replies"));
         try{
             arangoDB.db(dbName).createCollection(repliesCollection);
@@ -141,7 +137,7 @@ public class DatabaseSeed {
         }
     }
 
-    public void insertLikes() throws IOException, ClassNotFoundException {
+    public void insertLikes() {
         try{
             arangoDB.db(dbName).createCollection(likesCollection);
 
@@ -173,14 +169,12 @@ public class DatabaseSeed {
             String headLine = userNames[rand.nextInt(5)] + ", " + userNames[rand.nextInt(5)] + " and 2 others";
             String imageUrl = "url" + i;
             Like like = new Like( likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine, imageUrl);
-            dbHandler.addLike(like);
-            System.out.println("New like document insert with key = ");
-            Like retrievedDoc = arangoDB.db(dbName).collection(likesCollection).getDocument(like.getLikeId(), Like.class);
-            System.out.println(retrievedDoc.toString());
+            DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
+            System.out.println("New like document insert with key = "  + likeDoc.getKey());
         }
     }
 
-    public void insertUsers() throws IOException, ClassNotFoundException {
+    public void insertUsers() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/users"));
         try{
             arangoDB.db(dbName).createCollection(usersCollection);
@@ -213,53 +207,33 @@ public class DatabaseSeed {
         }
     }
 
-    public void deleteAllPosts() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void deleteAllPosts() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(postsCollection).drop();
         System.out.println("Post collection is dropped");
     }
 
-    public void deleteAllComments() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void deleteAllComments() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(commentsCollection).drop();
         System.out.println("Comments collection is dropped");
     }
 
 
-    public void deleteAllReplies() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void deleteAllReplies() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(repliesCollection).drop();
         System.out.println("Replies collection is dropped");
     }
 
-    public void deleteAllLikes() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void deleteAllLikes() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(likesCollection).drop();
         System.out.println("Likes collection is dropped");
     }
 
-    public void deleteAllUsers() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void deleteAllUsers() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(usersCollection).drop();
         System.out.println("Users collection is dropped");
     }
 
-    public void closeDBConnection() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void closeDBConnection() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
-
-//    public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        DatabaseSeed db = new DatabaseSeed();
-//        db.deleteAllPosts();
-//        db.deleteAllUsers();
-//        db.deleteAllComments();
-//        db.deleteAllLikes();
-//        db.deleteAllReplies();
-//        try {
-//            db.insertPosts();
-//            db.insertUsers();
-//            db.insertComments();
-//            db.insertLikes();
-//            db.insertReplies();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
