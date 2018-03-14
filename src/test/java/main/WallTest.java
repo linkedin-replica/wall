@@ -31,7 +31,7 @@ public class WallTest {
 
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
-        dbSeed.insertPosts();
+      //  dbSeed.insertPosts();
 
 
     }

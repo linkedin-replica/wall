@@ -15,6 +15,10 @@ public class Comment {
         private ArrayList<String> mentions;
         private String text,timeStamp;
 
+        public Comment(){
+
+        }
+
         public Comment(String commentId,String authorId,String parentPostId, int likesCount,int repliesCount, ArrayList<String> images,ArrayList<String> urls,ArrayList<String> mentions, String text,String timeStamp){
 
             this.commentId = commentId;

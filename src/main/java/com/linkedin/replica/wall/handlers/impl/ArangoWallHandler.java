@@ -243,20 +243,8 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public Comment getComment(String commentId) {
         Comment comment = null;
         try {
-            BaseDocument commentDocument = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentId,
-                    BaseDocument.class);
-            System.out.println("Key: " + commentDocument.getKey());
-            String authorId = (String) commentDocument.getAttribute("authorId");
-            String parentPostId = (String) commentDocument.getAttribute("parentPostId");
-            int likesCount = (Integer) commentDocument.getAttribute("likesCount");
-            int repliesCount = (Integer) commentDocument.getAttribute("repliesCount");
-            ArrayList<String> images = (ArrayList<String>) commentDocument.getAttribute("images");
-            ArrayList<String> urls = (ArrayList<String>) commentDocument.getAttribute("urls");
-            ArrayList<String> mentions = (ArrayList<String>) commentDocument.getAttribute("mentions");
-            String text = (String) commentDocument.getAttribute("text");
-            String timeStamp = (String) commentDocument.getAttribute("timeStamp");
-            comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
-
+            comment = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentId,
+                    Comment.class);
         } catch (ArangoDBException e) {
             System.err.println("Failed to get comment: commentId; " + e.getMessage());
         }

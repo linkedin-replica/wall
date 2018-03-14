@@ -78,7 +78,7 @@ public class DatabaseSeed {
         }
     }
 
-    public void insertComments() throws IOException, ClassNotFoundException {
+   /* public void insertComments() throws IOException, ClassNotFoundException {
         try{
             arangoDB.db(dbName).createCollection(commentsCollection);
 
@@ -100,7 +100,37 @@ public class DatabaseSeed {
           }
 
 
-    }
+    }*/
+   public void insertComments() throws IOException, ClassNotFoundException {
+       List<String> lines = Files.readAllLines(Paths.get("src/test/resources/comments"));
+       try{
+           arangoDB.db(dbName).createCollection(commentsCollection);
+
+       }catch(ArangoDBException ex){
+           // check if exception was raised because that database was not created
+           if(ex.getErrorNum() == 1228){
+               arangoDB.createDatabase(dbName);
+               arangoDB.db(dbName).createCollection(commentsCollection);
+           }else{
+               throw ex;
+           }
+       }
+       int counter = 1;
+       BaseDocument newDoc;
+       ArrayList<String> x =  new ArrayList<String>() ;
+       x.add("y");
+       for(String text : lines) {
+           Comment comment = new Comment(counter + "", "3", "1", 45, 34, x, x, x, text, "11");
+           newDoc = new BaseDocument();
+           newDoc.setKey(comment.getCommentId());
+           newDoc.addAttribute("comment", comment);
+           arangoDB.db(dbName).collection(commentsCollection).insertDocument(newDoc);
+           System.out.println("New comment document insert with key = ");
+           BaseDocument retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), BaseDocument.class);
+           System.out.println("comment: " + retrievedDoc.toString());
+           counter++;
+       }
+   }
 
     public void insertReplies() throws IOException, ClassNotFoundException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/replies"));
@@ -225,23 +255,23 @@ public class DatabaseSeed {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
 
-//    public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        DatabaseSeed db = new DatabaseSeed();
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        DatabaseSeed db = new DatabaseSeed();
 //        db.deleteAllPosts();
 //        db.deleteAllUsers();
 //        db.deleteAllComments();
 //        db.deleteAllLikes();
 //        db.deleteAllReplies();
-//        try {
-//            db.insertPosts();
-//            db.insertUsers();
-//            db.insertComments();
-//            db.insertLikes();
-//            db.insertReplies();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
+       try {
+            db.insertPosts();
+            db.insertUsers();
+            db.insertComments();
+            db.insertLikes();
+            db.insertReplies();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }
