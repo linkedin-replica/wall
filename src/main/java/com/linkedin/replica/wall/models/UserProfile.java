@@ -5,12 +5,14 @@ import com.arangodb.entity.DocumentField;
 import java.util.ArrayList;
 
 public class UserProfile {
+    private ArrayList<Bookmark> bookmarks;
+
     @DocumentField(DocumentField.Type.KEY)
     private String userId;
+
     private String email;
     private String firstName;
     private String lastName;
-    private ArrayList<Bookmark> bookmarks;
 
     public UserProfile() {
         super();

@@ -4,6 +4,7 @@ import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.entity.DocumentUpdateEntity;
 import com.arangodb.util.MapBuilder;
 
 import com.linkedin.replica.wall.config.DatabaseConnection;
@@ -44,10 +45,6 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     }
 
-    public List<Bookmark> getBookmarks() {
-        return null;
-    }
-
     /**
      * method to update user's bookmarks list by adding new bookmark.
      *
@@ -56,14 +53,16 @@ public class ArangoWallHandler implements DatabaseHandler {
      */
     public String addBookmark(Bookmark bookmark) {
         String userId = bookmark.getUserId();
-
         String message = "";
         try {
             UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+
             ArrayList<Bookmark> bookmarkList = user.getBookmarks();
-            bookmarkList.add(bookmark);
-            user.setBookmarks(bookmarkList);
+
+             bookmarkList.add(bookmark);
+             user.setBookmarks(bookmarkList);
             arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
+
             message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
@@ -80,15 +79,23 @@ public class ArangoWallHandler implements DatabaseHandler {
      */
     public String deleteBookmark(Bookmark bookmark) {
         String userId = bookmark.getUserId();
-
         String message = "";
         try {
             UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
             ArrayList<Bookmark> bookmarkList = user.getBookmarks();
+            Bookmark b = user.getBookmarks().get(0);
+
+            System.out.println(bookmarkList.contains(bookmark));
             bookmarkList.remove(bookmark);
+            System.out.println(bookmarkList.contains(bookmark));
+
             user.setBookmarks(bookmarkList);
+            System.out.println(bookmarkList.contains(bookmark));
+
+            System.out.println(bookmarkList.size() + " second");
             arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
-            message = "Success to add bookmark";
+
+            message = "Success to deletes bookmark";
 
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete bookmark. " + e.getMessage());
@@ -103,7 +110,7 @@ public class ArangoWallHandler implements DatabaseHandler {
      * @return list of users bookmarks.
      */
 
-    public List<Bookmark> getUserBookmarks(String userId) {
+    public List<Bookmark> getBookmarks(String userId) {
          List<Bookmark> ans = new ArrayList<>();
         String message = "";
         try {

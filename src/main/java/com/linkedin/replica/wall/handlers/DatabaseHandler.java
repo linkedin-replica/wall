@@ -10,7 +10,7 @@ public interface DatabaseHandler {
     /**
      * @return list of bookmarks
      */
-    public List<Bookmark> getUserBookmarks(String userId);
+    public List<Bookmark> getBookmarks(String userId);
 
     /**
      * Add a bookmark

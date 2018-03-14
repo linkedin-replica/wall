@@ -197,6 +197,10 @@ public class DatabaseSeed {
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
             UserProfile user = new UserProfile(counter + "", email, firstName, lastName);
+            Bookmark bookmark = new Bookmark(counter+"",counter+"");
+            ArrayList<Bookmark> b = new ArrayList<>();
+            b.add(bookmark);
+            user.setBookmarks(b);
             insertedUsers.add(user);
             arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
             System.out.println("New user document insert with key = " + user.getUserId());
@@ -244,23 +248,30 @@ public class DatabaseSeed {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        DatabaseSeed db = new DatabaseSeed();
-      //  db.deleteAllPosts();
-        db.deleteAllUsers();
-//        db.deleteAllComments();
-//        db.deleteAllLikes();
-//        db.deleteAllReplies();
-        try {
-         //   db.insertPosts();
-            db.insertUsers();
-//            db.insertComments();
-//            db.insertLikes();
-//            db.insertReplies();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) throws IOException, ClassNotFoundException {
+//       // DatabaseSeed db = new DatabaseSeed();
+//        ArangoDB arangoDB = new ArangoDB.Builder().user("root").password("").build();
+//        UserProfile user = arangoDB.db("WallDb").collection("Users").getDocument("1", UserProfile.class);
+//
+////        BaseDocument user = arangoDB.db("WallDb").collection("Users").getDocument("1", BaseDocument.class);
+//        System.out.println(user);
+////        Object o = user.getAttribute("bookmarks");
+////        System.out.println(((ArrayList<?>)o).get(0));
+//      //  db.deleteAllPosts();
+//     //   db.deleteAllUsers();
+////        db.deleteAllComments();
+////        db.deleteAllLikes();
+////        db.deleteAllReplies();
+////        try {
+////         //   db.insertPosts();
+////            db.insertUsers();
+//////            db.insertComments();
+//////            db.insertLikes();
+//////            db.insertReplies();
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        } catch (ClassNotFoundException e) {
+////            e.printStackTrace();
+////        }
+//   }
 }

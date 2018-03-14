@@ -14,7 +14,7 @@ public class GetBookmarksCommand extends Command{
 
         if (request.containsKey("userId")) {
             String userId = request.get("userId");
-            response.put("response", dbHandler.getUserBookmarks(userId));
+            response.put("response", dbHandler.getBookmarks(userId));
         } else {
             response.put("response", "missing information");
         }

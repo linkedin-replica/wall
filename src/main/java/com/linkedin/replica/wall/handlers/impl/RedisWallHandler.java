@@ -8,19 +8,32 @@ import com.linkedin.replica.wall.models.Post;
 import java.util.List;
 
 public class RedisWallHandler implements DatabaseHandler {
-    public List<Bookmark> getUserBookmarks(String userId) {
-        return null;
-    }
-
+    /**
+     * add bookmark to user's bookmarks
+     * @param bookmark
+     * @return
+     */
     public String addBookmark(Bookmark bookmark) {
         return null;
 
     }
 
+    /**
+     * delete bookmark from user's bookmarks
+     * @param bookmark
+     * @return
+     */
     public String deleteBookmark(Bookmark bookmark) {
         return null;
 
     }
+
+    /**
+     * get a list of users bookmarks.
+     * @param userId
+     * @return
+     */
+    public List<Bookmark> getBookmarks(String userId){return null ;}
 
 
     public List<Post> getPosts(String userId) {

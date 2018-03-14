@@ -1,6 +1,7 @@
 package databaseHandlers;
 
 import java.awt.print.Book;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -28,12 +29,12 @@ public class ArangoHandlerTest {
     private static DatabaseHandler arangoWallHandler;
     private static ArangoDB arangoDB;
     private static Properties properties;
-    private String dbName;
+    private static String dbName;
     private String likesCollection;
     private String repliesCollection;
     private String commentsCollection;
     private String postsCollection;
-    private String usersCollection;
+    private static String usersCollection;
     private ArrayList<UserProfile> insertedUsers;
 
 
@@ -42,16 +43,20 @@ public class ArangoHandlerTest {
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
         Wall.start(args);
-
-        dbSeed = new DatabaseSeed();
-        arangoWallHandler = new ArangoWallHandler();
+        properties = new Properties();
+        properties.load(new FileInputStream("db_config"));
         arangoDB = DatabaseConnection.getInstance().getArangodb();
-
+        dbName = properties.getProperty("arangodb.name");
+        usersCollection = properties.getProperty("collections.users.name");
+        arangoWallHandler = new ArangoWallHandler();
+        dbSeed = new DatabaseSeed();
+        dbSeed.deleteAllUsers();
         dbSeed.insertUsers();
-        dbSeed.insertPosts();
-        dbSeed.insertReplies();
-        dbSeed.insertLikes();
-        dbSeed.insertComments();
+
+//        dbSeed.insertPosts();
+//        dbSeed.insertReplies();
+//        dbSeed.insertLikes();
+//        dbSeed.insertComments();
     }
 
     @Test
@@ -59,12 +64,10 @@ public class ArangoHandlerTest {
         UserProfile user = dbSeed.getInsertedUsers().get(0);
         String userId = user.getUserId();
         String postId = "P123";
-
         int bookmarkNo = user.getBookmarks().size() + 1;
         Bookmark bookmark = new Bookmark(userId, postId);
         arangoWallHandler.addBookmark(bookmark);
-
-        UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
+        UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
         ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
         Bookmark retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
         assertEquals("size of bookmarks should increased by one", updatedBookmarks.size() , bookmarkNo);
@@ -72,15 +75,19 @@ public class ArangoHandlerTest {
         assertEquals("postID should be the same in the inserted bookmark", retrievedBookmark.getPostId(), bookmark.getPostId());
     }
 
-//    @Test
-//    public void testDeleteBookmark(){
-//        UserProfile user = dbSeed.getInsertedUsers().get(0);
-//        String userId = user.getUserId();
-//        String postId = "P123";
-//
-//
-//
-//    }
+    @Test
+    public void testDeleteBookmark(){
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        int bookmarkNo = user.getBookmarks().size() - 1;
+        Bookmark bookmark = user.getBookmarks().get(0);
+        arangoWallHandler.deleteBookmark(bookmark);
+        UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
+        System.out.println(updatedBookmarks.size());
+        assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo);
+
+    }
 
  //   @Test
 //    public void testSearchUsers() throws FileNotFoundException, ClassNotFoundException, IOException, SQLException{
@@ -122,12 +129,12 @@ public class ArangoHandlerTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
-        dbSeed.deleteAllReplies();
-        dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
-        Wall.shutdown();
+      //  dbSeed.deleteAllUsers();
+     //   dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllReplies();
+//        dbSeed.deleteAllComments();
+//        dbSeed.deleteAllLikes();
+       // Wall.shutdown();
     }
 
 }
