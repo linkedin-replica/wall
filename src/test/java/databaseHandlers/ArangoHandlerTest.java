@@ -88,6 +88,7 @@ public class ArangoHandlerTest {
         assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo);
 
     }
+    
 
  //   @Test
 //    public void testSearchUsers() throws FileNotFoundException, ClassNotFoundException, IOException, SQLException{
