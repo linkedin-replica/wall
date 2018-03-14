@@ -5,6 +5,7 @@ import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RedisWallHandler implements DatabaseHandler {
@@ -33,7 +34,7 @@ public class RedisWallHandler implements DatabaseHandler {
      * @param userId
      * @return
      */
-    public List<Bookmark> getBookmarks(String userId){return null ;}
+    public ArrayList<Bookmark> getBookmarks(String userId){return null ;}
 
 
     public List<Post> getPosts(String userId) {

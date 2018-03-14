@@ -52,11 +52,10 @@ public class ArangoHandlerTest {
         dbSeed = new DatabaseSeed();
         dbSeed.deleteAllUsers();
         dbSeed.insertUsers();
-
-//        dbSeed.insertPosts();
-//        dbSeed.insertReplies();
-//        dbSeed.insertLikes();
-//        dbSeed.insertComments();
+        dbSeed.insertPosts();
+        dbSeed.insertReplies();
+        dbSeed.insertLikes();
+        dbSeed.insertComments();
     }
 
     @Test
@@ -74,6 +73,7 @@ public class ArangoHandlerTest {
         assertEquals("userID should be the same in the inserted bookmark", retrievedBookmark.getUserId(), bookmark.getUserId());
         assertEquals("postID should be the same in the inserted bookmark", retrievedBookmark.getPostId(), bookmark.getPostId());
     }
+
 
     @Test
     public void testDeleteBookmark(){
@@ -95,6 +95,17 @@ public class ArangoHandlerTest {
         String userId = user.getUserId();
         ArrayList<Bookmark> bookmarks = user.getBookmarks();
         ArrayList<Bookmark> retrievedBookmarks = arangoWallHandler.getBookmarks(userId);
+        assertEquals("size of bookmarks arrays should be equal", bookmarks.size() , retrievedBookmarks.size());
+        boolean check = true;
+        for (int i = 0; i < bookmarks.size(); i++){
+            if(!bookmarks.get(i).equals(retrievedBookmarks.get(i))){
+                check = false;
+                break;
+            }
+        }
+
+        assertEquals("bookmarks arrays should be identical", check , true);
+
 
     }
 
