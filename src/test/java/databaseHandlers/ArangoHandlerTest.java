@@ -1,16 +1,12 @@
 package databaseHandlers;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.*;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
-import com.arangodb.entity.IndexEntity;
-import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
@@ -27,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 
 public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
-    private static WallService wallService;
     private static Properties properties;
     private static ArangoDB arangoDB;
     private static String dbName;
@@ -40,7 +35,6 @@ public class ArangoHandlerTest {
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
         Wall.start(args);
-        wallService = new WallService();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         properties = new Properties();
         properties.load(new FileInputStream("db_config"));
