@@ -9,6 +9,7 @@ import java.util.*;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
+import com.arangodb.entity.IndexEntity;
 import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
@@ -31,6 +32,7 @@ public class ArangoHandlerTest {
     private static ArangoDB arangoDB;
     private static String dbName;
     private static String  likesCollection;
+    private static DatabaseHandler dbHandler;
 
 
     @BeforeClass
@@ -44,7 +46,7 @@ public class ArangoHandlerTest {
         properties.load(new FileInputStream("db_config"));
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
-
+        dbHandler = new ArangoWallHandler();
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
@@ -53,9 +55,8 @@ public class ArangoHandlerTest {
         dbSeed.insertComments();
     }
     @Test
-    public void testGetPostsLikes() throws IOException, ClassNotFoundException {
+    public void testGetPostsLikes() {
         String postId = "15";
-        DatabaseHandler dbHandler = new ArangoWallHandler();
         boolean equalsPostId = false;
         List<Like> postLikes = dbHandler.getPostLikes(postId);
         for(Like like: postLikes) {
@@ -67,9 +68,8 @@ public class ArangoHandlerTest {
         }
     }
     @Test
-    public void testGetCommentsLikes() throws IOException, ClassNotFoundException {
+    public void testGetCommentsLikes() {
         String commentId = "16";
-        DatabaseHandler dbHandler = new ArangoWallHandler();
         boolean equalsCommentId = false;
         List<Like> commentLikes = dbHandler.getCommentLikes(commentId);
         for(Like like: commentLikes) {
@@ -81,9 +81,8 @@ public class ArangoHandlerTest {
         }
     }
     @Test
-    public void testGetRepliesLikes() throws IOException, ClassNotFoundException {
+    public void testGetRepliesLikes(){
         String replyId = "18";
-        DatabaseHandler dbHandler = new ArangoWallHandler();
         boolean equalsReplyId = false;
         List<Like> replyLikes = dbHandler.getReplyLikes(replyId);
         for(Like like: replyLikes) {
@@ -95,15 +94,14 @@ public class ArangoHandlerTest {
         }
     }
     @Test
-    public void testAddLikes() throws IOException, ClassNotFoundException {
+    public void testAddLikes() {
         Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Like like = new Like( "100", "200", null, null, "name", "headLine", "urlX");
-        DatabaseHandler dbHandler = new ArangoWallHandler();
         dbHandler.addLike(like);
         Long newLikesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Long expectedCollectionSize = likesCollectionSize + 1;
-        assertEquals("The size of the likesCollection should have increased by one", expectedCollectionSize, newLikesCollectionSize);
         Like retrievedLike = arangoDB.db(dbName).collection(likesCollection).getDocument(like.getLikeId(),Like.class);
+        assertEquals("The size of the likesCollection should have increased by one", expectedCollectionSize, newLikesCollectionSize);
         assertEquals("The likerId should match the one in the like inserted", "100", retrievedLike.getLikerId());
         assertEquals("The likedPostId should match the one in the like inserted", "200", retrievedLike.getLikedPostId());
         assertEquals("The likedCommentId should match the one in the like inserted", null, retrievedLike.getLikedCommentId());
@@ -111,128 +109,23 @@ public class ArangoHandlerTest {
         assertEquals("The userName should match the one in the like inserted", "name", retrievedLike.getUserName());
         assertEquals("The headLine should match the one in the like inserted", "headLine", retrievedLike.getHeadLine());
         assertEquals("The imageUrl should match the one in the like inserted", "urlX", retrievedLike.getImageUrl());
-        
+
     }
+    @Test public void testDeleteLikes() {
+        String query = "FOR l in " + likesCollection + " RETURN l";
+        ArangoCursor<Like> likesCursor = arangoDB.db(dbName).query(query, new HashMap<String, Object>(), null, Like.class);
+        ArrayList<Like> allLikes = new ArrayList<Like>(likesCursor.asListRemaining());
+        Like existingLike = allLikes.get(0);
+        String existingLikeId = existingLike.getLikeId();
+        Long collectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
+        Long expectedCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount() - 1;
+        dbHandler.deleteLike(existingLike);
+        Long newCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
+        Boolean docWithIdExists = arangoDB.db(dbName).collection(likesCollection).documentExists(existingLikeId);
+        assertEquals("The size of the likesCollection should have decreased by one", expectedCollectionSize, newCollectionSize);
+        assertEquals("There should be no document in collection with this id", false, docWithIdExists);
 
-//    @Test
-//    public void testGetPostLikes() throws ClassNotFoundException, IllegalAccessException, ParseException, InstantiationException {
-//        String postId = "15";
-//        HashMap<String,String> request = new HashMap<String,String>();
-//        request.put("likedPostId", postId);
-//        LinkedHashMap<String, Object> response = wallService.serve("getPostLikes", request);
-//        List<Like> postLikes = (List<Like>) response.get("response");
-//        System.out.println(postLikes.size());
-//        boolean check = false;
-//        for(Like like : postLikes){
-//            if(like.getLikedPostId().equals(postId))
-//                check = true;
-//
-//            assertEquals("Incorrect like retrieved as the likedPostId does not match the postId.", true, check);
-//            check = false;
-//        }
-//    }
-//
-//    @Test
-//    public void testGetCommentLikes() throws ClassNotFoundException, IllegalAccessException, ParseException, InstantiationException {
-//        String commentId = "16";
-//        HashMap<String,String> request = new HashMap<String,String>();
-//        request.put("likedCommentId", commentId);
-//        LinkedHashMap<String, Object> response = wallService.serve("getCommentLikes", request);
-//        List<Like> commentLikes = (List<Like>) response.get("response");
-//        System.out.println(commentLikes.get(0).toString());
-//        System.out.println(commentLikes.size());
-//        boolean check = false;
-//        for(Like like : commentLikes){
-//            if(like.getLikedCommentId().equals(commentId))
-//                check = true;
-//
-//            assertEquals("Incorrect like retrieved as the likedCommentId does not match the commentId.", true, check);
-//            check = false;
-//        }
-//    }
-//
-//    @Test
-//    public void testGetReplyLikes() throws ClassNotFoundException, IllegalAccessException, ParseException, InstantiationException {
-//        String replyId = "18";
-//        HashMap<String,String> request = new HashMap<String,String>();
-//        request.put("likedReplyId", replyId);
-//        LinkedHashMap<String, Object> response = wallService.serve("getReplyLikes", request);
-//        List<Like> replyLikes = (List<Like>) response.get("response");
-//        System.out.println(replyLikes.get(0).toString());
-//        System.out.println(replyLikes.size());
-//        boolean check = false;
-//        for(Like like : replyLikes){
-//            if(like.getLikedReplyId().equals(replyId))
-//                check = true;
-//
-//            assertEquals("Incorrect like retrieved as the likedReplyId does not match the replyId.", true, check);
-//            check = false;
-//        }
-//    }
-
-//    @Test
-//    public void testAddLikes() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
-//        HashMap<String,String> request = new HashMap<String,String>();
-//        request.put("likerId", "100");
-//        request.put("likedPostId", "99");
-//        request.put("likedCommentId", null);
-//        request.put("likedReplyId", null);
-//        request.put("userName", "Yara");
-//        request.put("headLine", "Yara and 5 others");
-//        request.put("imageUrl", "urlX");
-//        LinkedHashMap<String, Object> response = wallService.serve("addLike", request);
-//        String [] message = ((String) response.get("response")).split(",");
-//        String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @postId  && l.likerId == @likerId RETURN l";
-//        Map<String, Object> bindVars = new MapBuilder().put("postId", "99").get();
-//        bindVars.put("likerId", "100");
-//        ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-//                Like.class);
-//        List<Like> retrievedLikes = new ArrayList<Like>();
-//        while (cursor.hasNext())
-//            retrievedLikes.add(cursor.next());
-//        System.out.println(retrievedLikes.size() + retrievedLikes.get(0).toString());
-//        assertEquals("Only one like should have the likerId and postId", 1, retrievedLikes.size());
-//
-
-//    }
-
-//    @Test
-//    public void testDeleteLikes() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
-////        HashMap<String,String> request = new HashMap<String,String>();
-////        request.put("likerId", "100");
-////        request.put("likedPostId", "99");
-////        request.put("likedCommentId", null);
-////        request.put("likedReplyId", null);
-////        request.put("userName", "Yara");
-////        request.put("headLine", "Yara and 5 others");
-////        request.put("imageUrl", "urlX");
-////        Like like = new Like(request.get("likerId"), request.get("likedPostId"), request.get("likedCommentId"), request.get("likedReplyId"), request.get("userName"), request.get("headLine"),request.get("imageUrl"));
-////        arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
-////        String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @postId  && l.likerId == @likerId RETURN l";
-////        Map<String, Object> bindVars = new MapBuilder().put("postId", "99").get();
-////        bindVars.put("likerId", "100");
-////        ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-////                Like.class);
-////        List<Like> retrievedLikes = new ArrayList<Like>();
-////        while (cursor.hasNext())
-////            retrievedLikes.add(cursor.next());
-////        System.out.println(retrievedLikes.size() + retrievedLikes.get(0).toString());
-////        assertEquals("Only one like should have the likerId and postId", 1, retrievedLikes.size());
-////
-////        LinkedHashMap<String, Object> response = wallService.serve("deleteLike", request);
-////        String query1 = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @postId  && l.likerId == @likerId RETURN l";
-////        Map<String, Object> bindVars1 = new MapBuilder().put("postId", "99").get();
-////        bindVars.put("likerId", "100");
-////        ArangoCursor<Like> cursor1 = arangoDB.db(dbName).query(query1, bindVars1, null,
-////                Like.class);
-////        List<Like> retrievedLikes1 = new ArrayList<Like>();
-////        while (cursor1.hasNext())
-////            retrievedLikes1.add(cursor1.next());
-////        System.out.println(retrievedLikes.size());
-////        assertEquals("There should be no like with the likerId and postId", 0, retrievedLikes.size());
-
-//    }
-
+    }
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException{
