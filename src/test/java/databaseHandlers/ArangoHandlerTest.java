@@ -16,6 +16,7 @@ import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.UserProfile;
 import javafx.geometry.Pos;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,7 +51,6 @@ public class ArangoHandlerTest {
         usersCollection = properties.getProperty("collections.users.name");
         arangoWallHandler = new ArangoWallHandler();
         dbSeed = new DatabaseSeed();
-        dbSeed.deleteAllUsers();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
         dbSeed.insertReplies();
@@ -138,8 +138,8 @@ public class ArangoHandlerTest {
 //            check = false;
 //        }
 //    }
-//
-//
+
+
 //    @Test
 //    public void testSearchPosts() throws FileNotFoundException, ClassNotFoundException, IOException, SQLException{
 //        String searchKey = "Lorem";
