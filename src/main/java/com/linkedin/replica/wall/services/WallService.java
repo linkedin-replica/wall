@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Properties;
 
 /**
- * Wall Service is responsible for taking input from controller, reading commands db_config file to
+ * Main Service is responsible for taking input from controller, reading commands db_config file to
  * get specific command responsible for handling input request and also get DatabaseHandler name
  * Associated with this command
  *

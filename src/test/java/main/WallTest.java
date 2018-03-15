@@ -5,15 +5,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
 
-import com.linkedin.replica.wall.main.Wall;
+import com.linkedin.replica.wall.main.Main;
 import com.linkedin.replica.wall.services.WallService;
 import databaseHandlers.DatabaseSeed;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.arangodb.ArangoDBException;
 
@@ -26,7 +23,7 @@ public class WallTest {
     public static void setup() throws ClassNotFoundException, IOException, SQLException{
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
-        Wall.start(args);
+        Main.start(args);
         service = new WallService();
 
         dbSeed = new DatabaseSeed();
@@ -97,6 +94,6 @@ public class WallTest {
     public static void tearDown() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
         dbSeed.deleteAllUsers();
         dbSeed.deleteAllPosts();
-        Wall.shutdown();
+        Main.shutdown();
     }
 }

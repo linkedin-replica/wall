@@ -1,6 +1,5 @@
 package databaseHandlers;
 
-import java.awt.print.Book;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,12 +10,9 @@ import com.arangodb.ArangoDB;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
-import com.linkedin.replica.wall.main.Wall;
+import com.linkedin.replica.wall.main.Main;
 import com.linkedin.replica.wall.models.Bookmark;
-import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.UserProfile;
-import javafx.geometry.Pos;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +39,7 @@ public class ArangoHandlerTest {
     public static void setup() throws ClassNotFoundException, IOException, SQLException{
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
-        Wall.start(args);
+        Main.start(args);
         properties = new Properties();
         properties.load(new FileInputStream("db_config"));
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -165,7 +161,7 @@ public class ArangoHandlerTest {
         dbSeed.deleteAllReplies();
         dbSeed.deleteAllComments();
         dbSeed.deleteAllLikes();
-        Wall.shutdown();
+        Main.shutdown();
     }
 
 }
