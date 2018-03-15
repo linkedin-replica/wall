@@ -212,30 +212,19 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
 
 
-    public List<Comment> getComments(String postID) {
-        final ArrayList<Comment> comments = new ArrayList<Comment>();
+    public List<Comment> getComments(String postId) {
+        ArrayList<Comment> comments = new ArrayList<Comment>();
         try {
-            String query = "FOR l IN " + commentsCollection + " FILTER l.parentPostId == " + postID + " RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", postID).get();
-            ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
+            String query = "FOR l IN " + commentsCollection + " FILTER l.parentPostId == @parentPostId RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", postId).get();
+            ArangoCursor<Comment> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                    Comment.class);
             cursor.forEachRemaining(commentDocument -> {
-                Comment comment;
-                String commentId = commentDocument.getKey();
-                String authorId = (String) commentDocument.getAttribute("authorId");
-                String parentPostId = (String) commentDocument.getAttribute("parentPostId");
-                int likesCount = (Integer) commentDocument.getAttribute("likesCount");
-                int repliesCount = (Integer) commentDocument.getAttribute("repliesCount");
-                ArrayList<String> images = (ArrayList<String>) commentDocument.getAttribute("images");
-                ArrayList<String> urls = (ArrayList<String>) commentDocument.getAttribute("urls");
-                ArrayList<String> mentions = (ArrayList<String>) commentDocument.getAttribute("mentions");
-                String text = (String) commentDocument.getAttribute("text");
-                String timeStamp = (String) commentDocument.getAttribute("timeStamp");
-                comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
-                comments.add(comment);
-                System.out.println("Key: " + commentDocument.getKey());
+                comments.add(commentDocument);
+                System.out.println("Key: " + commentDocument.getCommentId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to execute query. " + e.getMessage());
+            System.err.println("Failed to get posts' comments." + e.getMessage());
         }
         return comments;
     }

@@ -94,6 +94,20 @@ public class ArangoHandlerTest {
 
     }
 
+    @Test
+    public void testGetComments(){
+        List<Comment> newComments = arangoWallHandler.getComments("123");
+        assertEquals("Expected to have 1 comment with that post ID", newComments.size(), 1);
+
+    }
+
+    @Test
+    public void testGetComment(){
+        Comment newComment = getComment("commentID");
+        assertEquals("Expected to get a certain comment", newComment.getAuthorId(), "authorID");
+
+    }
+
 /*    @Test
     public void testGetPostLikes() throws ClassNotFoundException, IllegalAccessException, ParseException, InstantiationException {
         String postId = "15";
