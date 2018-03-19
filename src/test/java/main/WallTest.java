@@ -5,10 +5,13 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.linkedin.replica.wall.main.Wall;
+import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.services.WallService;
 import databaseHandlers.DatabaseSeed;
 import org.junit.AfterClass;
@@ -30,12 +33,90 @@ public class WallTest {
         service = new WallService();
 
         dbSeed = new DatabaseSeed();
-        dbSeed.insertUsers();
-        dbSeed.insertPosts();
+//        dbSeed.insertUsers();
+//        dbSeed.insertPosts();
 
 
     }
 
+    @Test
+    public void testAddReplyService() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        HashMap<String,String> request = new HashMap<String, String>();
+        request.put("authorId","3");
+        request.put("parentPostId","1");
+        request.put("parentCommentId","45");
+        request.put("mentions","y");
+        request.put("likesCount","45");
+        request.put("text","TestTestTest");
+        request.put("timestamp","Thu Jan 19 2012 01:00 PM");
+        request.put("images","y");
+        request.put("urls","y");
+        service.serve("addReply",request);
+
+        LinkedHashMap<String, Object> result = service.serve("getReplies", request);
+        List<Reply> replies = (List<Reply>) result.get("response");
+        Boolean found = false;
+        for(int i =0;i<replies.size();i++){
+            if(replies.get(i).getText().equals("TestTestTest")){
+                found = true;
+                break;
+            }
+        }
+        assertEquals("Texts should be the same",found,true);
+
+    }
+
+    @Test
+    public void testEditReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        HashMap<String,String> request = new HashMap<String, String>();
+        request.put("replyId","1");
+        request.put("authorId","3");
+        request.put("parentPostId","1");
+        request.put("parentCommentId","45");
+        request.put("mentions","y");
+        request.put("likesCount","45");
+        request.put("text","Testing service edit");
+        request.put("timestamp","Thu Jan 19 2012 01:00 PM");
+        request.put("images","y");
+        request.put("urls","y");
+        service.serve("editReply",request);
+        LinkedHashMap<String, Object> result = service.serve("getReplies", request);
+        List<Reply> replies = (List<Reply>) result.get("response");
+        Boolean found = false;
+        for(int i =0;i<replies.size();i++){
+            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals("1")){
+                found = true;
+                break;
+            }
+        }
+        assertEquals("Texts should be the same",found,true);
+    }
+
+    @Test
+    public void testDeleteReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+
+        HashMap<String,String> request = new HashMap<String, String>();
+        request.put("replyId","1");
+        request.put("authorId","3");
+        request.put("parentPostId","1");
+        request.put("parentCommentId","45");
+        request.put("mentions","y");
+        request.put("likesCount","45");
+        request.put("text","Testing");
+        request.put("timestamp","Thu Jan 19 2012 01:00 PM");
+        request.put("images","y");
+        request.put("urls","y");
+
+        LinkedHashMap<String, Object> result = service.serve("getReplies", request);
+        List<Reply> replies = (List<Reply>) result.get("response");
+
+        service.serve("deleteReply",request);
+
+        LinkedHashMap<String, Object> testResult = service.serve("getReplies", request);
+        List<Reply> testReplies = (List<Reply>) testResult.get("response");
+
+        assertEquals("Size should decrement by one",replies.size()-1,testReplies.size());
+    }
 //    @Test
 //    public void testSearchUsers() throws FileNotFoundException, ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException{
 //        System.out.println("er");
@@ -95,8 +176,8 @@ public class WallTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException, SQLException{
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllUsers();
+//        dbSeed.deleteAllPosts();
         Wall.shutdown();
     }
 }

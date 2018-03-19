@@ -4,16 +4,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
+import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.main.Wall;
 import com.linkedin.replica.wall.models.Like;
+import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.services.WallService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -30,6 +34,9 @@ public class ArangoHandlerTest {
     private static ArangoDB arangoDB;
     private static String dbName;
     private static String  likesCollection;
+    private static String  repliesCollection;
+    private static DatabaseHandler arangoWallHandler;
+
 
 
     @BeforeClass
@@ -38,18 +45,65 @@ public class ArangoHandlerTest {
         String[] args = {"db_config", "src/main/resources/command_config"};
         Wall.start(args);
         wallService = new WallService();
+
+        arangoWallHandler = new ArangoWallHandler();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         properties = new Properties();
         properties.load(new FileInputStream("db_config"));
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
+        repliesCollection = properties.getProperty("collections.replies.name");
+
 
         dbSeed = new DatabaseSeed();
-        dbSeed.insertUsers();
-        dbSeed.insertPosts();
+//        dbSeed.insertUsers();
+//        dbSeed.insertPosts();
+        dbSeed.deleteAllReplies();
         dbSeed.insertReplies();
-        dbSeed.insertLikes();
-        dbSeed.insertComments();
+//        dbSeed.insertLikes();
+//        dbSeed.insertComments();
+    }
+
+    @Test
+    public void testAddReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
+        mentionsImagesUrls.add("Test");
+        String replyID = "112";
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2l,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        arangoWallHandler.addReply(reply);
+        Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyID,Reply.class);
+        System.out.println("reply doc " + replyDocument);
+        assertEquals("Reply ID should be", replyDocument.getReplyId() , "112");
+        assertEquals("Reply text should be", replyDocument.getText() , "You are so cute");
+    }
+
+    @Test
+    public void testDeleteReply(){
+        String commentID = "45";
+        List<Reply> replies = arangoWallHandler.getReplies(commentID);
+        if(replies!=null){
+            Reply reply = replies.get(0);
+            arangoWallHandler.deleteReply(reply);
+            assertEquals("Size should be decremented by one", replies.size()-1 , arangoWallHandler.getReplies(commentID).size());
+
+        }
+    }
+
+    @Test
+    public void testEditReplies() throws ParseException {
+        ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
+        mentionsImagesUrls.add("Test");
+        String replyID = "1";
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2l,"Some edited text",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        arangoWallHandler.editReply(reply);
+        Reply testReply = arangoWallHandler.getReply(replyID);
+        assertEquals("Texts should be the same", testReply.getText(), "Some edited text");
+
+
     }
 
     @Test
@@ -143,12 +197,12 @@ public class ArangoHandlerTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException{
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
-        dbSeed.deleteAllReplies();
-        dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
-        Wall.shutdown();
+//        dbSeed.deleteAllUsers();
+//        dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllReplies();
+//        dbSeed.deleteAllComments();
+//        dbSeed.deleteAllLikes();
+//        Wall.shutdown();
     }
 
 }

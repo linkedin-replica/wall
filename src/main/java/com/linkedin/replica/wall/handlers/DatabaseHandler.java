@@ -74,6 +74,13 @@ public interface DatabaseHandler {
     public List<Reply> getReplies(String commentId);
 
     /**
+     *
+     * @param replyId
+     * @return reply based on reply ID
+     */
+    public Reply  getReply(String replyId);
+
+    /**
      * Add a reply
      */
     public String addReply(Reply reply);
@@ -121,5 +128,6 @@ public interface DatabaseHandler {
      * @param like
      */
     public String deleteLike(Like like);
+
 
 }

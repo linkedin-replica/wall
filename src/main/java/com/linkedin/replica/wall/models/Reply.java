@@ -31,6 +31,9 @@ public class Reply {
         this.images = images;
         this.urls = urls;
     }
+    public Reply(){
+        super();
+    }
 
     public String getReplyId() {
         return replyId;
