@@ -18,3 +18,4 @@ addReply.command=AddReplyCommand
 deleteReply.command=DeleteReplyCommand
 editReply.command=EditReplyCommand
 getReplies.command=GetRepliesCommand
+

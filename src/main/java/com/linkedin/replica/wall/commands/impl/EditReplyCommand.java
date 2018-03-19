@@ -20,7 +20,7 @@ public class EditReplyCommand extends Command{
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
         // call dbHandler to get results from db and add returned results to linkedHashMapM
         Reply reply;
-        DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         String replyId = request.get("replyId");
         String authorId = request.get("authorId");
         String parentPostId = request.get("parentPostId");

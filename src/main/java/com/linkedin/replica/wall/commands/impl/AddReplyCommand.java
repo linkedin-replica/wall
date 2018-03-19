@@ -18,7 +18,6 @@ public class AddReplyCommand extends Command{
     public LinkedHashMap<String, Object> execute() throws ParseException {
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
-        System.out.println("EXECUTEEEE");
         // call dbHandler to get results from db and add returned results to linkedHashMap
         Reply reply;
 
