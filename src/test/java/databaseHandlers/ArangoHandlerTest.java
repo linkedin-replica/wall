@@ -112,7 +112,7 @@ public class ArangoHandlerTest {
         Like existingLike = allLikes.get(0);
         String existingLikeId = existingLike.getLikeId();
         Long collectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
-        Long expectedCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount() - 1;
+        Long expectedCollectionSize = collectionSize - 1;
         dbHandler.deleteLike(existingLike);
         Long newCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Boolean docWithIdExists = arangoDB.db(dbName).collection(likesCollection).documentExists(existingLikeId);
