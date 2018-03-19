@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.handlers;
 import com.linkedin.replica.wall.models.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface DatabaseHandler {
@@ -10,7 +11,7 @@ public interface DatabaseHandler {
     /**
      * @return list of bookmarks
      */
-    public List<Bookmark> getBookmarks();
+    public ArrayList<Bookmark> getBookmarks(String userId);
 
     /**
      * Add a bookmark

@@ -23,6 +23,7 @@ public class DatabaseSeed {
     private String commentsCollection;
     private String postsCollection;
     private String usersCollection;
+    private ArrayList<UserProfile> insertedUsers;
 
     public DatabaseSeed() throws IOException, ClassNotFoundException {
         properties = new Properties();
@@ -34,7 +35,7 @@ public class DatabaseSeed {
         commentsCollection = properties.getProperty("collections.comments.name");
         postsCollection = properties.getProperty("collections.posts.name");
         usersCollection = properties.getProperty("collections.users.name");
-
+        insertedUsers = new ArrayList<>();
 
     }
 
@@ -105,6 +106,7 @@ public class DatabaseSeed {
         }
     }
 
+
     public void insertReplies() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/replies"));
         try{
@@ -174,6 +176,10 @@ public class DatabaseSeed {
         }
     }
 
+    /**
+     * seed collection Users in db with dummy data.
+     * @throws IOException
+     */
     public void insertUsers() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/users"));
         try{
@@ -188,26 +194,35 @@ public class DatabaseSeed {
             }
         }
         int counter = 1;
-        BaseDocument newDoc;
         String[] arr;
         for(String text : lines){
             arr = text.split(" ");
-            newDoc = new BaseDocument();
             String firstName = arr[0];
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
             UserProfile user = new UserProfile(counter + "", email, firstName, lastName);
-            newDoc.setKey(user.getUserId());
-            newDoc.addAttribute("user", user);
-            arangoDB.db(dbName).collection(usersCollection).insertDocument(newDoc);
-            System.out.println("New user document insert with key = " + newDoc.getId());
+            Bookmark bookmark = new Bookmark(counter+"",counter+"");
+            ArrayList<Bookmark> b = new ArrayList<>();
+            b.add(bookmark);
+            user.setBookmarks(b);
+            insertedUsers.add(user);
+            arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
+            System.out.println("New user document insert with key = " + user.getUserId());
             counter++;
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), BaseDocument.class);
-            System.out.println("user: " + retrievedDoc.toString());
+            UserProfile retrievedUser= arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
+            System.out.println("user: " + retrievedUser.toString());
         }
     }
 
-    public void deleteAllPosts() throws ArangoDBException, ClassNotFoundException, IOException {
+    /**
+     * return list of inserted users.
+     * @return
+     */
+    public ArrayList<UserProfile> getInsertedUsers(){
+        return  this.insertedUsers;
+    }
+
+    public void deleteAllPosts() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(postsCollection).drop();
         System.out.println("Post collection is dropped");
     }
@@ -236,4 +251,5 @@ public class DatabaseSeed {
     public void closeDBConnection() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
+
 }

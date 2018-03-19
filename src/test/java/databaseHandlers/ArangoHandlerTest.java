@@ -10,9 +10,10 @@ import com.arangodb.ArangoDB;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
-import com.linkedin.replica.wall.main.Wall;
 import com.linkedin.replica.wall.models.Like;
-import com.linkedin.replica.wall.services.WallService;
+import com.linkedin.replica.wall.main.Main;
+import com.linkedin.replica.wall.models.Bookmark;
+import com.linkedin.replica.wall.models.UserProfile;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,24 +24,28 @@ import static org.junit.Assert.assertEquals;
 
 public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
-    private static Properties properties;
+    private static DatabaseHandler arangoWallHandler;
     private static ArangoDB arangoDB;
+    private static Properties properties;
     private static String dbName;
-    private static String  likesCollection;
-    private static DatabaseHandler dbHandler;
-
+    private static String likesCollection;
+    private String repliesCollection;
+    private String commentsCollection;
+    private String postsCollection;
+    private static String usersCollection;
+    private ArrayList<UserProfile> insertedUsers;
 
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException {
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
-        Wall.start(args);
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         properties = new Properties();
         properties.load(new FileInputStream("db_config"));
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
-        dbHandler = new ArangoWallHandler();
+        usersCollection = properties.getProperty("collections.users.name");
+        arangoWallHandler = new ArangoWallHandler();
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
@@ -52,7 +57,7 @@ public class ArangoHandlerTest {
     public void testGetPostsLikes() {
         String postId = "15";
         boolean equalsPostId = false;
-        List<Like> postLikes = dbHandler.getPostLikes(postId);
+        List<Like> postLikes = arangoWallHandler.getPostLikes(postId);
         for(Like like: postLikes) {
             if(like.getLikedPostId().equals(postId))
                 equalsPostId = true;
@@ -65,7 +70,7 @@ public class ArangoHandlerTest {
     public void testGetCommentsLikes() {
         String commentId = "16";
         boolean equalsCommentId = false;
-        List<Like> commentLikes = dbHandler.getCommentLikes(commentId);
+        List<Like> commentLikes = arangoWallHandler.getCommentLikes(commentId);
         for(Like like: commentLikes) {
             if(like.getLikedCommentId().equals(commentId))
                 equalsCommentId = true;
@@ -78,20 +83,19 @@ public class ArangoHandlerTest {
     public void testGetRepliesLikes(){
         String replyId = "18";
         boolean equalsReplyId = false;
-        List<Like> replyLikes = dbHandler.getReplyLikes(replyId);
+        List<Like> replyLikes = arangoWallHandler.getReplyLikes(replyId);
         for(Like like: replyLikes) {
             if(like.getLikedReplyId().equals(replyId))
                 equalsReplyId = true;
             assertEquals("Incorrect like retrieved as the likedReplyId does not match the replyId.", true, equalsReplyId);
             equalsReplyId = false;
-
         }
     }
     @Test
     public void testAddLikes() {
         Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Like like = new Like( "100", "200", null, null, "name", "headLine", "urlX");
-        dbHandler.addLike(like);
+        arangoWallHandler.addLike(like);
         Long newLikesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Long expectedCollectionSize = likesCollectionSize + 1;
         Like retrievedLike = arangoDB.db(dbName).collection(likesCollection).getDocument(like.getLikeId(),Like.class);
@@ -113,11 +117,71 @@ public class ArangoHandlerTest {
         String existingLikeId = existingLike.getLikeId();
         Long collectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Long expectedCollectionSize = collectionSize - 1;
-        dbHandler.deleteLike(existingLike);
+        arangoWallHandler.deleteLike(existingLike);
         Long newCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Boolean docWithIdExists = arangoDB.db(dbName).collection(likesCollection).documentExists(existingLikeId);
         assertEquals("The size of the likesCollection should have decreased by one", expectedCollectionSize, newCollectionSize);
         assertEquals("There should be no document in collection with this id", false, docWithIdExists);
+
+    }
+    /**
+     * testing Adding bookmark function
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @Test
+    public void testAddBookmark() throws IOException, ClassNotFoundException {
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        String postId = "P123";
+        int bookmarkNo = user.getBookmarks().size() + 1;
+        Bookmark bookmark = new Bookmark(userId, postId);
+        arangoWallHandler.addBookmark(bookmark);
+        UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
+        Bookmark retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
+        assertEquals("size of bookmarks should increased by one", updatedBookmarks.size() , bookmarkNo);
+        assertEquals("userID should be the same in the inserted bookmark", retrievedBookmark.getUserId(), bookmark.getUserId());
+        assertEquals("postID should be the same in the inserted bookmark", retrievedBookmark.getPostId(), bookmark.getPostId());
+    }
+
+    /**
+     * test DeleteBookmark function
+     */
+    @Test
+    public void testDeleteBookmark(){
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        int bookmarkNo = user.getBookmarks().size() - 1;
+        Bookmark bookmark = user.getBookmarks().get(0);
+        arangoWallHandler.deleteBookmark(bookmark);
+        UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
+        System.out.println(updatedBookmarks.size());
+        assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo);
+
+    }
+
+    /**
+     * testing getBookmarks function
+     */
+    @Test
+    public void testGetBookmarks(){
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        ArrayList<Bookmark> bookmarks = user.getBookmarks();
+        ArrayList<Bookmark> retrievedBookmarks = arangoWallHandler.getBookmarks(userId);
+        assertEquals("size of bookmarks arrays should be equal", bookmarks.size() , retrievedBookmarks.size());
+        boolean check = true;
+        for (int i = 0; i < bookmarks.size(); i++){
+            if(!bookmarks.get(i).equals(retrievedBookmarks.get(i))){
+                check = false;
+                break;
+            }
+        }
+
+        assertEquals("bookmarks arrays should be identical", check , true);
+
 
     }
 
@@ -128,7 +192,6 @@ public class ArangoHandlerTest {
         dbSeed.deleteAllReplies();
         dbSeed.deleteAllComments();
         dbSeed.deleteAllLikes();
-        Wall.shutdown();
-    }
+        DatabaseConnection.getInstance().closeConnections();    }
 
 }

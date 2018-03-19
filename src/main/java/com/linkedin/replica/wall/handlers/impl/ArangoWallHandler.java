@@ -20,7 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-public  class ArangoWallHandler implements DatabaseHandler {
+public class ArangoWallHandler implements DatabaseHandler {
     private ArangoDB arangoDB;
     private Properties properties;
     private String dbName;
@@ -44,58 +44,86 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
     }
 
-    public List<Bookmark> getBookmarks() {
-        return null;
-    }
-
+    /**
+     * method to update user's bookmarks list by adding new bookmark.
+     *
+     * @param bookmark to be added.
+     * @return message tells whether the process is successful or failed.
+     */
     public String addBookmark(Bookmark bookmark) {
-        String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
-
-        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
         String message = "";
         try {
-            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
-                    getDocument(getUserQuery, BaseDocument.class);
-            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
-            if (l == null)
-                l = new ArrayList<Object>();
-            l.add(bookmark);
-            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
+            UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+
+            ArrayList<Bookmark> bookmarkList = user.getBookmarks();
+
+             bookmarkList.add(bookmark);
+             user.setBookmarks(bookmarkList);
+            arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
+
             message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete bookmark. " + e.getMessage());
+            System.err.println("Failed to add bookmark. " + e.getMessage());
             message = "Failed to add bookmark. " + e.getMessage();
         }
         return message;
     }
 
-
+    /**
+     * method to update user's bookmarks list by deleting new bookmark.
+     * @param bookmark to be deleted
+     * @return message tells whether the process is successful or failed.
+     */
     public String deleteBookmark(Bookmark bookmark) {
-        String userCollection = properties.getProperty(properties.getProperty("collections.users.name"));
         String userId = bookmark.getUserId();
-        String getUserQuery = "FOR t IN @userCollection FILTER t.userId == @userId RETURN t";
         String message = "";
         try {
-            BaseDocument user = arangoDB.db(dbName).collection(userCollection).
-                    getDocument(getUserQuery, BaseDocument.class);
+            UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+            ArrayList<Bookmark> bookmarkList = user.getBookmarks();
+            Bookmark b = user.getBookmarks().get(0);
 
-            List<Object> l = (List<Object>) user.getAttribute("bookmarks");
-            if (l == null)
-                l = new ArrayList<Object>();
-            l.remove(bookmark);
-            arangoDB.db(dbName).collection(userCollection).updateDocument("bookmarks", l);
-            message = "Success to add bookmark";
+            System.out.println(bookmarkList.contains(bookmark));
+            bookmarkList.remove(bookmark);
+            System.out.println(bookmarkList.contains(bookmark));
+
+            user.setBookmarks(bookmarkList);
+            System.out.println(bookmarkList.contains(bookmark));
+
+            System.out.println(bookmarkList.size() + " second");
+            arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
+
+            message = "Success to deletes bookmark";
 
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete bookmark. " + e.getMessage());
-            message = "Failed to delete bookmark";
+            message = "Failed to delete bookmark. " + e.getMessage();
         }
         return message;
     }
 
-    public BaseDocument createPostDoc(Post post){
+    /**
+     * method to get user's bookmarks.
+     * @param userId
+     * @return list of users bookmarks.
+     */
+
+    public ArrayList<Bookmark> getBookmarks(String userId) {
+         ArrayList<Bookmark> ans = new ArrayList<>();
+        String message = "";
+        try {
+            UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+            ans = user.getBookmarks();
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get user's bookmarks " + e.getMessage());
+        }
+        return ans;
+
+    }
+
+
+    public BaseDocument createPostDoc(Post post) {
         BaseDocument postDocument = new BaseDocument();
         postDocument.setKey(post.getPostID());
         postDocument.addAttribute("authorID", post.getAuthorID());
@@ -133,9 +161,9 @@ public  class ArangoWallHandler implements DatabaseHandler {
                 String companyID = (String) postDocument.getAttribute("companyID");
                 String privacy = (String) postDocument.getAttribute("privacy");
                 String text = (String) postDocument.getAttribute("text");
-                String timeStamp = (String) postDocument.getAttribute("timeStamp" );
+                String timeStamp = (String) postDocument.getAttribute("timeStamp");
                 boolean isCompanyPost = (boolean) postDocument.getAttribute("isCompanypost");
-                boolean isPrior = (boolean) postDocument.getAttribute("isPrior" );
+                boolean isPrior = (boolean) postDocument.getAttribute("isPrior");
                 ArrayList<String> hashtags = (ArrayList<String>) postDocument.getAttribute("hashtags");
                 ArrayList<String> mentions = (ArrayList<String>) postDocument.getAttribute("mentions");
                 ArrayList<String> images = (ArrayList<String>) postDocument.getAttribute("images");
@@ -146,9 +174,8 @@ public  class ArangoWallHandler implements DatabaseHandler {
                 int commentsCount = (Integer) postDocument.getAttribute("commentsCount");
 
 
-
-                post = new Post(postID, authorID, type, companyID, privacy, text, timeStamp,isCompanyPost,isPrior,
-                        hashtags, mentions,images,videos,urls,shares,likesCount,commentsCount);
+                post = new Post(postID, authorID, type, companyID, privacy, text, timeStamp, isCompanyPost, isPrior,
+                        hashtags, mentions, images, videos, urls, shares, likesCount, commentsCount);
                 posts.add(post);
                 System.out.println("Key: " + postDocument.getKey());
             });
@@ -199,7 +226,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
 
     public String deletePost(Post post) {
 
-        String response="";
+        String response = "";
         try {
             arangoDB.db(dbName).collection("posts").deleteDocument(post.getPostID());
 
@@ -209,7 +236,6 @@ public  class ArangoWallHandler implements DatabaseHandler {
         }
         return response;
     }
-
 
 
     public List<Comment> getComments(String postID) {
@@ -230,7 +256,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
                 ArrayList<String> mentions = (ArrayList<String>) commentDocument.getAttribute("mentions");
                 String text = (String) commentDocument.getAttribute("text");
                 String timeStamp = (String) commentDocument.getAttribute("timeStamp");
-                comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
+                comment = new Comment(commentID, authorID, parentPostID, likesCount, repliesCount, images, urls, mentions, text, timeStamp);
                 comments.add(comment);
                 System.out.println("Key: " + commentDocument.getKey());
             });
@@ -252,7 +278,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
         return comment;
     }
 
-    public BaseDocument createCommentDoc(Comment comment){
+    public BaseDocument createCommentDoc(Comment comment) {
         BaseDocument commentDocument = new BaseDocument();
         commentDocument.setKey(comment.getCommentId());
         commentDocument.addAttribute("authorID", comment.getAuthorId());
@@ -294,7 +320,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
     }
 
     public String deleteComment(Comment comment) {
-        String response="";
+        String response = "";
         try {
             arangoDB.db(dbName).collection(commentsCollection).deleteDocument(comment.getCommentId());
 
@@ -360,11 +386,10 @@ public  class ArangoWallHandler implements DatabaseHandler {
             response = "Failed to add reply. " + e.getMessage();
         }
         Comment comment = getComment(reply.getParentCommentId());
-        if(comment !=null){
+        if (comment != null) {
             comment.setRepliesCount(comment.getRepliesCount() + 1);
             editComment(comment);
-        }
-        else {
+        } else {
             response = "Failed to update comment's reply count. ";
         }
         //Todo:
@@ -396,7 +421,7 @@ public  class ArangoWallHandler implements DatabaseHandler {
         String response = "";
         BaseDocument replyDocument = createReplyDocument(reply);
         try {
-            arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,replyDocument);
+            arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId(), replyDocument);
         } catch (ArangoDBException e) {
             System.err.println("Failed to update reply. " + e.getMessage());
             response = "Failed to update reply. " + e.getMessage();
@@ -413,11 +438,10 @@ public  class ArangoWallHandler implements DatabaseHandler {
             response = "Failed to delete reply. " + e.getMessage();
         }
         Comment comment = getComment(reply.getParentCommentId());
-        if(comment !=null){
+        if (comment != null) {
             comment.setRepliesCount(comment.getRepliesCount() - 1);
             editComment(comment);
-        }
-        else {
+        } else {
             response = "Failed to update comment's reply count. ";
         }
         //Todo:
@@ -511,27 +535,21 @@ public  class ArangoWallHandler implements DatabaseHandler {
             else {
                 response = "Failed to update post's like count. ";
             }
-
-
-        }
-        else if(like.getLikedCommentId() != null){
+        } else if (like.getLikedCommentId() != null) {
             Comment comment = getComment(like.getLikedCommentId());
-            if(comment !=null){
+            if (comment != null) {
                 comment.setLikesCount(comment.getLikesCount() + 1);
                 editComment(comment);
-            }
-            else {
+            } else {
                 response = "Failed to update comment's like count. ";
             }
 
-        }
-        else if(like.getLikedReplyId() != null){
+        } else if (like.getLikedReplyId() != null) {
             Reply reply = getReply(like.getLikedReplyId());
-            if(reply !=null){
+            if (reply != null) {
                 reply.setLikesCount(reply.getLikesCount() + 1);
                 editReply(reply);
-            }
-            else {
+            } else {
                 response = "Failed to update reply's like count. ";
             }
 
@@ -558,26 +576,21 @@ public  class ArangoWallHandler implements DatabaseHandler {
             else {
                 response = "Failed to update post's like count. ";
             }
-
-        }
-        else if(like.getLikedCommentId() != null){
+        } else if (like.getLikedCommentId() != null) {
             Comment comment = getComment(like.getLikedCommentId());
-            if(comment !=null){
+            if (comment != null) {
                 comment.setLikesCount(comment.getLikesCount() - 1);
                 editComment(comment);
-            }
-            else {
+            } else {
                 response = "Failed to update comment's like count. ";
             }
 
-        }
-        else if(like.getLikedReplyId() != null){
+        } else if (like.getLikedReplyId() != null) {
             Reply reply = getReply(like.getLikedReplyId());
-            if(reply !=null){
+            if (reply != null) {
                 reply.setLikesCount(reply.getLikesCount() - 1);
                 editReply(reply);
-            }
-            else {
+            } else {
                 response = "Failed to update reply's like count. ";
             }
 
