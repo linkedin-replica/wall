@@ -269,7 +269,8 @@ public class ArangoHandlerTest {
 
     @Test
     public void testDeleteComment(){
-        Comment comment  = new Comment("commentID2","authorID","parentPostID2",12,22,null,null,null,"comment Text","time Stamp");
+        Comment comment  = new Comment("commentID2","authorID","parentPostID",12,22,null,null,null,"comment Text","time Stamp");
+        arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
         arangoWallHandler.deleteComment(comment);
         Comment newComment = getComment("commentID2");
         assertEquals("Expected to not have that comment", newComment, null);
