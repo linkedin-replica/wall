@@ -9,8 +9,10 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
+import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
+import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 
@@ -33,10 +35,11 @@ public class WallTest {
     private static ArangoDatabase arangoDB;
     static Configuration config;
     private static DatabaseSeed dbSeed;
+    private static String commentsCollection;
 
 
     @BeforeClass
-    public static void setup() throws ClassNotFoundException, IOException {
+    public static void setup() throws ClassNotFoundException, IOException, ParseException {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app_config",
                 rootFolder + "arango_config",
@@ -52,6 +55,8 @@ public class WallTest {
         dbSeed.insertReplies();
         dbSeed.insertLikes();
         dbSeed.insertComments();
+        commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
+
     }
 
     @Test
@@ -143,110 +148,110 @@ public class WallTest {
         }
         return comment;
     }
-//
-//    public List<Comment> getComments(String postId) {
-//        ArrayList<Comment> comments = new ArrayList<Comment>();
-//        try {
-//            String query = "FOR l IN " + commentsCollection + " FILTER l.parentPostId == @parentPostId RETURN l";
-//            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", postId).get();
-//            ArangoCursor<Comment> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-//                    Comment.class);
-//            cursor.forEachRemaining(commentDocument -> {
-//                comments.add(commentDocument);
-//                System.out.println("Key: " + commentDocument.getCommentId());
-//            });
-//        } catch (ArangoDBException e) {
-//            System.err.println("Failed to get posts' comments." + e.getMessage());
-//        }
-//        return comments;
-//    }
-//
+
+    public List<Comment> getComments(String postId) {
+        ArrayList<Comment> comments = new ArrayList<Comment>();
+        try {
+            String query = "FOR l IN " + commentsCollection + " FILTER l.parentPostId == @parentPostId RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", postId).get();
+            ArangoCursor<Comment> cursor = arangoDB.query(query, bindVars, null,
+                    Comment.class);
+            cursor.forEachRemaining(commentDocument -> {
+                comments.add(commentDocument);
+                System.out.println("Key: " + commentDocument.getCommentId());
+            });
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get posts' comments." + e.getMessage());
+        }
+        return comments;
+    }
 
 
-//
-//    @Test
-//    public void testEditComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-//        HashMap<String,String> request = new HashMap<String,String>();
-//        request.put("commentId", "1234");
-//        request.put("authorId", "12");
-//        request.put("parentPostId", "14");
-//        request.put("likesCount", 20+"");
-//        request.put("repliesCount", 2+"");
-//        request.put("images", "sdgg");
-//        request.put("urls", "fhdfhj");
-//        request.put("mentions", "sdgfh");
-//        request.put("text", "Text");
-//        request.put("timeStamp", "Time Stamp");
-//        try {
-//            LinkedHashMap<String, Object> response = service.serve("edit.comment", request);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        List<Comment> newComments = getComments("14");
-//        assertEquals("The comment should have a new Text", newComments.get(0).getText(),"Text");
-//
-//
-//    }
-//
-//    @Test
-//    public void testDeleteComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-//        HashMap<String,String> request = new HashMap<String,String>();
-//        request.put("commentId", "1234");
-//        request.put("authorId", "12");
-//        request.put("parentPostId", "14");
-//        request.put("likesCount", 20+"");
-//        request.put("repliesCount", 2+"");
-//        request.put("images", "sdgg");
-//        request.put("urls", "fhdfhj");
-//        request.put("mentions", "sdgfh");
-//        request.put("text", "Text");
-//        request.put("timeStamp", "Time Stamp");
-//        try {
-//            LinkedHashMap<String, Object> response = service.serve("delete.comment", request);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        Comment newComment = getComment("1234");
-//        assertEquals("The comment should not exist", newComment,null);
-//
-//
-//    }
-//
-//    @Test
-//    public void testGetComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-//        HashMap<String,String> request = new HashMap<String,String>();
-//        request.put("parentPostId", "14");
-//        try {
-//            LinkedHashMap<String, Object> response = service.serve("get.comments", request);
-//            List<Comment> newComments = (List<Comment>) response.get("response");
-//            assertEquals("The comment should not exist", newComments.size(),1);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
 
-//
+
+    @Test
+    public void testEditComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        HashMap<String,String> request = new HashMap<String,String>();
+        request.put("commentId", "1234");
+        request.put("authorId", "12");
+        request.put("parentPostId", "14");
+        request.put("likesCount", 20+"");
+        request.put("repliesCount", 2+"");
+        request.put("images", "sdgg");
+        request.put("urls", "fhdfhj");
+        request.put("mentions", "sdgfh");
+        request.put("text", "Text");
+        request.put("timeStamp", "Time Stamp");
+        try {
+            LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("editComment", request);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        List<Comment> newComments = getComments("14");
+        assertEquals("The comment should have a new Text", newComments.get(0).getText(),"Text");
+
+
+    }
+
+    @Test
+    public void testDeleteComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        HashMap<String,String> request = new HashMap<String,String>();
+        request.put("commentId", "1234");
+        request.put("authorId", "12");
+        request.put("parentPostId", "14");
+        request.put("likesCount", 20+"");
+        request.put("repliesCount", 2+"");
+        request.put("images", "sdgg");
+        request.put("urls", "fhdfhj");
+        request.put("mentions", "sdgfh");
+        request.put("text", "Text");
+        request.put("timeStamp", "Time Stamp");
+        try {
+            LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("deleteComment", request);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Comment newComment = getComment("1234");
+        assertEquals("The comment should not exist", newComment,null);
+
+
+    }
+
+    @Test
+    public void testGetComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        HashMap<String,String> request = new HashMap<String,String>();
+        request.put("parentPostId", "14");
+        try {
+            LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("getComments", request);
+            List<Comment> newComments = (List<Comment>) response.get("response");
+            assertEquals("The comment should not exist", newComments.size(),1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 
 
 
 
-//        @Test
-//        public void testAddLikeCommand() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException{
-//            HashMap<String, String> request = new HashMap<>();
-//            request.put("likerId", "100");
-//            request.put("likedPostId", "99");
-//            request.put("likedCommentId", null);
-//            request.put("likedReplyId", null);
-//            request.put("userName", "Yara");
-//            request.put("headLine", "Yara and 5 others");
-//            request.put("imageUrl", "urlX");
-//
-//            wallService.serve("addLike", request);
-//        }
+
+
+
+        @Test
+        public void testAddLikeCommand() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException{
+            HashMap<String, String> request = new HashMap<>();
+            request.put("likerId", "100");
+            request.put("likedPostId", "99");
+            request.put("likedCommentId", null);
+            request.put("likedReplyId", null);
+            request.put("userName", "Yara");
+            request.put("headLine", "Yara and 5 others");
+            request.put("imageUrl", "urlX");
+
+            wallService.serve("addLike", request);
+        }
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {

@@ -1,6 +1,9 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.*;
@@ -18,35 +21,35 @@ public class AddPostCommand extends Command{
         super(args);
     }
 
-    public LinkedHashMap<String, Object> execute()  {
+    public LinkedHashMap<String, Object> execute() throws ParseException {
+
 
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Post post;
-        String postID = request.get("postID");
-        String authorID = request.get("authorID");
+        String postId = request.get("postId");
+        String authorId = request.get("authorId");
         String type = request.get("type");
-        String companyID = request.get("companyID");
+        String companyId = request.get("companyId");
         String privacy = request.get("privacy");
         String text = request.get("text");
-        String timeStamp = request.get("timeStamp");
+        Date timestamp = format.parse(request.get("timeStamp"));
+        //String timeStamp = request.get("timeStamp");
+        String hashtags = request.get("hashtags");
+        String mentions = request.get("mentions");
+        int likesCount = Integer.parseInt(request.get("likesCount"));
+        String images = request.get("images");
+        String videos = request.get("videos");
+        String urls = request.get("urls");
+        int commentsCount = Integer.parseInt(request.get("commentsCount"));
+        String shares = request.get("shares");
+
         boolean isCompanyPost = Boolean.parseBoolean(request.get("isCompanyPost"));
         boolean isPrior = Boolean.parseBoolean(request.get("isPrior"));
-        ArrayList<String> hashtags = new ArrayList<String>(Arrays.asList(request.get("hashtags").split(",")));
-        ArrayList<String> mentions = new ArrayList<String>(Arrays.asList(request.get("mentions").split(",")));
-        ArrayList<String> images = new ArrayList<String>(Arrays.asList(request.get("images").split(",")));
-        ArrayList<String> videos = new ArrayList<String>(Arrays.asList(request.get("videos").split(",")));
-        ArrayList<String> urls = new ArrayList<String>(Arrays.asList(request.get("urls").split(",")));
-        ArrayList<String> shares = new ArrayList<String>(Arrays.asList(request.get("shares").split(",")));
-        Integer likesCount = Integer.parseInt(request.get("likesCount"));
-        Integer commentsCount = Integer.parseInt(request.get("commentsCount"));
 
+        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, shares, timestamp, isCompanyPost, isPrior);
 
-
-        post = new Post(postID, authorID, type, companyID, privacy, text, timeStamp,isCompanyPost,isPrior,
-                hashtags, mentions,images,videos,urls,shares,likesCount,commentsCount);
-
-        // call dbHandler to get results from db and add returned results to linkedHashMap
         response.put("response", dbHandler.addPost(post));
         return response;
     }
