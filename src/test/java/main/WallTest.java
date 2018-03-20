@@ -292,7 +292,7 @@ public class WallTest {
         List<Bookmark> response = (ArrayList<Bookmark>) result.get("response");
         assertEquals("response should be user's bookmark arraylist", response.size(), size);
     }
-    
+
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException {
 //        dbSeed.deleteAllUsers();

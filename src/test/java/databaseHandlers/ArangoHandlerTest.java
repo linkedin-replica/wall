@@ -242,6 +242,9 @@ public class ArangoHandlerTest {
         return comment;
     }
 
+    /**
+     * testing add comment arango handler function.
+     */
     @Test
     public void testAddComment(){
         Comment comment  = new Comment("commentID2","authorID","parentPostID",12,22,null,null,null,"comment Text","time Stamp");
@@ -251,10 +254,15 @@ public class ArangoHandlerTest {
 
     }
 
+    /**
+     * testing editing comment arango handler function.
+     */
     @Test
     public void testEditComment(){
-        Comment comment  = new Comment("commentID2","authorID","parentPostID2",12,22,null,null,null,"comment Text","time Stamp");
-        arangoWallHandler.editComment(comment);
+        Comment originalComment  = new Comment("commentID2","authorID","parentPostID",12,22,null,null,null,"comment Text","time Stamp");
+        arangoDB.db(dbName).collection(commentsCollection).insertDocument(originalComment);
+        Comment updatedComment  = new Comment("commentID2","authorID","parentPostID2",12,22,null,null,null,"comment Text","time Stamp");
+        arangoWallHandler.editComment(updatedComment);
         Comment newComment = getComment("commentID2");
         assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), "parentPostID2");
     }
