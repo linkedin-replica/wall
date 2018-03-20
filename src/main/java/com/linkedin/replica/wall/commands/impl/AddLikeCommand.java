@@ -1,6 +1,7 @@
 package com.linkedin.replica.wall.commands.impl;
 
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.linkedin.replica.wall.commands.Command;
@@ -8,8 +9,8 @@ import com.linkedin.replica.wall.models.Like;
 
 public class AddLikeCommand extends Command{
 
-    public AddLikeCommand() {
-        super();
+    public AddLikeCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     @Override

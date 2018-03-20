@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.arangodb.ArangoDBException;
-import com.arangodb.entity.CollectionEntity;
 import redis.clients.jedis.Jedis;
 
 import com.arangodb.ArangoDB;
@@ -15,14 +14,12 @@ import com.arangodb.ArangoDB;
 public class DatabaseConnection {
     private ArangoDB arangoDB;
     private Jedis redis;
-
+    private Configuration config;
     private static DatabaseConnection instance;
-    private Properties properties;
 
-    private DatabaseConnection() throws FileNotFoundException, IOException, ClassNotFoundException{
-        properties = new Properties();
-        properties.load(new FileInputStream("db_config"));
 
+    private DatabaseConnection() throws FileNotFoundException, IOException {
+        config = Configuration.getInstance();
         arangoDB = instantiateArrangoDB();
         //redis = new Jedis();
     }
@@ -61,8 +58,8 @@ public class DatabaseConnection {
      */
     private ArangoDB instantiateArrangoDB(){
         return new ArangoDB.Builder()
-                .user(properties.getProperty("arangodb.user"))
-                .password(properties.getProperty("arangodb.password"))
+                .user(config.getArangoConfig("arangodb.user"))
+                .password(config.getArangoConfig("arangodb.password"))
                 .build();
     }
 
@@ -70,7 +67,7 @@ public class DatabaseConnection {
      * Creates the wall db
      */
     private void createDatabase() {
-        String dbName = properties.getProperty("arangodb.name");
+        String dbName = config.getArangoConfig("arangodb.name");
         try {
             arangoDB.createDatabase(dbName);
             System.out.println("Database created: " + dbName);

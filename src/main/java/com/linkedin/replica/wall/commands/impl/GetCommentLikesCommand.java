@@ -2,11 +2,13 @@ package com.linkedin.replica.wall.commands.impl;
 
 import com.linkedin.replica.wall.commands.Command;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class GetCommentLikesCommand extends Command{
-    public GetCommentLikesCommand() {
-        super();
+
+    public GetCommentLikesCommand(HashMap<String, String> args) {
+        super(args);
     }
 
 

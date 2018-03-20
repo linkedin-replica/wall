@@ -8,6 +8,7 @@ import com.arangodb.entity.DocumentCreateEntity;
 import com.arangodb.entity.DocumentUpdateEntity;
 import com.arangodb.util.MapBuilder;
 
+import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.Bookmark;
@@ -26,7 +27,6 @@ import java.util.*;
 
 public class ArangoWallHandler implements DatabaseHandler {
     private ArangoDB arangoDB;
-    private Properties properties;
     private String dbName;
     String likesCollection;
     String repliesCollection;
@@ -37,14 +37,13 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     public ArangoWallHandler() throws IOException, ClassNotFoundException {
         arangoDB = DatabaseConnection.getInstance().getArangodb();
-        properties = new Properties();
-        properties.load(new FileInputStream("db_config"));
-        dbName = properties.getProperty("arangodb.name");
-        likesCollection = properties.getProperty("collections.likes.name");
-        repliesCollection = properties.getProperty("collections.replies.name");
-        usersCollection = properties.getProperty("collections.users.name");
-        commentsCollection = properties.getProperty("collections.comments.name");
-        postsCollection = properties.getProperty("collections.posts.name");
+        Configuration config = Configuration.getInstance();
+        dbName = config.getArangoConfig("arangodb.name");
+        likesCollection = config.getArangoConfig("collections.likes.name");
+        repliesCollection = config.getArangoConfig("collections.replies.name");
+        usersCollection = config.getArangoConfig("collections.users.name");
+        commentsCollection = config.getArangoConfig("collections.comments.name");
+        postsCollection = config.getArangoConfig("collections.posts.name");
 
     }
 

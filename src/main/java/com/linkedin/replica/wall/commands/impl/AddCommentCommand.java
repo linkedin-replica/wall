@@ -14,9 +14,9 @@ public class AddCommentCommand extends Command{
     String [] images;
     String [] mentions;
     String [] urls;
-    public AddCommentCommand() {
 
-        super();
+    public AddCommentCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute() {
