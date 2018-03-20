@@ -280,7 +280,19 @@ public class WallTest {
         assertEquals("response should be Success to delete bookmark", response, "Success to delete bookmark");
     }
 
-
+    @Test
+    public void testGetBookmark() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        HashMap<String, String> request = new HashMap<>();
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        String postId = userId;
+        request.put("userId", userId);
+        LinkedHashMap<String, Object> result = service.serve("deleteBookmark", request);
+        int size = 1;
+        List<Bookmark> response = (ArrayList<Bookmark>) result.get("response");
+        assertEquals("response should be user's bookmark arraylist", response.size(), size);
+    }
+    
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException {
 //        dbSeed.deleteAllUsers();
