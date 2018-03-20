@@ -42,7 +42,7 @@ public class WallTest {
     private static String  commentsCollection;
 
     @BeforeClass
-    public static void setup() throws ClassNotFoundException, IOException, SQLException, TimeoutException {
+    public static void setup() throws ClassNotFoundException, IOException, SQLException, TimeoutException, ParseException {
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
         //Main.start(args);
@@ -59,7 +59,6 @@ public class WallTest {
         dbSeed.deleteAllPosts();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
-
 
     }
 

@@ -222,9 +222,7 @@ public class ArangoWallHandler implements DatabaseHandler {
     public String addComment(Comment comment) {
         String response = "";
         if(comment.getParentPostId() != null && getPost(comment.getParentPostId()) != null) {
-//            Post post = getPost(comment.getParentPostId());
-//            post.setCommentsCount(post.getCommentsCount() + 1);
-//            editPost(post);
+
             try {
                 DocumentCreateEntity commentDoc = arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
                 System.out.println("Comment added");
@@ -233,6 +231,9 @@ public class ArangoWallHandler implements DatabaseHandler {
                 System.err.println("Failed to add a comment. " + e.getMessage());
                 response = "Failed to add a comment. " + e.getMessage();
             }
+            Post post = getPost(comment.getParentPostId());
+            post.setCommentsCount(post.getCommentsCount() + 1);
+            editPost(post);
 
         }else {
             response = "Failed to add a comment missing post found.";

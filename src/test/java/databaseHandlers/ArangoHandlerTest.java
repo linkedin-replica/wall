@@ -47,8 +47,7 @@ public class ArangoHandlerTest {
     private static String usersCollection;
     private static String  repliesCollection;
     private static String postsCollection;
-    private ArrayList<UserProfile> insertedUsers;
-
+    private static  Post inserted
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         // startup SearchEngine
