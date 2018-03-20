@@ -25,6 +25,10 @@ public class Post {
     private boolean isCompanyPost;
     private boolean isPrior;
 
+    public Post(){
+        super();
+    }
+
     public Post(String postId, String authorId,String type, String companyId, String privacy, String text, String hashtags, String mentions, int likesCount, String images, String videos, String urls, int commentsCount, String shares, String timestamp, boolean isCompanyPost, boolean isPrior){
 
         this.postId = postId;

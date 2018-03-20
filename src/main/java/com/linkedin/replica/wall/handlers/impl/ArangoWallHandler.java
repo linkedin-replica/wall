@@ -99,19 +99,20 @@ public  class ArangoWallHandler implements DatabaseHandler {
     public List<Post> getPosts(String userID) {
 
 
-        final ArrayList<Post> posts = new ArrayList<Post>();
+        ArrayList<Post> posts = new ArrayList<Post>();
         try {
-            String query = "FOR l IN " + postsCollection + " FILTER l.authorId == " + userID + " RETURN l";
+            String query = "FOR l IN " + postsCollection + " FILTER l.authorId == @authorId RETURN l";
             Map<String, Object> bindVars = new MapBuilder().put("authorId", userID).get();
-            ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null, Post.class);
-            cursor.forEachRemaining(post -> {
-                posts.add(post);
-                System.out.println("Key: " + post.getPostId());
+            ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                    Post.class);
+            cursor.forEachRemaining(postDocument -> {
+                posts.add(postDocument);
+                System.out.println("Key: " + postDocument.getPostId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to execute query. " + e.getMessage());
+            System.err.println("Failed to get posts." + e.getMessage());
         }
-        return null;
+        return posts;
     }
 
     public String addPost(Post post) {
