@@ -12,6 +12,7 @@ import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.DocumentCreateEntity;
 import com.linkedin.replica.wall.config.DatabaseConnection;
+import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.*;
 
 public class DatabaseSeed {
@@ -75,36 +76,36 @@ public class DatabaseSeed {
         }
     }
 
-    public void insertComments() throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get("src/test/resources/comments"));
-        try{
-            arangoDB.db(dbName).createCollection(commentsCollection);
+   public void insertComments() throws IOException, ClassNotFoundException {
+       List<String> lines = Files.readAllLines(Paths.get("src/test/resources/comments"));
+       try{
+           arangoDB.db(dbName).createCollection(commentsCollection);
 
-        }catch(ArangoDBException ex){
-            // check if exception was raised because that database was not created
-            if(ex.getErrorNum() == 1228){
-                arangoDB.createDatabase(dbName);
-                arangoDB.db(dbName).createCollection(commentsCollection);
-            }else{
-                throw ex;
-            }
-        }
-        int counter = 1;
-        BaseDocument newDoc;
-        ArrayList<String> x =  new ArrayList<String>() ;
-        x.add("y");
-        for(String text : lines) {
-            Comment comment = new Comment(counter + "", "3", "1", 45, 34, x, x, x, text, "11");
-            newDoc = new BaseDocument();
-            newDoc.setKey(comment.getCommentId());
-            newDoc.addAttribute("comment", comment);
-            arangoDB.db(dbName).collection(commentsCollection).insertDocument(newDoc);
-            System.out.println("New comment document insert with key = ");
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), BaseDocument.class);
-            System.out.println("comment: " + retrievedDoc.toString());
-            counter++;
-        }
-    }
+       }catch(ArangoDBException ex){
+           // check if exception was raised because that database was not created
+           if(ex.getErrorNum() == 1228){
+               arangoDB.createDatabase(dbName);
+               arangoDB.db(dbName).createCollection(commentsCollection);
+           }else{
+               throw ex;
+           }
+       }
+       int counter = 1;
+       BaseDocument newDoc;
+       ArrayList<String> x =  new ArrayList<String>() ;
+       x.add("y");
+       for(String text : lines) {
+           Comment comment = new Comment(counter + "", "3", "1", 45, 34, x, x, x, text, "11");
+           newDoc = new BaseDocument();
+           newDoc.setKey(comment.getCommentId());
+           newDoc.addAttribute("comment", comment);
+           arangoDB.db(dbName).collection(commentsCollection).insertDocument(newDoc);
+           System.out.println("New comment document insert with key = ");
+           BaseDocument retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), BaseDocument.class);
+           System.out.println("comment: " + retrievedDoc.toString());
+           counter++;
+       }
+   }
 
 
     public void insertReplies() throws IOException {
@@ -251,5 +252,4 @@ public class DatabaseSeed {
     public void closeDBConnection() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
-
 }

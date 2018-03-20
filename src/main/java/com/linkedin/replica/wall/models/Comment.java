@@ -1,15 +1,23 @@
 package com.linkedin.replica.wall.models;
 
+import com.arangodb.entity.DocumentField;
+
 import java.util.ArrayList;
 
 public class Comment {
 
-        private String commentId,authorId,parentPostId;
+    @DocumentField(DocumentField.Type.KEY)
+        private String commentId;
+        private String authorId,parentPostId;
         private int likesCount,repliesCount;
         private ArrayList<String> images;
         private ArrayList<String> urls;
         private ArrayList<String> mentions;
         private String text,timeStamp;
+
+        public Comment(){
+
+        }
 
         public Comment(String commentId,String authorId,String parentPostId, int likesCount,int repliesCount, ArrayList<String> images,ArrayList<String> urls,ArrayList<String> mentions, String text,String timeStamp){
 
@@ -105,5 +113,17 @@ public class Comment {
         public void setTimeStamp(String timeStamp) {
             this.timeStamp = timeStamp;
         }
+
+    public String toString() {
+        return "Comment{" +
+                "commentId='" + commentId + '\'' +
+                ", parentPostId='" + parentPostId + '\'' +
+                ", authorId='" + authorId + '\'' +
+                ", likesCount='" + likesCount + '\'' +
+                ", repliesCount='" + repliesCount + '\'' +
+                ", text='" + text + '\'' +
+                ", timeStamp='" + timeStamp + '\'' +
+                '}';
+    }
     }
 

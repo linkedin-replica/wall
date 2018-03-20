@@ -2,7 +2,6 @@ package databaseHandlers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 
 import com.arangodb.ArangoCursor;
@@ -11,9 +10,10 @@ import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.Like;
-import com.linkedin.replica.wall.main.Main;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.UserProfile;
+import com.linkedin.replica.wall.models.Comment;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,24 +28,25 @@ public class ArangoHandlerTest {
     private static ArangoDB arangoDB;
     private static Properties properties;
     private static String dbName;
+    private static String  commentsCollection;
     private static String likesCollection;
-    private String repliesCollection;
-    private String commentsCollection;
-    private String postsCollection;
     private static String usersCollection;
     private ArrayList<UserProfile> insertedUsers;
+
 
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException {
         // startup SearchEngine
         String[] args = {"db_config", "src/main/resources/command_config"};
         arangoDB = DatabaseConnection.getInstance().getArangodb();
+        arangoWallHandler = new ArangoWallHandler();
         properties = new Properties();
         properties.load(new FileInputStream("db_config"));
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
         usersCollection = properties.getProperty("collections.users.name");
         arangoWallHandler = new ArangoWallHandler();
+        commentsCollection = properties.getProperty("collections.comments.name");
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
@@ -122,7 +123,6 @@ public class ArangoHandlerTest {
         Boolean docWithIdExists = arangoDB.db(dbName).collection(likesCollection).documentExists(existingLikeId);
         assertEquals("The size of the likesCollection should have decreased by one", expectedCollectionSize, newCollectionSize);
         assertEquals("There should be no document in collection with this id", false, docWithIdExists);
-
     }
     /**
      * testing Adding bookmark function
@@ -184,14 +184,66 @@ public class ArangoHandlerTest {
 
 
     }
+    public Comment getComment(String commentId) {
+        Comment comment = null;
+        try {
+            comment = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentId,
+                    Comment.class);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get comment: commentId; " + e.getMessage());
+        }
+        return comment;
+    }
+
+    @Test
+    public void testAddComment(){
+        Comment comment  = new Comment("commentID2","authorID","parentPostID",12,22,null,null,null,"comment Text","time Stamp");
+        arangoWallHandler.addComment(comment);
+        Comment newComment = getComment("commentID2");
+        assertEquals("Expected to have a certain comment in database", newComment.getParentPostId(), "parentPostID");
+
+    }
+
+    @Test
+    public void testEditComment(){
+        Comment comment  = new Comment("commentID2","authorID","parentPostID2",12,22,null,null,null,"comment Text","time Stamp");
+        arangoWallHandler.editComment(comment);
+        Comment newComment = getComment("commentID2");
+        assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), "parentPostID2");
+    }
+
+    @Test
+    public void testDeleteComment(){
+        Comment comment  = new Comment("commentID2","authorID","parentPostID2",12,22,null,null,null,"comment Text","time Stamp");
+        arangoWallHandler.deleteComment(comment);
+        Comment newComment = getComment("commentID2");
+        assertEquals("Expected to not have that comment", newComment, null);
+
+    }
+
+    @Test
+    public void testGetComments(){
+        List<Comment> newComments = arangoWallHandler.getComments("123");
+        assertEquals("Expected to have 1 comment with that post ID", newComments.size(), 1);
+
+    }
+
+    @Test
+    public void testGetComment() {
+        Comment newComment = getComment("commentID");
+        assertEquals("Expected to get a certain comment", newComment.getAuthorId(), "authorID");
+
+    }
+
 
     @AfterClass
-    public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException{
+    public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
         dbSeed.deleteAllUsers();
         dbSeed.deleteAllPosts();
         dbSeed.deleteAllReplies();
         dbSeed.deleteAllComments();
         dbSeed.deleteAllLikes();
-        DatabaseConnection.getInstance().closeConnections();    }
+        DatabaseConnection.getInstance().closeConnections();
+      }
 
 }

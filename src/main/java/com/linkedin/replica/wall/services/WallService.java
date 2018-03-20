@@ -54,4 +54,3 @@ public class WallService {
             return command.execute();
         }
 }
-
