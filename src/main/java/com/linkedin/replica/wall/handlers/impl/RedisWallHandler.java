@@ -5,6 +5,7 @@ import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,5 +123,10 @@ public class RedisWallHandler implements DatabaseHandler {
     public String deleteLike(Like like) {
 
         return null;
+    }
+
+    @Override
+    public void getTopPosts()throws ParseException {
+
     }
 }

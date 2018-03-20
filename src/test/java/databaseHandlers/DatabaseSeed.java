@@ -5,6 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.arangodb.ArangoDB;
@@ -42,7 +45,7 @@ public class DatabaseSeed {
 
     }
 
-    public void insertPosts() throws IOException {
+    public void insertPosts() throws IOException, ClassNotFoundException, ParseException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/posts"));
         System.out.println("posts inserted");
         try{
@@ -63,25 +66,27 @@ public class DatabaseSeed {
         BaseDocument newDoc;
         ArrayList<String> x =  new ArrayList<String>() ;
         x.add("y");
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+        Date timestamp = format.parse("Mon Mar 19 2012 01:00 PM");
         System.out.println("before loop");
         for(String text : lines){
             Post post = new Post(counter + "", "2", "3",
-                    "4", "5", text, "7",
+                    "4", "5", text, timestamp,
                     true, true, x, x,
                     x, x, x, x, 7,
                     6);
-            newDoc = new BaseDocument();
-            newDoc.setKey(post.getPostID());
-            newDoc.addAttribute("post", post);
+//            newDoc = new BaseDocument();
+//            newDoc.setKey(post.getPostID());
+//            newDoc.addAttribute("post", post);
 
-            arangoDB.db(dbName).collection(postsCollection).insertDocument(newDoc);
+
+            arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             System.out.println("New post document insert with key = ");
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostID(), BaseDocument.class);
-            System.out.println("post: " + retrievedDoc.toString());
+            Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostID(), Post.class);
+            //System.out.println("post: " + retrievedDoc.getAuthorID());
             counter ++;
         }
     }
-
    public void insertComments() throws IOException, ClassNotFoundException {
        List<String> lines = Files.readAllLines(Paths.get("src/test/resources/comments"));
        try{

@@ -19,6 +19,9 @@ import com.linkedin.replica.wall.models.UserProfile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ArangoWallHandler implements DatabaseHandler {
@@ -572,18 +575,25 @@ public class ArangoWallHandler implements DatabaseHandler {
         return response;
     }
 
-    public void getTopPosts(){
+    public void getTopPosts() throws ParseException {
         try {
-            String query = "FOR p IN " + postsCollection + " FILTER p.parentCommentId == @commentId RETURN p";
-            Map<String, Object> bindVars = new MapBuilder().put("commentId", "4").get();
-            ArangoCursor<Reply> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                    Reply.class);
-            cursor.forEachRemaining(replyDocument -> {
-                System.out.println("Key: " + replyDocument.getReplyId());
+            String query = "FOR p IN " + postsCollection + " RETURN p";
+            ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, null, null,
+                    Post.class);
+            cursor.forEachRemaining(postDocument -> {
+                System.out.println("Key: " + postDocument.getTimeStamp());
             });
         } catch (ArangoDBException e) {
             System.err.println("Failed to get top posts " + e.getMessage());
         }
+
+
+
+        DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a");
+        Date postDate = dateFormat.parse("Mon Mar 19 2018 01:00 PM");
+        Date currentDate = new Date();
+        float diffInDays = (currentDate.getTime()-postDate.getTime())/(1000*60*60*24);
+        System.out.println("date is " + diffInDays);
     }
 
 }

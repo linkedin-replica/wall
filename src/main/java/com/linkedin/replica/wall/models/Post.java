@@ -1,16 +1,18 @@
 package com.linkedin.replica.wall.models;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Post {
 
-    private String postID,authorID,type,companyID,privacy,text,timeStamp;
+    private String postID,authorID,type,companyID,privacy,text;
+    private Date timeStamp;
     private boolean isCompanyPost,isPrior;
     private ArrayList<String> hashtags,mentions,images,videos,urls,shares;
     private int likesCount,commentsCount;
 
     public Post(String postID, String authorID, String type, String companyID, String privacy, String text,
-                String timeStamp, boolean isCompanyPost, boolean isPrior, ArrayList<String> hashtags,
+                Date timeStamp, boolean isCompanyPost, boolean isPrior, ArrayList<String> hashtags,
                 ArrayList<String> mentions, ArrayList<String> images,ArrayList<String> videos,
                 ArrayList<String> urls, ArrayList<String> shares, int likesCount, int commentsCount){
 
@@ -32,6 +34,9 @@ public class Post {
         this.likesCount = likesCount;
         this.commentsCount = commentsCount;
 
+    }
+    public Post(){
+        super();
     }
 
     public String getPostID() {
@@ -82,11 +87,11 @@ public class Post {
         this.text = text;
     }
 
-    public String getTimeStamp() {
+    public Date getTimeStamp() {
         return this.timeStamp;
     }
 
-    public void setTimeStamp(String timeStamp) {
+    public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
     }
 

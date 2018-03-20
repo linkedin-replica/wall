@@ -1,6 +1,9 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.*;
@@ -19,10 +22,11 @@ public class AddPostCommand extends Command{
         super();
     }
 
-    public LinkedHashMap<String, Object> execute()  {
+    public LinkedHashMap<String, Object> execute() throws ParseException {
 
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Post post;
         String postID = request.get("postID");
         String authorID = request.get("authorID");
@@ -30,7 +34,8 @@ public class AddPostCommand extends Command{
         String companyID = request.get("companyID");
         String privacy = request.get("privacy");
         String text = request.get("text");
-        String timeStamp = request.get("timeStamp");
+        Date timeStamp = format.parse(request.get("timeStamp"));
+        //String timeStamp = request.get("timeStamp");
         boolean isCompanyPost = Boolean.parseBoolean(request.get("isCompanyPost"));
         boolean isPrior = Boolean.parseBoolean(request.get("isPrior"));
         ArrayList<String> hashtags = new ArrayList<String>(Arrays.asList(request.get("hashtags").split(",")));
