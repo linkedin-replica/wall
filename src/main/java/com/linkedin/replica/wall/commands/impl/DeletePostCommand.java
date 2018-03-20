@@ -15,9 +15,8 @@ public class DeletePostCommand extends Command{
     String [] images;
     String [] mentions;
     String [] urls;
-    public DeletePostCommand() {
-
-        super();
+    public DeletePostCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute() throws ParseException {

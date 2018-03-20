@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.linkedin.replica.wall.commands.Command;
@@ -7,8 +8,8 @@ import com.linkedin.replica.wall.models.Like;
 
 public class DeleteLikeCommand extends Command{
 
-    public DeleteLikeCommand() {
-        super();
+    public DeleteLikeCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     @Override

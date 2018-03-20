@@ -10,7 +10,10 @@ public abstract class Command {
     protected HashMap<String, String> request;
     protected DatabaseHandler dbHandler;
 
-    public Command(){}
+    public Command(HashMap<String, String> args) {
+        this.request = args;
+    }
+
 
     /**
      * Execute the command.
@@ -26,5 +29,6 @@ public abstract class Command {
     public void setDbHandler(DatabaseHandler dbHandler) {
         this.dbHandler = dbHandler;
     }
+
 
 }

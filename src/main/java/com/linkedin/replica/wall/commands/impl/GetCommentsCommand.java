@@ -10,8 +10,8 @@ import com.linkedin.replica.wall.models.Reply;
 
 public class GetCommentsCommand extends Command{
 
-    public GetCommentsCommand() {
-        super();
+    public GetCommentsCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute() {

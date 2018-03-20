@@ -11,8 +11,8 @@ import com.linkedin.replica.wall.models.Comment;
 
 public class EditCommentCommand extends Command{
 
-    public EditCommentCommand() {
-        super();
+    public EditCommentCommand(HashMap<String, String> args) {
+        super(args);
     }
 
 

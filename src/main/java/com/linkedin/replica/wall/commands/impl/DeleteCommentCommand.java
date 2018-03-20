@@ -11,8 +11,8 @@ import com.linkedin.replica.wall.models.Comment;
 
 public class DeleteCommentCommand extends Command{
 
-    public DeleteCommentCommand() {
-        super();
+    public DeleteCommentCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute() {
