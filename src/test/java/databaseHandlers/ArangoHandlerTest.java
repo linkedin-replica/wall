@@ -250,6 +250,7 @@ public class ArangoHandlerTest {
         Comment comment  = new Comment("commentID2","authorID","parentPostID",12,22,null,null,null,"comment Text","time Stamp");
         arangoWallHandler.addComment(comment);
         Comment newComment = getComment("commentID2");
+        System.out.println(newComment);
         assertEquals("Expected to have a certain comment in database", newComment.getParentPostId(), "parentPostID");
 
     }
@@ -267,6 +268,9 @@ public class ArangoHandlerTest {
         assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), "parentPostID2");
     }
 
+    /**
+     * testing deleting comment arango handler function.
+     */
     @Test
     public void testDeleteComment(){
         Comment comment  = new Comment("commentID2","authorID","parentPostID",12,22,null,null,null,"comment Text","time Stamp");
