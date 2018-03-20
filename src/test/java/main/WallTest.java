@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.services.WallService;
 import databaseHandlers.DatabaseSeed;
 import org.junit.AfterClass;
@@ -53,8 +54,10 @@ public class WallTest {
         likesCollection = properties.getProperty("collections.likes.name");
         commentsCollection = properties.getProperty("collections.comments.name");
         dbSeed = new DatabaseSeed();
-//        dbSeed.insertUsers();
-//        dbSeed.insertPosts();
+        dbSeed.deleteAllUsers();;
+        dbSeed.deleteAllPosts();
+        dbSeed.insertUsers();
+        dbSeed.insertPosts();
 
 
     }
@@ -249,10 +252,25 @@ public class WallTest {
 
         assertEquals("Size should decrement by one",replies.size()-1,testReplies.size());
     }
+
+    @Test
+    public void testAddBookmark() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        HashMap<String, String> request = new HashMap<>();
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        String postId = "123";
+        request.put("userId", userId);
+        request.put("postId", postId);
+        LinkedHashMap<String, Object> result = service.serve("addBookmark", request);
+        String response = (String) result.get("response");
+        assertEquals("response should be Success to add bookmark", response, "Success to add bookmark");
+    }
+
+    
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException {
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllUsers();
+//        dbSeed.deleteAllPosts();
 //        Main.shutdown();
     }
 
