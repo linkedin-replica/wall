@@ -218,6 +218,11 @@ public class ArangoWallHandler implements DatabaseHandler {
         return comment;
     }
 
+    /**
+     * function to add comment in database and update post collection.
+     * @param comment
+     * @return
+     */
     public String addComment(Comment comment) {
         String response = "";
         if(comment.getParentPostId() != null && getPost(comment.getParentPostId()) != null) {
@@ -241,24 +246,31 @@ public class ArangoWallHandler implements DatabaseHandler {
         return response;
     }
 
+    /**
+     * function to edit specific coment in the database.
+     * @param comment
+     * @return
+     */
     public String editComment(Comment comment) {
         String response = "";
         try {
-            DocumentUpdateEntity commentDoc =  arangoDB.db(dbName).collection(commentsCollection).updateDocument(comment.getCommentId(),comment);
-
+             arangoDB.db(dbName).collection(commentsCollection).updateDocument(comment.getCommentId(),comment);
         } catch (ArangoDBException e) {
-            System.err.println("Failed to update comment. " + e.getMessage());
             response = "Failed to update comment. " + e.getMessage();
         }
         return response;
     }
 
+    /**
+     * function to delete specific comment in the database.
+     * @param comment
+     * @return
+     */
     public String deleteComment(Comment comment) {
         String response = "";
         try {
             arangoDB.db(dbName).collection(commentsCollection).deleteDocument(comment.getCommentId());
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete a comment. " + e.getMessage());
             response = "Failed to delete a comment. " + e.getMessage();
         }
 
