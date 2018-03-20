@@ -19,7 +19,6 @@ public class GetBookmarksCommand extends Command{
             response.put("response", "missing information");
         }
 
-
         return response;
     }
 

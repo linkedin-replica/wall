@@ -14,6 +14,7 @@ import com.arangodb.ArangoDB;
 import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
+import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Comment;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -266,7 +267,20 @@ public class WallTest {
         assertEquals("response should be Success to add bookmark", response, "Success to add bookmark");
     }
 
-    
+    @Test
+    public void testDeleteBookmark() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        HashMap<String, String> request = new HashMap<>();
+        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        String userId = user.getUserId();
+        String postId = userId;
+        request.put("userId", userId);
+        request.put("postId", postId);
+        LinkedHashMap<String, Object> result = service.serve("deleteBookmark", request);
+        String response = (String) result.get("response");
+        assertEquals("response should be Success to delete bookmark", response, "Success to delete bookmark");
+    }
+
+
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException {
 //        dbSeed.deleteAllUsers();

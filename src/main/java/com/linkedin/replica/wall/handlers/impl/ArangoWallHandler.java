@@ -83,19 +83,10 @@ public class ArangoWallHandler implements DatabaseHandler {
         try {
             UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
             ArrayList<Bookmark> bookmarkList = user.getBookmarks();
-            Bookmark b = user.getBookmarks().get(0);
-
-            System.out.println(bookmarkList.contains(bookmark));
             bookmarkList.remove(bookmark);
-            System.out.println(bookmarkList.contains(bookmark));
-
             user.setBookmarks(bookmarkList);
-            System.out.println(bookmarkList.contains(bookmark));
-
-            System.out.println(bookmarkList.size() + " second");
             arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
-
-            message = "Success to deletes bookmark";
+            message = "Success to delete bookmark";
 
         } catch (ArangoDBException e) {
             System.err.println("Failed to delete bookmark. " + e.getMessage());
