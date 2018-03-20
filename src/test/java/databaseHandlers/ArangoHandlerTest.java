@@ -18,6 +18,16 @@ import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.services.WallService;
+import java.io.FileNotFoundException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Properties;
+
+
+import com.arangodb.entity.DocumentCreateEntity;
+
+import com.linkedin.replica.wall.models.Post;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +46,7 @@ public class ArangoHandlerTest {
     private static String likesCollection;
     private static String usersCollection;
     private static String  repliesCollection;
+    private static String postsCollection;
     private ArrayList<UserProfile> insertedUsers;
 
     @BeforeClass
@@ -52,12 +63,102 @@ public class ArangoHandlerTest {
         arangoWallHandler = new ArangoWallHandler();
         commentsCollection = properties.getProperty("collections.comments.name");
         repliesCollection = properties.getProperty("collections.replies.name");
+        postsCollection = properties.getProperty("collections.posts.name");
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
         dbSeed.insertReplies();
         dbSeed.insertLikes();
         dbSeed.insertComments();
+    }
+
+
+    public String addPost(Post post) {
+        String response = "";
+        try {
+            DocumentCreateEntity addDoc =  arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
+            System.out.println("Post Created");
+            response = "Post Created";
+        }catch (ArangoDBException e){
+            System.err.println("Failed to add Post " + e.getMessage());
+            response = "Failed to add Post " + e.getMessage();
+        }
+
+        return response;
+    }
+
+
+
+   public Post getPosts(String userID){
+
+        Post post = null;
+       try {
+
+           post = arangoDB.db(dbName).collection(postsCollection).getDocument(userID, Post.class);
+
+       } catch (ArangoDBException e) {
+
+           System.err.println("Failed to get post: postId; " + e.getMessage());
+       }
+
+        return post;
+   }
+
+   @Test
+   public void testAddPost() throws ParseException {
+
+       DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+       Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+
+
+        Post post = new Post("postId", "authorId", null, "companyId", null, null,
+                null,null, 12, "images", "videos", "urls", 30,
+                "shares", timestamp, true, false);
+        arangoWallHandler.addPost(post);
+        Post newPost = getPosts("postId");
+        assertEquals("Expected to have a certain post in database", newPost.getCompanyId(), "companyId");
+
+   }
+
+   @Test
+   public void testEditPost() throws ParseException {
+
+       DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+       Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+       Post post = new Post("postId", "authorId", null, "companyId", null, null,
+               null,null, 13, "images", "videos", "urls", 30,
+               "shares", timestamp, true, false);
+       arangoWallHandler.editPost(post);
+       Post newPost = getPosts("postId");
+       assertEquals("Expected to have a certain post in database", newPost.getLikesCount(), 13);
+
+   }
+
+   @Test
+   public void testDeletePost() throws ParseException {
+
+       DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+       Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+       Post post = new Post("postId", "authorId", null, "companyId", null, null,
+               null,null, 12, "images", "videos", "urls", 30,
+               "shares", timestamp, true, false);
+       arangoWallHandler.deletePost(post);
+       Post newPost = getPosts("postId");
+       assertEquals("Expected to have a certain post in database", newPost, null);
+   }
+
+
+    @Test
+    public void testGetPosts() throws ParseException {
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+        Post post = new Post("postId", "232", null, "companyId", null, null,
+                null,null, 12, "images", "videos", "urls", 30,
+                "shares", timestamp, true, false);
+        addPost(post);
+        List<Post> newPost = arangoWallHandler.getPosts("232");
+        assertEquals("Expected to have 1 post with that post ID", newPost.size(), 1);
+
     }
 
     @Test
@@ -84,8 +185,8 @@ public class ArangoHandlerTest {
 //            Reply reply = replies.get(0);
 //            arangoWallHandler.deleteReply(reply);
 //            assertEquals("Size should be decremented by one", replies.size()-1 , arangoWallHandler.getReplies(commentID).size());
-//
-//        }
+
+     //   }
     }
 
     @Test
@@ -286,11 +387,11 @@ public class ArangoHandlerTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-//        dbSeed.deleteAllUsers();
-//        dbSeed.deleteAllPosts();
-//        dbSeed.deleteAllReplies();
-//        dbSeed.deleteAllComments();
-//        dbSeed.deleteAllLikes();
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
+        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
       }
 

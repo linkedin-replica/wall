@@ -71,19 +71,18 @@ public class DatabaseSeed {
         System.out.println("before loop");
         for(String text : lines){
             Post post = new Post(counter + "", "2", "3",
-                    "4", "5", text, timestamp,
-                    true, true, x, x,
-                    x, x, x, x, 7,
-                    6);
-//            newDoc = new BaseDocument();
-//            newDoc.setKey(post.getPostID());
-//            newDoc.addAttribute("post", post);
+                    "4", "5", text, "",
+                    "y", 455, "", "",
+                    "", 455, "", timestamp, true,
+                    true);
+
 
 
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             System.out.println("New post document insert with key = ");
-            Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostID(), Post.class);
+            Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostId(), Post.class);
             //System.out.println("post: " + retrievedDoc.getAuthorID());
+
             counter ++;
         }
     }
