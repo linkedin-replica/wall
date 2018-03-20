@@ -14,7 +14,7 @@ public class GetRepliesCommand extends Command{
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
         // call dbHandler to get results from db and add returned results to linkedHashMap
-        response.put("response", dbHandler.getReplies(request.get("commentId")));
+        response.put("response", dbHandler.getReplies(request.get("parentCommentId")));
         return response;
     }
 }

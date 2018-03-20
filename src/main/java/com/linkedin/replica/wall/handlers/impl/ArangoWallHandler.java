@@ -337,27 +337,13 @@ public class ArangoWallHandler implements DatabaseHandler {
     public List<Reply> getReplies(String commentId) {
         ArrayList<Reply> replies = new ArrayList<Reply>();
         try {
-            String query = "FOR r IN " + repliesCollection + " FILTER r.parentCommentId == " + commentId + " RETURN r";
+            String query = "FOR r IN " + repliesCollection + " FILTER r.parentCommentId == @parentCommentId RETURN r";
             Map<String, Object> bindVars = new MapBuilder().put("parentCommentId", commentId).get();
-            ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                    BaseDocument.class);
+            ArangoCursor<Reply> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                    Reply.class);
             cursor.forEachRemaining(replyDocument -> {
-                Reply reply;
-                String replyId = replyDocument.getKey();
-                String authorId = (String) replyDocument.getAttribute("authorId");
-                String parentPostId = (String) replyDocument.getAttribute("parentPostId");
-                String parentCommentId = (String) replyDocument.getAttribute("parentCommentId");
-                ArrayList<String> mentions = (ArrayList<String>) replyDocument.getAttribute("mentions");
-                Long likesCount = (Long) replyDocument.getAttribute("likesCount");
-                String text = (String) replyDocument.getAttribute("text");
-                Date timestamp = (Date) replyDocument.getAttribute("timestamp");
-                ArrayList<String> images = (ArrayList<String>) replyDocument.getAttribute("images");
-                ArrayList<String> urls = (ArrayList<String>) replyDocument.getAttribute("urls");
-
-
-                reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
-                replies.add(reply);
-                System.out.println("Key: " + replyDocument.getKey());
+                replies.add(replyDocument);
+                System.out.println("Key: " + replyDocument.getReplyId());
             });
         } catch (ArangoDBException e) {
             System.err.println("Failed to get replies. " + e.getMessage());
@@ -368,9 +354,12 @@ public class ArangoWallHandler implements DatabaseHandler {
     public Reply getReply(String replyId) {
         Reply reply = null;
         try {
-            reply = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
+            Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
                     Reply.class);
-//            System.out.println("Key: " + replyDocument.getReplyId());
+            reply = replyDocument;
+            if(reply!=null)
+                System.out.println("Key: " + replyDocument.getReplyId());
+
         } catch (ArangoDBException e) {
             System.err.println("Failed to get reply: replyId; " + e.getMessage());
         }
@@ -379,10 +368,8 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     public String addReply(Reply reply) {
         String response = "";
-        BaseDocument replyDocument = createReplyDocument(reply);
         try {
-            arangoDB.db(dbName).collection(repliesCollection).insertDocument(replyDocument);
-            System.out.println("Reply created");
+            arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             response = "Reply created";
         } catch (ArangoDBException e) {
             System.err.println("Failed to add reply. " + e.getMessage());
@@ -404,27 +391,11 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     }
 
-    public BaseDocument createReplyDocument(Reply reply) {
-        BaseDocument replyDocument = new BaseDocument();
-        replyDocument.setKey(reply.getReplyId());
-        replyDocument.addAttribute("authorId", reply.getAuthorId());
-        replyDocument.addAttribute("parentPostId", reply.getParentPostId());
-        replyDocument.addAttribute("parentCommentId", reply.getParentCommentId());
-        replyDocument.addAttribute("mentions", reply.getMentions());
-        replyDocument.addAttribute("likesCount", reply.getLikesCount());
-        replyDocument.addAttribute("text", reply.getText());
-        replyDocument.addAttribute("timestamp", reply.getTimestamp());
-        replyDocument.addAttribute("images", reply.getImages());
-        replyDocument.addAttribute("urls", reply.getUrls());
-        return replyDocument;
-
-    }
 
     public String editReply(Reply reply) {
         String response = "";
-        BaseDocument replyDocument = createReplyDocument(reply);
         try {
-            arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId(), replyDocument);
+            arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,reply);
         } catch (ArangoDBException e) {
             System.err.println("Failed to update reply. " + e.getMessage());
             response = "Failed to update reply. " + e.getMessage();
@@ -600,4 +571,19 @@ public class ArangoWallHandler implements DatabaseHandler {
         }
         return response;
     }
+
+    public void getTopPosts(){
+        try {
+            String query = "FOR p IN " + postsCollection + " FILTER p.parentCommentId == @commentId RETURN p";
+            Map<String, Object> bindVars = new MapBuilder().put("commentId", "4").get();
+            ArangoCursor<Reply> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                    Reply.class);
+            cursor.forEachRemaining(replyDocument -> {
+                System.out.println("Key: " + replyDocument.getReplyId());
+            });
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get top posts " + e.getMessage());
+        }
+    }
+
 }

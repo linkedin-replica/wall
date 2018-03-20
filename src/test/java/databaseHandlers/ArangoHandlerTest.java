@@ -2,6 +2,9 @@ package databaseHandlers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.arangodb.ArangoCursor;
@@ -13,7 +16,8 @@ import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.models.Comment;
-
+import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.services.WallService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,8 +35,8 @@ public class ArangoHandlerTest {
     private static String  commentsCollection;
     private static String likesCollection;
     private static String usersCollection;
+    private static String  repliesCollection;
     private ArrayList<UserProfile> insertedUsers;
-
 
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException {
@@ -47,12 +51,56 @@ public class ArangoHandlerTest {
         usersCollection = properties.getProperty("collections.users.name");
         arangoWallHandler = new ArangoWallHandler();
         commentsCollection = properties.getProperty("collections.comments.name");
+        repliesCollection = properties.getProperty("collections.replies.name");
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
+        dbSeed.deleteAllReplies();
         dbSeed.insertReplies();
         dbSeed.insertLikes();
         dbSeed.insertComments();
+    }
+
+    @Test
+    public void testAddReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+        ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
+        mentionsImagesUrls.add("Test");
+        String replyID = "112";
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2l,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        arangoWallHandler.addReply(reply);
+        Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyID,Reply.class);
+        System.out.println("reply doc " + replyDocument);
+        assertEquals("Reply ID should be", replyDocument.getReplyId() , "112");
+        assertEquals("Reply text should be", replyDocument.getText() , "You are so cute");
+    }
+
+    @Test
+    public void testDeleteReply(){
+        String commentID = "45";
+        List<Reply> replies = arangoWallHandler.getReplies(commentID);
+        if(replies!=null){
+            Reply reply = replies.get(0);
+            arangoWallHandler.deleteReply(reply);
+            assertEquals("Size should be decremented by one", replies.size()-1 , arangoWallHandler.getReplies(commentID).size());
+
+        }
+    }
+
+    @Test
+    public void testEditReplies() throws ParseException {
+        ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
+        mentionsImagesUrls.add("Test");
+        String replyID = "1";
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2l,"Some edited text",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        arangoWallHandler.editReply(reply);
+        Reply testReply = arangoWallHandler.getReply(replyID);
+        assertEquals("Texts should be the same", testReply.getText(), "Some edited text");
+
+
     }
     @Test
     public void testGetPostsLikes() {

@@ -22,7 +22,7 @@ public class DeleteReplyCommand extends Command{
 
 
         Reply reply;
-        DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         String replyId = request.get("replyId");
         String authorId = request.get("authorId");
         String parentPostId = request.get("parentPostId");
