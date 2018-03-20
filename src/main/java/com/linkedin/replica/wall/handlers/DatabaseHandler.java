@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.handlers;
 import com.linkedin.replica.wall.models.*;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,4 +132,8 @@ public interface DatabaseHandler {
     public String deleteLike(Like like);
 
 
+    /**
+     * returns top posts to be cached
+     */
+    void getTopPosts() throws ParseException;
 }
