@@ -1,5 +1,5 @@
 arangodb.user=root
-arangodb.password=
+arangodb.password=root
 arangodb.name=WallDb
 collections.posts.name=Posts
 collections.comments.name=Comments
