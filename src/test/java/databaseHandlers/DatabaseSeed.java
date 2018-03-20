@@ -30,7 +30,7 @@ public class DatabaseSeed {
     public DatabaseSeed() throws IOException, ClassNotFoundException {
         properties = new Properties();
         dbHandler = new ArangoWallHandler();
-        properties.load(new FileInputStream("db_config"));
+        properties.load(new FileInputStream("arango_config"));
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");

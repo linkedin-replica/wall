@@ -11,8 +11,8 @@ import com.linkedin.replica.wall.models.Reply;
 
 public class DeleteReplyCommand extends Command{
 
-    public DeleteReplyCommand() {
-        super();
+    public DeleteReplyCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute() throws ParseException {

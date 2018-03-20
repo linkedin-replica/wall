@@ -17,7 +17,6 @@ import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
-import com.linkedin.replica.wall.services.WallService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,11 +40,11 @@ public class ArangoHandlerTest {
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException {
         // startup SearchEngine
-        String[] args = {"db_config", "src/main/resources/command_config"};
+        String[] args = {"arango_config", "src/main/resources/command_config"};
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         arangoWallHandler = new ArangoWallHandler();
         properties = new Properties();
-        properties.load(new FileInputStream("db_config"));
+        properties.load(new FileInputStream("arango_config"));
         dbName = properties.getProperty("arangodb.name");
         likesCollection = properties.getProperty("collections.likes.name");
         usersCollection = properties.getProperty("collections.users.name");

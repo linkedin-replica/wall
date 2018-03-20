@@ -14,9 +14,9 @@ public class EditPostCommand extends Command{
     String [] images;
     String [] mentions;
     String [] urls;
-    public EditPostCommand() {
 
-        super();
+    public EditPostCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute()  {

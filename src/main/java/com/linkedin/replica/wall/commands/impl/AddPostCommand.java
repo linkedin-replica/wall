@@ -14,9 +14,8 @@ public class AddPostCommand extends Command{
     String [] images;
     String [] mentions;
     String [] urls;
-    public AddPostCommand() {
-
-        super();
+    public AddPostCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute()  {

@@ -16,7 +16,7 @@ public class Main {
                     + "2- command_config file path"+" 3-message_config file path");
 
         // create singleton instance of Configuration class that will hold configuration files paths
-        Configuration.getInstance(args[0], args[1], args[2]);
+        Configuration.init(args[0], args[1], args[2]);
 
         // create singleton instance of DatabaseConnection class that is responsible for initiating connections
         // with databases
@@ -32,4 +32,5 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, TimeoutException {
         new Main().start(args);
     }
+
 }

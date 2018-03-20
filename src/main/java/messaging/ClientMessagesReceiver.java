@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
             connection = factory.newConnection();
             channel = connection.createChannel();
             properties = new Properties();
-            properties.load(new FileInputStream("../resources/app.config"));
+            properties.load(new FileInputStream("app_config"));
             QUEUE_NAME = properties.getProperty("rabbitmq.queue.name");
             RABBIT_MQ_IP = properties.getProperty("rabbitmq.ip");
             wallService = new WallService();

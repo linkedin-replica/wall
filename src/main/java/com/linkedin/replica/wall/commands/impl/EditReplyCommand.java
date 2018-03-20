@@ -11,8 +11,8 @@ import com.linkedin.replica.wall.models.Reply;
 
 public class EditReplyCommand extends Command{
 
-    public EditReplyCommand() {
-        super();
+    public EditReplyCommand(HashMap<String, String> args) {
+        super(args);
     }
 
     public LinkedHashMap<String, Object> execute() throws ParseException {
