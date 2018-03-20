@@ -85,6 +85,11 @@ public class RedisWallHandler implements DatabaseHandler {
         return null;
     }
 
+    @Override
+    public Reply getReply(String replyId) {
+        return null;
+    }
+
     public String addReply(Reply reply) {
         return null;
     }

@@ -17,9 +17,4 @@ getPosts.command=GetPostsCommand
 addReply.command=AddReplyCommand
 deleteReply.command=DeleteReplyCommand
 editReply.command=EditReplyCommand
-<<<<<<< HEAD
 getReplies.command=GetRepliesCommand
-=======
-getReplies.command=GetRepliesCommand
-
->>>>>>> c7c62a2f390fb870c07f1b16eb385a90d29eeac9

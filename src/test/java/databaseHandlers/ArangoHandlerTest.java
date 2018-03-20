@@ -55,7 +55,6 @@ public class ArangoHandlerTest {
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
-        dbSeed.deleteAllReplies();
         dbSeed.insertReplies();
         dbSeed.insertLikes();
         dbSeed.insertComments();
