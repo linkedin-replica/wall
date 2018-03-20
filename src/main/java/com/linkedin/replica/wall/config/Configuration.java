@@ -37,8 +37,6 @@ public class Configuration {
     public Class getCommandClass(String commandName) throws ClassNotFoundException {
         String commandsPackageName = Command.class.getPackage().getName() + ".impl";
         String commandClassPath = commandsPackageName + '.' + commandConfig.get(commandName + ".command");
-        System.out.println(commandConfig.toString());
-        System.out.println("xxx" + commandClassPath);
         return Class.forName(commandClassPath);
     }
 

@@ -58,8 +58,8 @@ public class DatabaseConnection {
      */
     private ArangoDB instantiateArrangoDB(){
         return new ArangoDB.Builder()
-                .user( config.getArangoConfig("arangodb.user"))
-                .password( config.getArangoConfig("arangodb.password"))
+                .user(config.getArangoConfig("arangodb.user"))
+                .password(config.getArangoConfig("arangodb.password"))
                 .build();
     }
 

@@ -9,6 +9,7 @@ import java.util.*;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
+import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
@@ -29,7 +30,7 @@ public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
     private static DatabaseHandler arangoWallHandler;
     private static ArangoDB arangoDB;
-    private static Properties properties;
+    static Configuration config;
     private static String dbName;
     private static String  commentsCollection;
     private static String likesCollection;
@@ -40,17 +41,18 @@ public class ArangoHandlerTest {
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException {
         // startup SearchEngine
-        String[] args = {"arango_config", "src/main/resources/command_config"};
+        String rootFolder = "src/main/resources/";
+        Configuration.init(rootFolder + "app_config",
+                rootFolder + "arango_config",
+                rootFolder + "command_config");
+        config = Configuration.getInstance();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         arangoWallHandler = new ArangoWallHandler();
-        properties = new Properties();
-        properties.load(new FileInputStream("arango_config"));
-        dbName = properties.getProperty("arangodb.name");
-        likesCollection = properties.getProperty("collections.likes.name");
-        usersCollection = properties.getProperty("collections.users.name");
-        arangoWallHandler = new ArangoWallHandler();
-        commentsCollection = properties.getProperty("collections.comments.name");
-        repliesCollection = properties.getProperty("collections.replies.name");
+        dbName = Configuration.getInstance().getArangoConfig("arangodb.name");
+        likesCollection = Configuration.getInstance().getArangoConfig("collections.likes.name");
+        usersCollection = Configuration.getInstance().getArangoConfig("collections.users.name");
+        commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
+        repliesCollection = Configuration.getInstance().getArangoConfig("collections.replies.name");
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();

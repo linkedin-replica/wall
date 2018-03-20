@@ -17,8 +17,10 @@ import com.linkedin.replica.wall.config.DatabaseConnection;
 import java.util.HashMap;
 import java.util.List;
 
+import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.services.WallService;
+import databaseHandlers.DatabaseSeed;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,6 +32,8 @@ public class WallTest {
     private static WallService wallService;
     private static ArangoDatabase arangoDB;
     static Configuration config;
+    private static DatabaseSeed dbSeed;
+
 
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException {
@@ -42,6 +46,12 @@ public class WallTest {
         arangoDB = DatabaseConnection.getInstance().getArangodb().db(
                 Configuration.getInstance().getArangoConfig("db.name")
         );
+        dbSeed = new DatabaseSeed();
+        dbSeed.insertUsers();
+        dbSeed.insertPosts();
+        dbSeed.insertReplies();
+        dbSeed.insertLikes();
+        dbSeed.insertComments();
     }
 
     @Test
@@ -123,39 +133,16 @@ public class WallTest {
         assertEquals("Size should decrement by one",replies.size()-1,testReplies.size());
     }
 
-
-
-
-//    @BeforeClass
-//    public static void setup() throws ClassNotFoundException, IOException, SQLException, TimeoutException {
-//        // startup SearchEngine
-//        String[] args = {"arango_config", "src/main/resources/command_config"};
-//        //Main.start(args);
-//        service = new WallService();
-//        arangoDB = DatabaseConnection.getInstance().getArangodb();
-//        arangoWallHandler = new ArangoWallHandler();
-//        properties = new Properties();
-//        properties.load(new FileInputStream("arango_config"));
-//        dbName = properties.getProperty("arangodb.name");
-//        likesCollection = properties.getProperty("collections.likes.name");
-//        commentsCollection = properties.getProperty("collections.comments.name");
-//        dbSeed = new DatabaseSeed();
-////        dbSeed.insertUsers();
-////        dbSeed.insertPosts();
-//
-//
-//    }
-
-//    public Comment getComment(String commentId) {
-//        Comment comment = null;
-//        try {
-//            comment = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentId,
-//                    Comment.class);
-//        } catch (ArangoDBException e) {
-//            System.err.println("Failed to get comment: commentId; " + e.getMessage());
-//        }
-//        return comment;
-//    }
+    public Comment getComment(String commentId) {
+        Comment comment = null;
+        try {
+            comment = arangoDB.collection(commentsCollection).getDocument(commentId,
+                    Comment.class);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get comment: commentId; " + e.getMessage());
+        }
+        return comment;
+    }
 //
 //    public List<Comment> getComments(String postId) {
 //        ArrayList<Comment> comments = new ArrayList<Comment>();
@@ -262,8 +249,13 @@ public class WallTest {
 //        }
 
     @AfterClass
-    public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException, SQLException {
-            DatabaseConnection.getInstance().closeConnections();
+    public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
+        dbSeed.deleteAllLikes();
+        DatabaseConnection.getInstance().closeConnections();
           //  Main.shutdown();
     }
 
