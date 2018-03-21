@@ -86,6 +86,7 @@ public class DatabaseSeed {
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             insertedPosts.add(post);
             Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostId(), Post.class);
+            System.out.println(retrievedDoc +" YAAAARAAAA333");
             counter ++;
         }
     }

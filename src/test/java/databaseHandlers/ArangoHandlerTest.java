@@ -213,63 +213,77 @@ public class ArangoHandlerTest {
 
     }
 
+    /**
+     * test get post likes.
+     */
     @Test
     public void testGetPostsLikes() {
         String postId = insertedPost.getPostId();
-        boolean equalsPostId = false;
+        boolean equalsPostId = true;
         List<Like> postLikes = arangoWallHandler.getPostLikes(postId);
         for(Like like: postLikes) {
-            if(like.getLikedPostId().equals(postId))
-                equalsPostId = true;
-            assertEquals("Incorrect like retrieved as the likedPostId does not match the postId.", true, equalsPostId);
-            equalsPostId = false;
-
+            if(!like.getLikedPostId().equals(postId))
+                equalsPostId = false;
         }
+        assertEquals("Incorrect like retrieved as the likedPostId does not match the postId.", true, equalsPostId);
+
     }
+
+    /**
+     * test get comment likes arango function.
+     */
     @Test
     public void testGetCommentsLikes() {
         String commentId = insertedComment.getCommentId();
-        boolean equalsCommentId = false;
+        boolean equalsCommentId = true;
         List<Like> commentLikes = arangoWallHandler.getCommentLikes(commentId);
         for(Like like: commentLikes) {
-            if(like.getLikedCommentId().equals(commentId))
-                equalsCommentId = true;
-            assertEquals("Incorrect like retrieved as the likedCommentId does not match the commentId.", true, equalsCommentId);
-            equalsCommentId = false;
-
+            if(!like.getLikedCommentId().equals(commentId))
+                equalsCommentId = false;
         }
+        assertEquals("Incorrect like retrieved as the likedCommentId does not match the commentId.", true, equalsCommentId);
+
     }
+
+    /**
+     * test get replies likes arango function.
+     */
     @Test
     public void testGetRepliesLikes(){
         String replyId = insertedReply.getReplyId();
-        boolean equalsReplyId = false;
+        boolean equalsReplyId = true;
         List<Like> replyLikes = arangoWallHandler.getReplyLikes(replyId);
         for(Like like: replyLikes) {
-            if(like.getLikedReplyId().equals(replyId))
-                equalsReplyId = true;
-            assertEquals("Incorrect like retrieved as the likedReplyId does not match the replyId.", true, equalsReplyId);
-            equalsReplyId = false;
+            if(!like.getLikedReplyId().equals(replyId))
+                equalsReplyId = false;
         }
+        assertEquals("Incorrect like retrieved as the likedReplyId does not match the replyId.", true, equalsReplyId);
+
     }
+
+    /**
+     * test add likes arango handlers.
+     */
     @Test
     public void testAddLikes() {
         Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
-        Like like = new Like( insertedUser.getUserId(), insertedPost.getPostId(), null, null, insertedUser.getFirstName(), "headLine", "urlX");
+        Like like = new Like(insertedUser.getUserId(), insertedPost.getPostId(), null, null, insertedUser.getFirstName(), "headLine", "urlX");
         arangoWallHandler.addLike(like);
         Long newLikesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Long expectedCollectionSize = likesCollectionSize + 1;
         Like retrievedLike = arangoDB.db(dbName).collection(likesCollection).getDocument(like.getLikeId(),Like.class);
         assertEquals("The size of the likesCollection should have increased by one", expectedCollectionSize, newLikesCollectionSize);
-        assertEquals("The likerId should match the one in the like inserted", "100", retrievedLike.getLikerId());
-        assertEquals("The likedPostId should match the one in the like inserted", "200", retrievedLike.getLikedPostId());
+        assertEquals("The likerId should match the one in the like inserted", insertedUser.getUserId(), retrievedLike.getLikerId());
+        assertEquals("The likedPostId should match the one in the like inserted", insertedPost.getPostId(), retrievedLike.getLikedPostId());
         assertEquals("The likedCommentId should match the one in the like inserted", null, retrievedLike.getLikedCommentId());
         assertEquals("The likedReplyId should match the one in the like inserted", null, retrievedLike.getLikedReplyId());
-        assertEquals("The userName should match the one in the like inserted", "name", retrievedLike.getUserName());
+        assertEquals("The userName should match the one in the like inserted", insertedUser.getFirstName(), retrievedLike.getUserName());
         assertEquals("The headLine should match the one in the like inserted", "headLine", retrievedLike.getHeadLine());
         assertEquals("The imageUrl should match the one in the like inserted", "urlX", retrievedLike.getImageUrl());
 
     }
-    @Test public void testDeleteLikes() {
+    @Test
+    public void testDeleteLikes() {
         String query = "FOR l in " + likesCollection + " RETURN l";
         ArangoCursor<Like> likesCursor = arangoDB.db(dbName).query(query, new HashMap<String, Object>(), null, Like.class);
         ArrayList<Like> allLikes = new ArrayList<Like>(likesCursor.asListRemaining());
@@ -387,6 +401,9 @@ public class ArangoHandlerTest {
 
     }
 
+    /**
+     * test get comments.
+     */
     @Test
     public void testGetComments(){
         List<Comment> newComments = arangoWallHandler.getComments(insertedComment.getParentPostId());
@@ -394,6 +411,9 @@ public class ArangoHandlerTest {
 
     }
 
+    /**
+     * test get comment.
+     */
     @Test
     public void testGetComment() {
         Comment newComment = getComment(insertedComment.getCommentId());

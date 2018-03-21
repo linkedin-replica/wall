@@ -298,10 +298,9 @@ public class ArangoWallHandler implements DatabaseHandler {
                     Reply.class);
             cursor.forEachRemaining(replyDocument -> {
                 replies.add(replyDocument);
-                System.out.println("Key: " + replyDocument.getReplyId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get replies. " + e.getMessage());
+            throw e;
         }
         return replies;
     }
@@ -381,6 +380,11 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     }
 
+    /**
+     * get specific like from like collection.
+     * @param likeId
+     * @return
+     */
     public Like getLike(String likeId) {
         Like like = null;
         try {
@@ -392,6 +396,11 @@ public class ArangoWallHandler implements DatabaseHandler {
         return like;
     }
 
+    /**
+     * get likes on specific likes.
+     * @param postId
+     * @return
+     */
     public List<Like> getPostLikes(String postId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
@@ -401,15 +410,19 @@ public class ArangoWallHandler implements DatabaseHandler {
                     Like.class);
             cursor.forEachRemaining(likeDocument -> {
                 likes.add(likeDocument);
-                System.out.println("Key: " + likeDocument.getLikeId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get posts' likes." + e.getMessage());
+            throw e;
         }
         return likes;
 
     }
 
+    /**
+     * function to get likes on comment.
+     * @param commentId
+     * @return
+     */
     public List<Like> getCommentLikes(String commentId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
@@ -419,14 +432,18 @@ public class ArangoWallHandler implements DatabaseHandler {
                     Like.class);
             cursor.forEachRemaining(likeDocument -> {
                 likes.add(likeDocument);
-                System.out.println("Key: " + likeDocument.getLikeId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get comments' likes." + e.getMessage());
+            throw e;
         }
         return likes;
     }
 
+    /**
+     * function to get likes on specific reply.
+     * @param replyId
+     * @return
+     */
     public List<Like> getReplyLikes(String replyId) {
         ArrayList<Like> likes = new ArrayList<Like>();
         try {
@@ -436,64 +453,74 @@ public class ArangoWallHandler implements DatabaseHandler {
                     Like.class);
             cursor.forEachRemaining(likeDocument -> {
                 likes.add(likeDocument);
-                System.out.println("Key: " + likeDocument.getLikeId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get replies' likes." + e.getMessage());
+            throw e;
         }
         return likes;
     }
 
+    /**
+     * function to add like on post/ like/ reply.
+     * @param like
+     * @return
+     */
     public String addLike(Like like) {
         String response = "";
-        try {
-            DocumentCreateEntity likeDoc =  arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
-            System.out.println("Like added");
-            response = "Like added" + "," + likeDoc.getKey();
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to add a like. " + e.getMessage());
-            response = "Failed to add a like. " + e.getMessage();
-        }
-
-        if(like.getLikedPostId() != null){
-            Post post = getPost(like.getLikedPostId());
-            if(post !=null){
-                post.setLikesCount(post.getLikesCount() + 1);
-                editPost(post);
-            }
-            else {
-                response = "Failed to update post's like count. ";
-            }
-        } else if (like.getLikedCommentId() != null) {
-            Comment comment = getComment(like.getLikedCommentId());
-            if (comment != null) {
-                comment.setLikesCount(comment.getLikesCount() + 1);
-                editComment(comment);
-            } else {
-                response = "Failed to update comment's like count. ";
+        String commentId = like.getLikedCommentId();
+        String replyId = like.getLikedReplyId();
+        String postId = like.getLikedPostId();
+        if((postId!= null && getPost(postId) != null) || (commentId != null && getComment(commentId) != null) || (replyId!= null && getReply(replyId) != null)) {
+            try {
+                DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
+                response = "Like added" + "," + likeDoc.getKey();
+            } catch (ArangoDBException e) {
+                response = "Failed to add a like. " + e.getMessage();
             }
 
-        } else if (like.getLikedReplyId() != null) {
-            Reply reply = getReply(like.getLikedReplyId());
-            if (reply != null) {
-                reply.setLikesCount(reply.getLikesCount() + 1);
-                editReply(reply);
-            } else {
-                response = "Failed to update reply's like count. ";
-            }
+            if (like.getLikedPostId() != null) {
+                Post post = getPost(like.getLikedPostId());
+                if (post != null) {
+                    post.setLikesCount(post.getLikesCount() + 1);
+                    editPost(post);
+                } else {
+                    response = "Failed to update post's like count. ";
+                }
+            } else if (like.getLikedCommentId() != null) {
+                Comment comment = getComment(like.getLikedCommentId());
+                if (comment != null) {
+                    comment.setLikesCount(comment.getLikesCount() + 1);
+                    editComment(comment);
+                } else {
+                    response = "Failed to update comment's like count. ";
+                }
 
+            } else if (like.getLikedReplyId() != null) {
+                Reply reply = getReply(like.getLikedReplyId());
+                if (reply != null) {
+                    reply.setLikesCount(reply.getLikesCount() + 1);
+                    editReply(reply);
+                } else {
+                    response = "Failed to update reply's like count. ";
+                }
+
+            }
         }
         return response;
 
 
     }
 
+    /**
+     * function to unlike post/ comment/ reply.
+     * @param like
+     * @return
+     */
     public String deleteLike(Like like) {
         String response = "";
         try {
             arangoDB.db(dbName).collection(likesCollection).deleteDocument(like.getLikeId());
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete a like. " + e.getMessage());
             response = "Failed to delete a like. " + e.getMessage();
         }
         if(like.getLikedPostId() != null){
@@ -527,13 +554,16 @@ public class ArangoWallHandler implements DatabaseHandler {
         return response;
     }
 
+    /**
+     * function to get the top posts.
+     * @throws ParseException
+     */
     public void getTopPosts() throws ParseException {
         try {
             String query = "FOR p IN " + postsCollection + " RETURN p";
             ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, null, null,
                     Post.class);
             cursor.forEachRemaining(postDocument -> {
-                System.out.println("Key: " + postDocument.getTimeStamp());
             });
         } catch (ArangoDBException e) {
             System.err.println("Failed to get top posts " + e.getMessage());
@@ -545,7 +575,6 @@ public class ArangoWallHandler implements DatabaseHandler {
         Date postDate = dateFormat.parse("Mon Mar 19 2018 01:00 PM");
         Date currentDate = new Date();
         float diffInDays = (currentDate.getTime()-postDate.getTime())/(1000*60*60*24);
-        System.out.println("date is " + diffInDays);
     }
 
 }
