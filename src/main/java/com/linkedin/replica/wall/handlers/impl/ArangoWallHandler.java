@@ -17,6 +17,7 @@ import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.models.UserProfile;
+import javafx.geometry.Pos;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -250,7 +251,8 @@ public class ArangoWallHandler implements DatabaseHandler {
      */
     public String addComment(Comment comment) {
         String response = "";
-        if(comment.getParentPostId() != null && getPost(comment.getParentPostId()) != null) {
+        String postId = comment.getParentPostId();
+        if(postId != null && getPost(postId) != null) {
 
             try {
                 DocumentCreateEntity commentDoc = arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
@@ -345,49 +347,60 @@ public class ArangoWallHandler implements DatabaseHandler {
         return reply;
     }
 
+    /**
+     * function to add reply on comment.
+     * @param reply
+     * @return
+     */
     public String addReply(Reply reply) {
         String response = "";
-        try {
-            arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
-            response = "Reply created";
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to add reply. " + e.getMessage());
-            response = "Failed to add reply. " + e.getMessage();
-        }
-        Comment comment = getComment(reply.getParentCommentId());
-        if (comment != null) {
-            comment.setRepliesCount(comment.getRepliesCount() + 1);
-            editComment(comment);
-        } else {
-            response = "Failed to update comment's reply count. ";
-        }
-        //Todo:
-        // 1. get post: call getPost()
-        // 2. update post object: add 1 to commentsCount
-        // 3. update post document: call editPosts()
+        String postId = reply.getParentPostId();
+        String commentId = reply.getParentCommentId();
+        if((postId != null && getPost(postId) != null) && (commentId != null && getComment(commentId ) != null)) {
+            try {
+                arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
+                response = "Reply created";
+            } catch (ArangoDBException e) {
+                System.err.println("Failed to add reply. " + e.getMessage());
+                response = "Failed to add reply. " + e.getMessage();
+            }
+            Comment comment = getComment(reply.getParentCommentId());
+                comment.setRepliesCount(comment.getRepliesCount() + 1);
+                editComment(comment);
 
+            Post post = getPost(reply.getParentPostId());
+            post.setCommentsCount(post.getCommentsCount() + 1);
+            editPost(post);
+        }
         return response;
 
     }
 
-
+    /**
+     * function to edit specific reply.
+     * @param reply
+     * @return
+     */
     public String editReply(Reply reply) {
         String response = "";
         try {
             arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,reply);
         } catch (ArangoDBException e) {
-            System.err.println("Failed to update reply. " + e.getMessage());
             response = "Failed to update reply. " + e.getMessage();
         }
         return response;
     }
 
+    /**
+     * function to delete specific reply.
+     * @param reply
+     * @return
+     */
     public String deleteReply(Reply reply) {
         String response = "";
         try {
             arangoDB.db(dbName).collection(repliesCollection).deleteDocument(reply.getReplyId());
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete reply. " + e.getMessage());
             response = "Failed to delete reply. " + e.getMessage();
         }
         Comment comment = getComment(reply.getParentCommentId());
@@ -397,10 +410,14 @@ public class ArangoWallHandler implements DatabaseHandler {
         } else {
             response = "Failed to update comment's reply count. ";
         }
-        //Todo:
-        // 1. get post: call getPost()
-        // 2. update post object: add 1 to commentsCount
-        // 3. update post document: call editPosts()
+        Post post = getPost(reply.getParentPostId());
+        if(post != null){
+            post.setCommentsCount(post.getCommentsCount() + 1);
+            editPost(post);
+        }else
+        {
+            response = "failed to update post's comment count";
+        }
         return response;
 
     }

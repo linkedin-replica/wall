@@ -194,6 +194,28 @@ public class ArangoHandlerTest {
         assertEquals("Expected to have 1 post with that post ID", newPost.size(), 1);
     }
 
+    /**
+     * function to get specefic reply from database.
+     * @param replyId
+     * @return
+     */
+    public Reply getReply(String replyId) {
+        Reply reply = null;
+        try {
+            reply = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
+                    Reply.class);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get reply: replyId; " + e.getMessage());
+        }
+        return reply;
+    }
+    /**
+     *
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws ParseException
+     * @throws IllegalAccessException
+     */
     @Test
     public void testAddReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
@@ -210,17 +232,15 @@ public class ArangoHandlerTest {
 
     @Test
     public void testDeleteReply() throws ParseException {
-        arangoWallHandler.getTopPosts();
-//        String commentID = "45";
-//        List<Reply> replies = arangoWallHandler.getReplies(commentID);
-//        if(replies!=null){
-//            Reply reply = replies.get(0);
-//            arangoWallHandler.deleteReply(reply);
-//            assertEquals("Size should be decremented by one", replies.size()-1 , arangoWallHandler.getReplies(commentID).size());
-
-        //   }
+        arangoWallHandler.deleteReply(insertedReply);
+        Reply newReply = getReply(insertedReply.getReplyId());
+        assertEquals("Expected to not have that comment", newReply, null);
     }
 
+    /**
+     * test edit reply function.
+     * @throws ParseException
+     */
     @Test
     public void testEditReplies() throws ParseException {
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
@@ -382,6 +402,12 @@ public class ArangoHandlerTest {
 
 
     }
+
+    /**
+     * function to get specific comment from database.
+     * @param commentId
+     * @return
+     */
     public Comment getComment(String commentId) {
         Comment comment = null;
         try {
