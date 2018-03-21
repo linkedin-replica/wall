@@ -34,7 +34,7 @@ public class DeleteReplyCommand extends Command{
         ArrayList<String> images = new ArrayList<String>(Arrays.asList(request.get("images").split(",")));
         ArrayList<String> urls = new ArrayList<String>(Arrays.asList(request.get("urls").split(",")));
 
-        reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
+        reply = new Reply(authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
         response.put("response", dbHandler.deleteReply(reply));
         return response;
     }

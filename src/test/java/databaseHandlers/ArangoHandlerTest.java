@@ -191,7 +191,7 @@ public class ArangoHandlerTest {
     }
 
     /**
-     * function to get specefic reply from database.
+     * function to get specific reply from database.
      * @param replyId
      * @return
      */
@@ -206,23 +206,17 @@ public class ArangoHandlerTest {
         return reply;
     }
     /**
-     *
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
      * @throws ParseException
-     * @throws IllegalAccessException
      */
     @Test
-    public void testAddReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+    public void testAddReply() throws ParseException{
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
-        String replyID = "replyId";
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-        Reply reply = new Reply(replyID,insertedUser.getUserId(),insertedPost.getPostId(),insertedComment.getCommentId(),mentionsImagesUrls,2l,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        Reply reply = new Reply(insertedUser.getUserId(),insertedPost.getPostId(),insertedComment.getCommentId(),mentionsImagesUrls,2l,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
         arangoWallHandler.addReply(reply);
-        Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyID,Reply.class);
-        assertEquals("Reply ID should be", replyDocument.getReplyId() , "replyId");
+        Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(),Reply.class);
         assertEquals("Reply text should be", replyDocument.getText() , "You are so cute");
     }
 
@@ -244,11 +238,11 @@ public class ArangoHandlerTest {
         String replyID = insertedReply.getReplyId();
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-        Reply reply = new Reply(replyID,insertedUser.getUserId(),insertedPost.getPostId(),insertedComment.getCommentId(),mentionsImagesUrls,2l,"Some edited text",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        Reply reply = insertedReply;
+        reply.setText("Some edited text");
         arangoWallHandler.editReply(reply);
         Reply testReply = arangoWallHandler.getReply(replyID);
         assertEquals("Texts should be the same", testReply.getText(), "Some edited text");
-
     }
 
     /**

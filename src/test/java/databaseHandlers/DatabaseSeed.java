@@ -135,7 +135,7 @@ public class DatabaseSeed {
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
-            Reply reply = new Reply(counter + "", "3", "1", "45", x, 45L, text, date, x, x);
+            Reply reply = new Reply("3", "1", "45", x, 45L, text, date, x, x);
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             insertedReplies.add(reply);
             BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);

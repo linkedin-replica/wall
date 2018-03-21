@@ -33,7 +33,7 @@ public class EditReplyCommand extends Command{
         ArrayList<String> urls = new ArrayList<String>(Arrays.asList(request.get("urls").split(",")));
 
 
-        reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
+        reply = new Reply(authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
         response.put("response", dbHandler.editReply(reply));
         return response;
     }
