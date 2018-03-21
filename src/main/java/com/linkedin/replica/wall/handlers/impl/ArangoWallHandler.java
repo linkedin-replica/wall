@@ -116,6 +116,11 @@ public class ArangoWallHandler implements DatabaseHandler {
 
     }
 
+    /**
+     * function to get posts of specific user.
+     * @param userID
+     * @return
+     */
     public List<Post> getPosts(String userID) {
         ArrayList<Post> posts = new ArrayList<Post>();
         try {
@@ -126,7 +131,6 @@ public class ArangoWallHandler implements DatabaseHandler {
             cursor.forEachRemaining(postDocument -> {
 
                 posts.add(postDocument);
-                System.out.println("Key: " + postDocument.getPostId());
             });
         } catch (ArangoDBException e) {
             System.err.println("Failed to get posts." + e.getMessage());
@@ -134,6 +138,11 @@ public class ArangoWallHandler implements DatabaseHandler {
         return posts;
     }
 
+    /**
+     * function to get specific post in database.
+     * @param postId
+     * @return
+     */
     public Post getPost(String postId) {
         Post post = null;
         try {
@@ -145,42 +154,51 @@ public class ArangoWallHandler implements DatabaseHandler {
         return post;
     }
 
+    /**
+     * function to add post in database.
+     * @param post
+     * @return
+     */
     public String addPost(Post post) {
             String response = "";
             try {
                 DocumentCreateEntity addDoc =  arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
-                System.out.println("Post Created");
                 response = "Post Created";
             }catch (ArangoDBException e){
-                System.err.println("Failed to add Post " + e.getMessage());
                 response = "Failed to add Post " + e.getMessage();
             }
 
         return response;
     }
 
+    /**
+     * function to edit specific post in the database.
+     * @param post
+     * @return
+     */
     public String editPost(Post post) {
         String response = "";
         try{
-            DocumentUpdateEntity editPost =  arangoDB.db(dbName).collection(postsCollection).updateDocument(post.getPostId() , post);
-            System.out.println("Post Updated");
+            arangoDB.db(dbName).collection(postsCollection).updateDocument(post.getPostId() , post);
             response = "Post Updated";
         } catch (ArangoDBException e){
-            System.err.println("Failed to Update Post " + e.getMessage());
             response = "Failed to Update Post " + e.getMessage();
         }
 
         return response;
     }
 
+    /**
+     * function to delete specific post from database.
+     * @param post
+     * @return
+     */
     public String deletePost(Post post) {
         String response;
         try {
             arangoDB.db(dbName).collection(postsCollection).deleteDocument(post.getPostId());
-            System.out.println("Post Deleted");
             response = "Post Deleted";
         } catch (ArangoDBException e){
-            System.err.println("Failed to Delete Post " + e.getMessage());
             response = "Failed to Delete Post " + e.getMessage();
         }
 
@@ -188,8 +206,11 @@ public class ArangoWallHandler implements DatabaseHandler {
     }
 
 
-
-
+    /**
+     * function to get list of comments on specific post.
+     * @param postId
+     * @return
+     */
     public List<Comment> getComments(String postId) {
         ArrayList<Comment> comments = new ArrayList<Comment>();
         try {
@@ -199,14 +220,18 @@ public class ArangoWallHandler implements DatabaseHandler {
                     Comment.class);
             cursor.forEachRemaining(commentDocument -> {
                 comments.add(commentDocument);
-                System.out.println("Key: " + commentDocument.getCommentId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get posts' comments." + e.getMessage());
+            throw e;
         }
         return comments;
     }
 
+    /**
+     * function to get specifc comment.
+     * @param commentId
+     * @return
+     */
     public Comment getComment(String commentId) {
         Comment comment = null;
         try {

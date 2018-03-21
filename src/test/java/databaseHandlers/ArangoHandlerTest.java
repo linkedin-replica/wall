@@ -85,14 +85,17 @@ public class ArangoHandlerTest {
         insertedUser = dbSeed.getInsertedUsers().get(0);
     }
 
-
+    /**
+     * adding post in database.
+     * @param post
+     * @return
+     */
     public String addPost(Post post) {
         String response = "";
         try {
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             response = "Post Created";
         }catch (ArangoDBException e){
-            System.err.println("Failed to add Post " + e.getMessage());
             response = "Failed to add Post " + e.getMessage();
         }
 
@@ -100,7 +103,11 @@ public class ArangoHandlerTest {
     }
 
 
-
+    /**
+     * return specific post from database.
+     * @param postId
+     * @return
+     */
    public Post getPosts(String postId){
 
         Post post = null;
@@ -116,6 +123,10 @@ public class ArangoHandlerTest {
         return post;
    }
 
+    /**
+     *
+     * @throws ParseException
+     */
    @Test
    public void testAddPost() throws ParseException {
 
@@ -132,6 +143,10 @@ public class ArangoHandlerTest {
 
    }
 
+    /**
+     * test of editing post arango handler.
+     * @throws ParseException
+     */
    @Test
    public void testEditPost() throws ParseException {
 
@@ -146,6 +161,10 @@ public class ArangoHandlerTest {
 
    }
 
+    /**
+     * function to test delete post arango function.
+     * @throws ParseException
+     */
    @Test
    public void testDeletePost() throws ParseException {
 
@@ -159,7 +178,10 @@ public class ArangoHandlerTest {
        assertEquals("Expected to have a certain post in database", newPost, null);
    }
 
-
+    /**
+     * testing getPosts arango function.
+     * @throws ParseException
+     */
     @Test
     public void testGetPosts() throws ParseException {
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
@@ -262,7 +284,7 @@ public class ArangoHandlerTest {
     }
 
     /**
-     * test add likes arango handlers.
+     * test add likes arango handler.
      */
     @Test
     public void testAddLikes() {
@@ -282,6 +304,10 @@ public class ArangoHandlerTest {
         assertEquals("The imageUrl should match the one in the like inserted", "urlX", retrievedLike.getImageUrl());
 
     }
+
+    /**
+     * test delete likes arango handler.
+     */
     @Test
     public void testDeleteLikes() {
         String query = "FOR l in " + likesCollection + " RETURN l";
