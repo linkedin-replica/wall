@@ -30,7 +30,7 @@ public class DeleteCommentCommand extends Command{
         ArrayList<String> mentions = new ArrayList<String>(Arrays.asList(request.get("mentions").split(",")));
         String text = request.get("text");
         String timeStamp = request.get("timeStamp");
-        comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
+        comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
 
         // call dbHandler to get results from db and add returned results to linkedHashMap
         response.put("response", dbHandler.deleteComment(comment));

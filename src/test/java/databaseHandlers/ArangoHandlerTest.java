@@ -419,9 +419,9 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testAddComment(){
-        Comment comment  = new Comment(insertedComment.getCommentId(),insertedUser.getUserId(),insertedPost.getPostId(),12,22,null,null,null,"comment Text","time Stamp");
+        Comment comment  = new Comment(insertedUser.getUserId(),insertedPost.getPostId(),12,22,null,null,null,"comment Text","time Stamp");
         arangoWallHandler.addComment(comment);
-        Comment newComment = getComment(insertedComment.getCommentId());
+        Comment newComment = getComment(comment.getCommentId());
         assertEquals("Expected to have a certain comment in database", newComment.getParentPostId(), insertedPost.getPostId());
 
     }
@@ -431,7 +431,8 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testEditComment(){
-        Comment updatedComment  = new Comment(insertedComment.getCommentId(),insertedUser.getUserId(),dbSeed.getInsertedPosts().get(1).getPostId(),12,22,null,null,null,"comment Text","time Stamp");
+        Comment updatedComment  = insertedComment;
+        updatedComment.setParentPostId(dbSeed.getInsertedPosts().get(1).getPostId());
         arangoWallHandler.editComment(updatedComment);
         Comment newComment = getComment(insertedComment.getCommentId());
         assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), dbSeed.getInsertedPosts().get(1).getPostId());

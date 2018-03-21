@@ -19,9 +19,8 @@ public class Comment {
 
         }
 
-        public Comment(String commentId,String authorId,String parentPostId, int likesCount,int repliesCount, ArrayList<String> images,ArrayList<String> urls,ArrayList<String> mentions, String text,String timeStamp){
+        public Comment(String authorId,String parentPostId, int likesCount,int repliesCount, ArrayList<String> images,ArrayList<String> urls,ArrayList<String> mentions, String text,String timeStamp){
 
-            this.commentId = commentId;
             this.authorId = authorId;
             this.parentPostId = parentPostId;
             this.likesCount = likesCount;
