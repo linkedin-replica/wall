@@ -20,7 +20,6 @@ public class DeleteCommentCommand extends Command{
         // create a LinkedHashMap to hold results
         LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
         Comment comment;
-        String commentId = request.get("commentId");
         String authorId = request.get("authorId");
         String parentPostId = request.get("parentPostId");
         Integer likesCount = Integer.parseInt(request.get("likesCount"));

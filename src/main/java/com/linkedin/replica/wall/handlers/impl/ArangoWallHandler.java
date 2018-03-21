@@ -56,21 +56,25 @@ public class ArangoWallHandler implements DatabaseHandler {
      */
     public String addBookmark(Bookmark bookmark) {
         String userId = bookmark.getUserId();
+        String postId = bookmark.getPostId();
         String message = "";
-        try {
-            UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
+        if(postId != null && getPost(postId) != null) {
+            try {
+                UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
 
-            ArrayList<Bookmark> bookmarkList = user.getBookmarks();
+                ArrayList<Bookmark> bookmarkList = user.getBookmarks();
 
-            bookmarkList.add(bookmark);
-            user.setBookmarks(bookmarkList);
-            arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
+                bookmarkList.add(bookmark);
+                user.setBookmarks(bookmarkList);
+                arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
 
-            message = "Success to add bookmark";
+                message = "Success to add bookmark";
 
-        } catch (ArangoDBException e) {
-            message = "Failed to add bookmark. " + e.getMessage();
-        }
+            } catch (ArangoDBException e) {
+                message = "Failed to add bookmark. " + e.getMessage();
+            }
+        }else
+            message = "Failed to add bookmark No post found";
         return message;
     }
 

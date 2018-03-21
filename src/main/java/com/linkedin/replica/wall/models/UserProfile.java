@@ -18,9 +18,8 @@ public class UserProfile {
         super();
     }
 
-    public UserProfile(String userId, String email, String firstName, String lastName) {
+    public UserProfile(String email, String firstName, String lastName) {
         this();
-        this.userId = userId;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
