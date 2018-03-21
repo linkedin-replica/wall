@@ -62,14 +62,13 @@ public class ArangoWallHandler implements DatabaseHandler {
 
             ArrayList<Bookmark> bookmarkList = user.getBookmarks();
 
-             bookmarkList.add(bookmark);
-             user.setBookmarks(bookmarkList);
+            bookmarkList.add(bookmark);
+            user.setBookmarks(bookmarkList);
             arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
 
             message = "Success to add bookmark";
 
         } catch (ArangoDBException e) {
-            System.err.println("Failed to add bookmark. " + e.getMessage());
             message = "Failed to add bookmark. " + e.getMessage();
         }
         return message;
@@ -92,7 +91,6 @@ public class ArangoWallHandler implements DatabaseHandler {
             message = "Success to delete bookmark";
 
         } catch (ArangoDBException e) {
-            System.err.println("Failed to delete bookmark. " + e.getMessage());
             message = "Failed to delete bookmark. " + e.getMessage();
         }
         return message;

@@ -369,7 +369,7 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testDeleteBookmark(){
-        UserProfile user =insertedUser;
+        UserProfile user = insertedUser;
         String userId = user.getUserId();
         int bookmarkNo = user.getBookmarks().size() - 1;
         Bookmark bookmark = user.getBookmarks().get(0);
@@ -381,7 +381,7 @@ public class ArangoHandlerTest {
     }
 
     /**
-     * testing getBookmarks function
+     * testing getBookmarks arango function
      */
     @Test
     public void testGetBookmarks(){
@@ -394,7 +394,6 @@ public class ArangoHandlerTest {
         for (int i = 0; i < bookmarks.size(); i++){
             if(!bookmarks.get(i).equals(retrievedBookmarks.get(i))){
                 check = false;
-                break;
             }
         }
 
