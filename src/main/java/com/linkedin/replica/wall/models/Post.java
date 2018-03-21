@@ -26,9 +26,8 @@ public class Post {
     private boolean isCompanyPost;
     private boolean isPrior;
 
-    public Post(String postId, String authorId,String type, String companyId, String privacy, String text, String hashtags, String mentions, int likesCount, String images, String videos, String urls, int commentsCount, String shares, Date timestamp, boolean isCompanyPost, boolean isPrior){
+    public Post(String authorId,String type, String companyId, String privacy, String text, String hashtags, String mentions, int likesCount, String images, String videos, String urls, int commentsCount, String shares, Date timestamp, boolean isCompanyPost, boolean isPrior){
 
-        this.postId = postId;
         this.authorId = authorId;
         this.type = type;
         this.companyId = companyId;

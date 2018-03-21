@@ -75,7 +75,7 @@ public class DatabaseSeed {
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Mon Mar 19 2012 01:00 PM");
         for(String text : lines){
-            Post post = new Post(counter + "", "2", "3",
+            Post post = new Post( "2", "3",
                     "4", "5", text, "",
                     "y", 455, "", "",
                     "", 455, "", timestamp, true,

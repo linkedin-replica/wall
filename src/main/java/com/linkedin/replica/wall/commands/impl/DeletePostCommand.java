@@ -44,7 +44,7 @@ public class DeletePostCommand extends Command{
         boolean isCompanyPost = Boolean.parseBoolean(request.get("isCompanyPost"));
         boolean isPrior = Boolean.parseBoolean(request.get("isPrior"));
 
-        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, shares, timestamp, isCompanyPost, isPrior);
+        post = new Post(authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, shares, timestamp, isCompanyPost, isPrior);
 
         response.put("response", dbHandler.deletePost(post));
         return response;

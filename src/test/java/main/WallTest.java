@@ -1,13 +1,9 @@
 package main;
 
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDBException;
@@ -15,14 +11,12 @@ import com.arangodb.ArangoDatabase;
 import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Comment;
 
 import java.util.HashMap;
 import java.util.List;
 
-import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.services.WallService;

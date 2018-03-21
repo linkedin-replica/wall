@@ -124,7 +124,7 @@ public class ArangoHandlerTest {
    }
 
     /**
-     *
+     * Test to add post.
      * @throws ParseException
      */
    @Test
@@ -134,11 +134,11 @@ public class ArangoHandlerTest {
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
 
 
-        Post post = new Post("postId", insertedUser.getUserId(), null, "companyId", null, null,
+        Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
                 null,null, 12, "images", "videos", "urls", 30,
                 "shares", timestamp, true, false);
         arangoWallHandler.addPost(post);
-        Post newPost = getPosts("postId");
+        Post newPost = getPosts(post.getPostId());
         assertEquals("Expected to have a certain post in database", newPost.getCompanyId(), "companyId");
 
    }
@@ -152,9 +152,8 @@ public class ArangoHandlerTest {
 
        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-       Post post = new Post(insertedPost.getPostId(), insertedUser.getUserId(), null, "companyId", null, null,
-               null,null, 13, "images", "videos", "urls", 30,
-               "shares", timestamp, true, false);
+       Post post = insertedPost;
+       post.setLikesCount(13);
        arangoWallHandler.editPost(post);
        Post newPost = getPosts(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database", newPost.getLikesCount(), 13);
@@ -170,10 +169,7 @@ public class ArangoHandlerTest {
 
        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-       Post post = new Post(insertedPost.getPostId(), insertedUser.getUserId(), null, "companyId", null, null,
-               null,null, 12, "images", "videos", "urls", 30,
-               "shares", timestamp, true, false);
-       arangoWallHandler.deletePost(post);
+       arangoWallHandler.deletePost(insertedPost);
        Post newPost = getPosts(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database", newPost, null);
    }
@@ -186,7 +182,7 @@ public class ArangoHandlerTest {
     public void testGetPosts() throws ParseException {
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-        Post post = new Post("postId", insertedUser.getUserId(), null, "companyId", null, null,
+        Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
                 null,null, 12, "images", "videos", "urls", 30,
                 "shares", timestamp, true, false);
         addPost(post);
