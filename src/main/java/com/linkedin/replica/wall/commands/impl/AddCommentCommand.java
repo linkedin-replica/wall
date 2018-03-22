@@ -27,13 +27,13 @@ public class AddCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"commentId", "authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text"});
+        validateArgs(new String[]{"authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text"});
 
 
         // call dbHandler to get error or success message from dbHandler
         Comment comment;
+
         Gson googleJson = new Gson();
-        String commentId = args.get("commentId").toString();
         String authorId = args.get("authorId").toString();
         String parentPostId = args.get("parentPostId").toString();
         int likesCount = (int) args.get("likesCount");
@@ -43,7 +43,7 @@ public class AddCommentCommand extends Command{
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
         String timestamp = args.get("timestamp").toString();
-        comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
+        comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
         String response =  dbHandler.addComment(comment);
         return response;
     }

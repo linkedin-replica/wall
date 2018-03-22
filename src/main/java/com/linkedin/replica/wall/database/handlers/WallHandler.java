@@ -52,4 +52,9 @@ public interface WallHandler extends DatabaseHandler {
     public String deleteLike(Like like);
 
     public void getTopPosts() throws ParseException;
+
+    public Comment getComment(String commentId);
+
+    public Post getPost(String postId);
+
 }

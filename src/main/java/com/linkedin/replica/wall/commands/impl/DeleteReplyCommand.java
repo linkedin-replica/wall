@@ -45,7 +45,7 @@ public class DeleteReplyCommand extends Command{
         ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
 
-        reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
+        reply = dbHandler.getReply(replyId);
         String response = dbHandler.deleteReply(reply);
         return response;
     }

@@ -51,8 +51,8 @@ public class EditPostCommand extends Command{
         String shares = args.get("shares").toString();
         boolean isCompanyPost = (boolean) args.get("isCompanyPost");
         boolean isPrior = (boolean) args.get("isPrior");
-        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior);
 
+        post = dbHandler.getPost(postId);
         String response = dbHandler.editPost(post);
         return response;
     }

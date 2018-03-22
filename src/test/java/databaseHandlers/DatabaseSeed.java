@@ -28,6 +28,10 @@ public class DatabaseSeed {
     private String usersCollection;
     static Configuration config;
     private ArrayList<UserProfile> insertedUsers;
+    private ArrayList<Post> insertedPosts;
+    private ArrayList<Comment> insertedComments;
+    private ArrayList<Like> insertedLikes;
+    private ArrayList<Reply> insertedReplies;
 
     public DatabaseSeed() throws IOException, ClassNotFoundException {
         String rootFolder = "src/main/resources/";
@@ -43,6 +47,10 @@ public class DatabaseSeed {
         repliesCollection = Configuration.getInstance().getArangoConfig("collections.replies.name");
         postsCollection = Configuration.getInstance().getArangoConfig("collections.posts.name");
         insertedUsers = new ArrayList<>();
+        insertedPosts = new ArrayList<>();
+        insertedComments = new ArrayList<>();
+        insertedLikes = new ArrayList<>();
+        insertedReplies = new ArrayList<>();
 
     }
 
@@ -57,33 +65,37 @@ public class DatabaseSeed {
             if(ex.getErrorNum() == 1228){
                 arangoDB.createDatabase(dbName);
                 arangoDB.db(dbName).createCollection(postsCollection);
-                System.out.println("collection created");
             }else{
-                System.out.println("exception");
                 throw ex;
             }
         }
         int counter = 1;
-        BaseDocument newDoc;
-        ArrayList<String> x =  new ArrayList<String>() ;
-        x.add("y");
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Mon Mar 19 2012 01:00 PM");
-        System.out.println("before loop");
         for(String text : lines){
-            Post post = new Post(counter + "", "2", "3",
-                    "4", "5", text, x,
-                    x, 455, x, x,
-                    x, 455, timestamp, true,
+            ArrayList<String> images = new ArrayList<String>();
+            images.add("images");
+            ArrayList<String> videos = new ArrayList<String>();
+            videos.add("videos");
+            ArrayList<String> urls = new ArrayList<String>();
+            urls.add("urls");
+            ArrayList<String> hashtags = new ArrayList<String>();
+            hashtags.add("hashtags");
+            ArrayList<String> mentions = new ArrayList<String>();
+            mentions.add("mentions");
+
+            Post post = new Post( "2", "3",
+                    "4", "5", text,hashtags,
+                    mentions, 12, images, videos,
+                    urls, 30, timestamp, true,
                     true);
 
 
 
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
-            System.out.println("New post document insert with key = ");
+            insertedPosts.add(post);
             Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostId(), Post.class);
-            //System.out.println("post: " + retrievedDoc.getAuthorID());
-
+            System.out.println(retrievedDoc +" YAAAARAAAA333");
             counter ++;
         }
     }
@@ -102,18 +114,13 @@ public class DatabaseSeed {
            }
        }
        int counter = 1;
-       BaseDocument newDoc;
        ArrayList<String> x =  new ArrayList<String>() ;
        x.add("y");
        for(String text : lines) {
-           Comment comment = new Comment(counter + "", "3", "1", 45, 34, x, x, x, text, "11");
-           newDoc = new BaseDocument();
-           newDoc.setKey(comment.getCommentId());
-           newDoc.addAttribute("comment", comment);
-           arangoDB.db(dbName).collection(commentsCollection).insertDocument(newDoc);
-           System.out.println("New comment document insert with key = ");
-           BaseDocument retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), BaseDocument.class);
-           System.out.println("comment: " + retrievedDoc.toString());
+           Comment comment = new Comment("3", insertedPosts.get(0).getPostId(), 45, 34, x, x, x, text, "11");
+           arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
+           insertedComments.add(comment);
+           Comment retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), Comment.class);
            counter++;
        }
    }
@@ -123,8 +130,6 @@ public class DatabaseSeed {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/replies"));
         try{
             arangoDB.db(dbName).createCollection(repliesCollection);
-            System.out.println("Replies inserted");
-
         }catch(ArangoDBException ex){
             // check if exception was raised because that database was not created
             if(ex.getErrorNum() == 1228){
@@ -139,11 +144,10 @@ public class DatabaseSeed {
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
-            Reply reply = new Reply(counter + "", "3", "1", "45", x, 4500, text, date, x, x);
+            Reply reply = new Reply("3", insertedPosts.get(0).getPostId(), insertedComments.get(0).getCommentId(), x, 4500, text, date, x, x);
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
-            System.out.println("New Reply document insert with key = ");
+            insertedReplies.add(reply);
             BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);
-            System.out.println("reply: " + retrievedDoc.toString());
             counter++;
         }
     }
@@ -170,17 +174,18 @@ public class DatabaseSeed {
             String likedCommentId = null;
             String likedReplyId = null;
             if(i%3 == 0){
-                likedPostId = "15";
+                likedPostId = insertedPosts.get(0).getPostId();
             } else if (i%3 == 1) {
-                likedCommentId = "16";
+                likedCommentId = insertedComments.get(0).getCommentId();
             } else {
-                likedReplyId = "18";
+                likedReplyId = insertedReplies.get(0).getReplyId();
             }
             String userName = userNames[rand.nextInt(5)];
             String headLine = userNames[rand.nextInt(5)] + ", " + userNames[rand.nextInt(5)] + " and 2 others";
             String imageUrl = "url" + i;
             Like like = new Like( likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine, imageUrl);
             DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
+            insertedLikes.add(like);
             System.out.println("New like document insert with key = "  + likeDoc.getKey());
         }
     }
@@ -209,8 +214,8 @@ public class DatabaseSeed {
             String firstName = arr[0];
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
-            UserProfile user = new UserProfile(counter + "", email, firstName, lastName);
-            Bookmark bookmark = new Bookmark(counter+"",counter+"");
+            UserProfile user = new UserProfile(email, firstName, lastName);
+            Bookmark bookmark = new Bookmark(user.getUserId(), insertedPosts.get(0).getPostId());
             ArrayList<Bookmark> b = new ArrayList<>();
             b.add(bookmark);
             user.setBookmarks(b);
@@ -229,6 +234,38 @@ public class DatabaseSeed {
      */
     public ArrayList<UserProfile> getInsertedUsers(){
         return  this.insertedUsers;
+    }
+
+    /**
+     * return list of inserted comments.
+     * @return
+     */
+    public ArrayList<Comment> getInsertedComments() {
+        return insertedComments;
+    }
+
+    /**
+     * return list of inserted posts.
+     * @return
+     */
+    public ArrayList<Post> getInsertedPosts() {
+        return insertedPosts;
+    }
+
+    /**
+     * return list of inserted likes.
+     * @return
+     */
+    public ArrayList<Like> getInsertedLikes() {
+        return insertedLikes;
+    }
+
+    /**
+     * return list of inserted replies.
+     * @return
+     */
+    public ArrayList<Reply> getInsertedReplies() {
+        return insertedReplies;
     }
 
     public void deleteAllPosts() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {

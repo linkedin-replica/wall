@@ -26,7 +26,6 @@ public class GetBookmarksCommand extends Command{
         // validate that all required arguments that are passed
         validateArgs(new String[]{"userId"});
 
-
         // call dbHandler to list of bookmarks from db
         String userId = args.get("userId").toString();
         String postId = args.get("postId").toString();

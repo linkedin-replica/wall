@@ -32,6 +32,7 @@ public class DeletePostCommand extends Command{
 
         // call dbHandler to get error or success message from dbHandler
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
+
         Post post;
         Gson googleJson = new Gson();
         String postId = args.get("postId").toString();
@@ -50,7 +51,7 @@ public class DeletePostCommand extends Command{
         int commentsCount = (int) args.get("commentsCount");
         boolean isCompanyPost = (boolean) args.get("isCompanyPost");
         boolean isPrior = (boolean) args.get("isPrior");
-        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior);
+        post = dbHandler.getPost(postId);
 
         String response = dbHandler.deletePost(post);
         return response;

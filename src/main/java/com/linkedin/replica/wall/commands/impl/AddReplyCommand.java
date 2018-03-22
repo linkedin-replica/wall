@@ -44,7 +44,7 @@ public class AddReplyCommand extends Command{
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
 
 
-        reply = new Reply("",authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
+        reply = new Reply(authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
         String response = dbHandler.addReply(reply);
         return response;
     }
