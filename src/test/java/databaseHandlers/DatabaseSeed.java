@@ -1,6 +1,5 @@
 package databaseHandlers;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,8 +14,7 @@ import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.DocumentCreateEntity;
 import com.linkedin.replica.wall.config.Configuration;
-import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
+import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.models.*;
 
 public class DatabaseSeed {
@@ -33,9 +31,9 @@ public class DatabaseSeed {
 
     public DatabaseSeed() throws IOException, ClassNotFoundException {
         String rootFolder = "src/main/resources/";
-        Configuration.init(rootFolder + "app_config",
-                rootFolder + "arango_config",
-                rootFolder + "command_config");
+        Configuration.init(rootFolder + "app.config",
+                rootFolder + "arango.test.config",
+                rootFolder + "commands.config", rootFolder + "controller.config");
         config = Configuration.getInstance();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         dbName = Configuration.getInstance().getArangoConfig("arangodb.name");
@@ -74,9 +72,9 @@ public class DatabaseSeed {
         System.out.println("before loop");
         for(String text : lines){
             Post post = new Post(counter + "", "2", "3",
-                    "4", "5", text, "",
-                    "y", 455, "", "",
-                    "", 455, "", timestamp, true,
+                    "4", "5", text, x,
+                    x, 455, x, x,
+                    x, 455, timestamp, true,
                     true);
 
 
@@ -141,7 +139,7 @@ public class DatabaseSeed {
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
-            Reply reply = new Reply(counter + "", "3", "1", "45", x, 45L, text, date, x, x);
+            Reply reply = new Reply(counter + "", "3", "1", "45", x, 4500, text, date, x, x);
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             System.out.println("New Reply document insert with key = ");
             BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);

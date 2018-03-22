@@ -1,11 +1,10 @@
-package com.linkedin.replica.wall.config;
+package com.linkedin.replica.wall.database;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Properties;
 
 import com.arangodb.ArangoDBException;
+import com.linkedin.replica.wall.config.Configuration;
 import redis.clients.jedis.Jedis;
 
 import com.arangodb.ArangoDB;
@@ -18,9 +17,9 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
 
 
-    private DatabaseConnection() throws FileNotFoundException, IOException {
+    private DatabaseConnection() {
         config = Configuration.getInstance();
-        arangoDB = instantiateArrangoDB();
+        instantiateArrangoDB();
         //redis = new Jedis();
     }
 
@@ -35,15 +34,12 @@ public class DatabaseConnection {
      * @throws FileNotFoundException
      * @throws ClassNotFoundException
      */
-    public static DatabaseConnection getInstance() throws FileNotFoundException, IOException, ClassNotFoundException{
-        if(instance == null){
-            synchronized (DatabaseConnection.class) {
-                if(instance == null){
-                    instance = new DatabaseConnection();
-                }
-            }
-        }
+    public static DatabaseConnection getInstance() {
         return instance;
+    }
+
+    public static void init() {
+        instance = new DatabaseConnection();
     }
 
     /**
@@ -56,25 +52,13 @@ public class DatabaseConnection {
      * Instantiate ArangoDB
      * @return
      */
-    private ArangoDB instantiateArrangoDB(){
-        return new ArangoDB.Builder()
+    private void instantiateArrangoDB(){
+        arangoDB =  new ArangoDB.Builder()
                 .user(config.getArangoConfig("arangodb.user"))
                 .password(config.getArangoConfig("arangodb.password"))
                 .build();
     }
 
-    /**
-     * Creates the wall db
-     */
-    private void createDatabase() {
-        String dbName = config.getArangoConfig("arangodb.name");
-        try {
-            arangoDB.createDatabase(dbName);
-            System.out.println("Database created: " + dbName);
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to create database: " + dbName + "; " + e.getMessage());
-        }
-    }
 
 
     public void closeConnections() {

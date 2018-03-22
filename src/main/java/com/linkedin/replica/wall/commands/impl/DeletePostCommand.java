@@ -6,47 +6,53 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.*;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.commands.Command;
 
 public class DeletePostCommand extends Command{
 
-    Post comment;
-    String [] images;
-    String [] mentions;
-    String [] urls;
-    public DeletePostCommand(HashMap<String, String> args) {
-        super(args);
+    public DeletePostCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
+        super(args,dbHandler);
     }
 
-    public LinkedHashMap<String, Object> execute() throws ParseException {
 
-        // create a LinkedHashMap to hold results
-        LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
-        Post post;
+    @Override
+    public Object execute() throws ParseException {
+
+        // get database handler that implements functionality of this command
+        WallHandler dbHandler = (WallHandler) this.dbHandler;
+
+        // validate that all required arguments that are passed
+        validateArgs(new String[]{"postId", "authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior"});
+
+        // call dbHandler to get error or success message from dbHandler
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        String postId = request.get("postId");
-        String authorId = request.get("authorId");
-        String type = request.get("type");
-        String companyId = request.get("companyId");
-        String privacy = request.get("privacy");
-        String text = request.get("text");
-        String hashtags = request.get("hashtags");
-        String mentions = request.get("mentions");
-        int likesCount = Integer.parseInt(request.get("likesCount"));
-        String images = request.get("images");
-        String videos = request.get("videos");
-        String urls = request.get("urls");
-        int commentsCount = Integer.parseInt(request.get("commentsCount"));
-        String shares = request.get("shares");
-        Date timestamp = format.parse(request.get("timeStamp"));
+        Post post;
+        Gson googleJson = new Gson();
+        String postId = args.get("postId").toString();
+        String authorId = args.get("authorId").toString();
+        String type = args.get("type").toString();
+        String companyId = args.get("companyId").toString();
+        String privacy = args.get("privacy").toString();
+        String text = args.get("text").toString();
+        Date timestamp = format.parse(args.get("timestamp").toString());
+        ArrayList<String> hashtags = googleJson.fromJson((JsonArray) args.get("hashtags"), ArrayList.class);
+        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
+        int likesCount = (int) args.get("likesCount");
+        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
+        ArrayList<String> videos = googleJson.fromJson((JsonArray) args.get("videos"), ArrayList.class);
+        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
+        int commentsCount = (int) args.get("commentsCount");
+        boolean isCompanyPost = (boolean) args.get("isCompanyPost");
+        boolean isPrior = (boolean) args.get("isPrior");
+        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior);
 
-        boolean isCompanyPost = Boolean.parseBoolean(request.get("isCompanyPost"));
-        boolean isPrior = Boolean.parseBoolean(request.get("isPrior"));
-
-        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, shares, timestamp, isCompanyPost, isPrior);
-
-        response.put("response", dbHandler.deletePost(post));
+        String response = dbHandler.deletePost(post);
         return response;
     }
 }

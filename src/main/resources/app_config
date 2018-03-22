@@ -1,2 +1,0 @@
-rabbitmq.queue.name=wallQueue
-rabbitmq.ip=localhost
