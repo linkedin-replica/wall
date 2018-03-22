@@ -245,55 +245,48 @@ public class WallTest {
 
             LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("getComments", request);
             List<Comment> newComments = (List<Comment>) response.get("response");
-            assertEquals("The comment should not exist", newComments.size(),1);
+            assertEquals("The comment should not exist", newComments.size(),10);
 
 
     }
 
     @Test
     public void testAddBookmark() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<String, String> request = new HashMap<>();
-        UserProfile user = dbSeed.getInsertedUsers().get(0);
-        String userId = user.getUserId();
-        String postId = "123";
+        HashMap<String, Object> request = new HashMap<>();
+        String userId = insertedUser.getUserId();
+        String postId = insertedPost.getPostId();
         request.put("userId", userId);
         request.put("postId", postId);
-        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("addBookmark", request);
-        String response = (String) result.get("response");
+        String response = (String) wallService.serve("addBookmark", request);
         assertEquals("response should be Success to add bookmark", response, "Success to add bookmark");
     }
 
     @Test
     public void testDeleteBookmark() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<String, String> request = new HashMap<>();
-        UserProfile user = dbSeed.getInsertedUsers().get(0);
-        String userId = user.getUserId();
-        String postId = userId;
+        HashMap<String, Object> request = new HashMap<>();
+        String userId = insertedUser.getUserId();
+        String postId = insertedPost.getPostId();
         request.put("userId", userId);
         request.put("postId", postId);
-        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("deleteBookmark", request);
-        String response = (String) result.get("response");
+        String response = (String) wallService.serve("deleteBookmark", request);
         assertEquals("response should be Success to delete bookmark", response, "Success to delete bookmark");
     }
 
     @Test
     public void testGetBookmark() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<String, String> request = new HashMap<>();
-        UserProfile user = dbSeed.getInsertedUsers().get(0);
-        String userId = user.getUserId();
-        String postId = userId;
+        HashMap<String, Object> request = new HashMap<>();
+        String userId = insertedUser.getUserId();
         request.put("userId", userId);
-        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("deleteBookmark", request);
+        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getBookmarks", request);
         int size = 1;
-        List<Bookmark> response = (ArrayList<Bookmark>) result.get("response");
-        assertEquals("response should be user's bookmark arraylist", response.size(), size);
+        assertEquals("response should be user's bookmark arraylist", result.size(), size);
     }
 
     @Test
     public void testAddLikeCommand() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException{
-        HashMap<String, String> request = new HashMap<>();
+        HashMap<String, Object> request = new HashMap<>();
         request.put("likerId", "100");
-        request.put("likedPostId", "99");
+        request.put("likedPostId", insertedPost.getPostId());
         request.put("likedCommentId", null);
         request.put("likedReplyId", null);
         request.put("userName", "Yara");

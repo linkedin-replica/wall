@@ -206,7 +206,7 @@ public class DatabaseSeed {
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
             UserProfile user = new UserProfile(email, firstName, lastName);
-            Bookmark bookmark = new Bookmark(user.getUserId(), user.getUserId());
+            Bookmark bookmark = new Bookmark(user.getUserId(), insertedPosts.get(0).getPostId());
             ArrayList<Bookmark> b = new ArrayList<>();
             b.add(bookmark);
             user.setBookmarks(b);
