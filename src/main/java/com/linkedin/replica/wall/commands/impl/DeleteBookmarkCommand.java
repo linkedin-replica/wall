@@ -4,25 +4,30 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.linkedin.replica.wall.commands.Command;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 
 public class DeleteBookmarkCommand extends Command{
 
-    public DeleteBookmarkCommand(HashMap<String, String> args) {
-        super(args);
+    public DeleteBookmarkCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
+        super(args,dbHandler);
     }
 
-    public LinkedHashMap<String, Object> execute() {
-        LinkedHashMap<String, Object> response = new LinkedHashMap<String, Object>();
-        String errMsg;
-        if (request.containsKey("userId") && request.containsKey("postId")) {
-            String userId = request.get("userId");
-            String postId = request.get("postId");
-            Bookmark bookmark = new Bookmark(userId, postId);
-            response.put("response", dbHandler.deleteBookmark(bookmark));
-        } else {
-            response.put("response", "missing information");
-        }
+    public Object execute() {
+        // get database handler that implements functionality of this command
+        WallHandler dbHandler = (WallHandler) this.dbHandler;
+
+        // validate that all required arguments that are passed
+        validateArgs(new String[]{"userId", "postId"});
+
+
+        // call dbHandler to get error or success message from dbHandler
+        String userId = args.get("userId").toString();
+        String postId = args.get("postId").toString();
+        Bookmark bookmark = new Bookmark(userId, postId);
+
+        String response = dbHandler.deleteBookmark(bookmark);
         return response;
     }
 }

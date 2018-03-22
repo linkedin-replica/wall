@@ -1,6 +1,5 @@
 package databaseHandlers;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -10,20 +9,17 @@ import java.util.*;
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.linkedin.replica.wall.config.Configuration;
-import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.DatabaseHandler;
-import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
+import com.linkedin.replica.wall.database.DatabaseConnection;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
+import com.linkedin.replica.wall.database.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
 
-import com.linkedin.replica.wall.services.WallService;
-import java.io.FileNotFoundException;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 
 
 import com.arangodb.entity.DocumentCreateEntity;
@@ -40,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
-    private static DatabaseHandler arangoWallHandler;
+    private static WallHandler arangoWallHandler;
     private static ArangoDB arangoDB;
     static Configuration config;
     private static String dbName;
@@ -55,10 +51,11 @@ public class ArangoHandlerTest {
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         // startup SearchEngine
         String rootFolder = "src/main/resources/";
-        Configuration.init(rootFolder + "app_config",
-                rootFolder + "arango_config",
-                rootFolder + "command_config");
+        Configuration.init(rootFolder + "app.config",
+                rootFolder + "arango.test.config",
+                rootFolder + "commands.config", rootFolder + "controller.config");
         config = Configuration.getInstance();
+        DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         arangoWallHandler = new ArangoWallHandler();
         dbName = Configuration.getInstance().getArangoConfig("arangodb.name");

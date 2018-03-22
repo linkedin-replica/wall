@@ -7,36 +7,42 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.linkedin.replica.wall.commands.Command;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Reply;
 
 public class AddReplyCommand extends Command{
 
-    public AddReplyCommand(HashMap<String, String> args) {
-        super(args);
+    public AddReplyCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
+        super(args,dbHandler);
     }
 
-    public LinkedHashMap<String, Object> execute() throws ParseException {
-        // create a LinkedHashMap to hold results
-        LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
-        // call dbHandler to get results from db and add returned results to linkedHashMap
+
+    @Override
+    public Object execute() throws ParseException {
+
+        // get database handler that implements functionality of this command
+        WallHandler dbHandler = (WallHandler) this.dbHandler;
+
+        // validate that all required arguments that are passed
+        validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId", "mentions", "likesCount", "text", "images", "urls"});
+
+        // call dbHandler to get error or success message from dbHandler
         Reply reply;
-
-        //DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        String replyId = request.get("replyId");
-        String authorId = request.get("authorId");
-        String parentPostId = request.get("parentPostId");
-        String parentCommentId = request.get("parentCommentId");
-        ArrayList<String> mentions = new ArrayList<String>(Arrays.asList(request.get("mentions").split(",")));
-        Long likesCount = Long.parseLong(request.get("likesCount"));
-        String text = (String) request.get("text");
-        Date timestamp = format.parse(request.get("timestamp"));
-        ArrayList<String> images = new ArrayList<String>(Arrays.asList(request.get("images").split(",")));
-        ArrayList<String> urls = new ArrayList<String>(Arrays.asList(request.get("urls").split(",")));
-
+        String replyId = args.get("replyId").toString();
+        String authorId = args.get("authorId").toString();
+        String parentPostId = args.get("parentPostId").toString();
+        String parentCommentId = args.get("parentCommentId").toString();
+        ArrayList<String> mentions = new ArrayList<String>(Arrays.asList(args.get("mentions").toString().split(",")));
+        Long likesCount = Long.parseLong(args.get("likesCount").toString());
+        String text = (String) args.get("text");
+        Date timestamp = format.parse(args.get("timestamp").toString());
+        ArrayList<String> images = new ArrayList<String>(Arrays.asList(args.get("images").toString().split(",")));
+        ArrayList<String> urls = new ArrayList<String>(Arrays.asList(args.get("urls").toString().split(",")));
 
         reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
-        response.put("response", dbHandler.addReply(reply));
+        String response = dbHandler.addReply(reply);
         return response;
     }
 }

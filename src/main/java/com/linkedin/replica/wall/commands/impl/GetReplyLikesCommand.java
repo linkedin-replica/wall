@@ -1,24 +1,34 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import com.linkedin.replica.wall.commands.Command;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
+import com.linkedin.replica.wall.models.Like;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class GetReplyLikesCommand extends Command{
 
-    public GetReplyLikesCommand(HashMap<String, String> args) {
-        super(args);
+    public GetReplyLikesCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
+        super(args,dbHandler);
     }
 
 
-    @Override
-    public LinkedHashMap<String, Object> execute() {
-        // create a LinkedHashMap to hold results
-        LinkedHashMap<String,Object> response = new LinkedHashMap<String, Object>();
+    public Object execute() {
 
-        // call dbHandler to get results from db and add returned results to linkedHashMap
-        response.put("response", dbHandler.getReplyLikes(request.get("likedReplyId")));
-        return response;
+        // get database handler that implements functionality of this command
+        WallHandler dbHandler = (WallHandler) this.dbHandler;
+
+        // validate that all required arguments that are passed
+        validateArgs(new String[]{"likedReplyId"});
+
+
+        // call dbHandler to list of likes from db
+        String likedReplyId = args.get("likedReplyId").toString();
+
+        List<Like> likes = dbHandler.getPostLikes(likedReplyId);
+        return likes;
     }
 }

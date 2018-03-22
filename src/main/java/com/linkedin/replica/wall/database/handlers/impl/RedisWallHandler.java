@@ -1,6 +1,7 @@
-package com.linkedin.replica.wall.handlers.impl;
+package com.linkedin.replica.wall.database.handlers.impl;
 
-import com.linkedin.replica.wall.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Post;
@@ -9,7 +10,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedisWallHandler implements DatabaseHandler {
+public class RedisWallHandler implements WallHandler {
     /**
      * add bookmark to user's bookmarks
      * @param bookmark

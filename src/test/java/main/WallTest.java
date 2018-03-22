@@ -1,20 +1,17 @@
 package main;
 
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.util.MapBuilder;
 import com.linkedin.replica.wall.config.Configuration;
-import com.linkedin.replica.wall.config.DatabaseConnection;
+import com.linkedin.replica.wall.database.DatabaseConnection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +38,9 @@ public class WallTest {
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         String rootFolder = "src/main/resources/";
-        Configuration.init(rootFolder + "app_config",
-                rootFolder + "arango_config",
-                rootFolder + "command_config");
+        Configuration.init(rootFolder + "app.config",
+                rootFolder + "arango.test.config",
+                rootFolder + "commands.config", rootFolder + "controller.config");
         config = Configuration.getInstance();
         wallService = new WallService();
         arangoDB = DatabaseConnection.getInstance().getArangodb().db(
@@ -60,7 +57,7 @@ public class WallTest {
     }
 
     @Test
-    public void testAddReplyService() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testAddReplyService() throws Exception {
         HashMap<String,String> request = new HashMap<String, String>();
         request.put("authorId","3");
         request.put("parentPostId","1");
@@ -87,7 +84,7 @@ public class WallTest {
     }
 
     @Test
-    public void testEditReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testEditReply() throws Exception {
         HashMap<String,String> request = new HashMap<String, String>();
         request.put("replyId","1");
         request.put("authorId","3");
@@ -113,7 +110,7 @@ public class WallTest {
     }
 
     @Test
-    public void testDeleteReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testDeleteReply() throws Exception {
 
         HashMap<String,String> request = new HashMap<String, String>();
         request.put("replyId","1");
@@ -170,7 +167,7 @@ public class WallTest {
 
 
     @Test
-    public void testEditComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testEditComments() throws Exception {
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("commentId", "1234");
         request.put("authorId", "12");
@@ -194,7 +191,7 @@ public class WallTest {
     }
 
     @Test
-    public void testDeleteComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testDeleteComments() throws Exception {
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("commentId", "1234");
         request.put("authorId", "12");
@@ -218,7 +215,7 @@ public class WallTest {
     }
 
     @Test
-    public void testGetComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testGetComments() throws Exception {
         HashMap<String,String> request = new HashMap<String,String>();
         request.put("parentPostId", "14");
         try {
@@ -240,7 +237,7 @@ public class WallTest {
 
 
         @Test
-        public void testAddLikeCommand() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException{
+        public void testAddLikeCommand() throws Exception {
             HashMap<String, String> request = new HashMap<>();
             request.put("likerId", "100");
             request.put("likedPostId", "99");
