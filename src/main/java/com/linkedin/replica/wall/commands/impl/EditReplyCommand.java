@@ -46,6 +46,15 @@ public class EditReplyCommand extends Command{
 
 
         reply = dbHandler.getReply(replyId);
+        reply.setAuthorId(authorId);
+        reply.setParentPostId(parentPostId);
+        reply.setParentCommentId(parentCommentId);
+        reply.setMentions(mentions);
+        reply.setImages(images);
+        reply.setLikesCount(likesCount);
+        reply.setUrls(urls);
+        reply.setTimestamp(timestamp);
+        reply.setText(text);
         String response = dbHandler.editReply(reply);
         return response;
     }

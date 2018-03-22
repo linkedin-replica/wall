@@ -16,7 +16,7 @@ public class Comment {
         private String text, timestamp;
 
         public Comment(){
-
+            super();
         }
 
         public Comment(String authorId,String parentPostId, int likesCount,int repliesCount, ArrayList<String> images,ArrayList<String> urls,ArrayList<String> mentions, String text,String timeStamp){

@@ -44,6 +44,15 @@ public class EditCommentCommand extends Command{
         String timestamp = args.get("timestamp").toString();
 
         comment = dbHandler.getComment(commentId);
+        comment.setAuthorId(authorId);
+        comment.setParentPostId(parentPostId);
+        comment.setLikesCount(likesCount);
+        comment.setRepliesCount(repliesCount);
+        comment.setImages(images);
+        comment.setUrls(urls);
+        comment.setMentions(mentions);
+        comment.setText(text);
+        comment.setTimestamp(timestamp);
         String response =  dbHandler.editComment(comment);
         return response;
     }

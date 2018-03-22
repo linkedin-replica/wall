@@ -299,6 +299,7 @@ public class ArangoWallHandler implements WallHandler {
         String response = "";
         try {
             arangoDB.db(dbName).collection(commentsCollection).deleteDocument(comment.getCommentId());
+            response = "Comment deleted";
         } catch (ArangoDBException e) {
             response = "Failed to delete a comment. " + e.getMessage();
         }
@@ -387,9 +388,11 @@ public class ArangoWallHandler implements WallHandler {
         String response = "";
         try {
             arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,reply);
+
             response = "Reply updated";
         } catch (ArangoDBException e) {
             response = "Failed to update reply. " + e.getMessage();
+
         }
         return response;
     }

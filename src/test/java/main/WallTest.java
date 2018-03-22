@@ -12,7 +12,6 @@ import com.arangodb.util.MapBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.config.Configuration;
-import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 
@@ -55,11 +54,12 @@ public class WallTest {
                 Configuration.getInstance().getArangoConfig("db.name")
         );
         dbSeed = new DatabaseSeed();
-        dbSeed.insertUsers();
         dbSeed.insertPosts();
+        dbSeed.insertComments();
         dbSeed.insertReplies();
         dbSeed.insertLikes();
-        dbSeed.insertComments();
+        dbSeed.insertUsers();
+
         commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
 
         insertedComment = dbSeed.getInsertedComments().get(0);
@@ -94,8 +94,7 @@ public class WallTest {
         String response = (String)wallService.serve("addReply",request);
         int afterReplyPost = insertedPost.getCommentsCount();
         int afterReplyComment = insertedComment.getRepliesCount();
-        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
-        List<Reply> replies = (List<Reply>) result.get("response");
+        List<Reply> replies = (List<Reply>)  wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
                 if(replies.get(i).getText().equals("TestTestTest")){
@@ -123,11 +122,10 @@ public class WallTest {
         request.put("images", images);
         request.put("urls", urls);
         String response = (String) wallService.serve("editReply",request);
-        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
-        List<Reply> replies = (List<Reply>) result.get("response");
+        List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
-        for(int i =0;i<replies.size();i++){
-            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals("1")){
+        for(int i = 0;i < replies.size(); i++){
+            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
                 found = true;
                 break;
             }
@@ -170,7 +168,11 @@ public class WallTest {
         try {
             comment = arangoDB.collection(commentsCollection).getDocument(commentId,
                     Comment.class);
+            System.out.println("das");
+            System.out.println(comment.toString());
+
         } catch (ArangoDBException e) {
+            System.out.println("catch");
             System.err.println("Failed to get comment: commentId; " + e.getMessage());
         }
         return comment;
@@ -212,9 +214,19 @@ public class WallTest {
 
         String response = (String) wallService.serve("editComment", request);
 
-        Comment updatedComment = getComment(insertedComment.getCommentId());
-        assertEquals("The comment should have a new Text", updatedComment.getText(),"Edited Text");
-        assertEquals("Response should be Comment Updated", response);
+
+        List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
+        Boolean found = false;
+        for(int i = 0;i < comments.size(); i++){
+            if(comments.get(i).getText().equals("Edited Text") && comments.get(i).getCommentId().equals(insertedComment.getCommentId())){
+                found = true;
+                break;
+            }
+        }
+        System.out.println(insertedComment.getCommentId());
+
+        assertEquals("The comment should have a new Text", found,true);
+        assertEquals("Response should be Comment Updated", response, "Comment Updated");
 
 
     }
@@ -233,10 +245,19 @@ public class WallTest {
 
         request.put("text", "Text");
         request.put("timeStamp", "Thu Jan 19 2012 01:00 PM");
-        String response = (String) wallService.serve("deleteComment", request);
 
-        Comment newComment = getComment(insertedComment.getCommentId());
-        assertEquals("The comment should not exist", newComment,null);
+
+        // LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
+        List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
+
+        String response =  (String) wallService.serve("deleteComment",request);
+
+        // LinkedHashMap<String, Object> testResult = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
+        List<Comment> testComment = (List<Comment>) wallService.serve("getComments", request);
+
+        assertEquals("Size should decrement by one",comments.size() - 1,testComment.size());
+
+        assertEquals("response should be comment deleted",response,"Comment deleted");
 
 
     }
@@ -245,8 +266,7 @@ public class WallTest {
     public void testGetComments() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
         request.put("parentPostId", insertedPost.getPostId());
-            LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("getComments", request);
-            List<Comment> newComments = (List<Comment>) response.get("response");
+            List<Comment> newComments = (List<Comment>) wallService.serve("getComments", request);
             assertEquals("The comment should not exist", newComments.size(),10);
 
 

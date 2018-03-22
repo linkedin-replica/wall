@@ -69,11 +69,11 @@ public class ArangoHandlerTest {
         postsCollection = Configuration.getInstance().getArangoConfig("collections.posts.name");
 
         dbSeed = new DatabaseSeed();
-        dbSeed.insertUsers();
         dbSeed.insertPosts();
         dbSeed.insertComments();
         dbSeed.insertReplies();
         dbSeed.insertLikes();
+        dbSeed.insertUsers();
 
         insertedComment = dbSeed.getInsertedComments().get(0);
         insertedLike = dbSeed.getInsertedLikes().get(0);
