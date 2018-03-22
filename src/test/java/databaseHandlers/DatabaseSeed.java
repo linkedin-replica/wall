@@ -108,7 +108,7 @@ public class DatabaseSeed {
        ArrayList<String> x =  new ArrayList<String>() ;
        x.add("y");
        for(String text : lines) {
-           Comment comment = new Comment("3", "1", 45, 34, x, x, x, text, "11");
+           Comment comment = new Comment("3", insertedPosts.get(0).getPostId(), 45, 34, x, x, x, text, "11");
            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
            insertedComments.add(comment);
            Comment retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), Comment.class);
@@ -135,7 +135,7 @@ public class DatabaseSeed {
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
-            Reply reply = new Reply("3", "1", "45", x, 45L, text, date, x, x);
+            Reply reply = new Reply("3", insertedPosts.get(0).getPostId(), insertedComments.get(0).getCommentId(), x, 45L, text, date, x, x);
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             insertedReplies.add(reply);
             BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);
@@ -165,11 +165,11 @@ public class DatabaseSeed {
             String likedCommentId = null;
             String likedReplyId = null;
             if(i%3 == 0){
-                likedPostId = "15";
+                likedPostId = insertedPosts.get(0).getPostId();
             } else if (i%3 == 1) {
-                likedCommentId = "16";
+                likedCommentId = insertedComments.get(0).getCommentId();
             } else {
-                likedReplyId = "18";
+                likedReplyId = insertedReplies.get(0).getReplyId();
             }
             String userName = userNames[rand.nextInt(5)];
             String headLine = userNames[rand.nextInt(5)] + ", " + userNames[rand.nextInt(5)] + " and 2 others";

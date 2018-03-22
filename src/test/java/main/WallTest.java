@@ -92,25 +92,26 @@ public class WallTest {
         String response = (String)wallService.serve("addReply",request);
         int afterReplyPost = insertedPost.getCommentsCount();
         int afterReplyComment = insertedComment.getRepliesCount();
-//        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
-//        List<Reply> replies = (List<Reply>) result.get("response");
-//        Boolean found = false;
-//        for(int i = 0;i < replies.size(); i++){
-//                if(replies.get(i).getText().equals("TestTestTest")){
-//                    found = true;
-//                    break;
-//                }
-//        }
+        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
+        List<Reply> replies = (List<Reply>) result.get("response");
+        Boolean found = false;
+        for(int i = 0;i < replies.size(); i++){
+                if(replies.get(i).getText().equals("TestTestTest")){
+                    found = true;
+                    break;
+                }
+        }
+        assertEquals("added reply correctly", found, true);
         assertEquals("response should be equal Reply created",response,"Reply created");
-        assertEquals("post comment count increased by one", beforeReplyPost, afterReplyPost) ;
-        assertEquals("comment reply count increased by one", beforeReplyComment, afterReplyComment) ;
+//        assertEquals("post comment count increased by one", beforeReplyPost, afterReplyPost) ;
+//        assertEquals("comment reply count increased by one", beforeReplyComment, afterReplyComment) ;
 
     }
 
     @Test
     public void testEditReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("replyId","1");
+        request.put("replyId", insertedReply.getReplyId());
         request.put("authorId","1");
         request.put("parentPostId",insertedPost.getPostId());
         request.put("parentCommentId",insertedComment.getCommentId());
@@ -121,23 +122,24 @@ public class WallTest {
         request.put("images", images);
         request.put("urls", urls);
         String response = (String) wallService.serve("editReply",request);
-//        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
-//        List<Reply> replies = (List<Reply>) result.get("response");
-//        Boolean found = false;
-//        for(int i =0;i<replies.size();i++){
-//            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals("1")){
-//                found = true;
-//                break;
-//            }
-//        }
+        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
+        List<Reply> replies = (List<Reply>) result.get("response");
+        Boolean found = false;
+        for(int i =0;i<replies.size();i++){
+            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals("1")){
+                found = true;
+                break;
+            }
+        }
         assertEquals("response should be Reply updated",response,"Reply updated");
+        assertEquals("reply should be updated", found, true);
     }
 
     @Test
     public void testDeleteReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         HashMap<String,Object> request = new HashMap<String, Object>();
-        request.put("replyId","1");
+        request.put("replyId",insertedReply.getReplyId());
         request.put("authorId","3");
         request.put("parentPostId",insertedPost.getPostId());
         request.put("parentCommentId",insertedComment.getCommentId());
@@ -151,10 +153,12 @@ public class WallTest {
         LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
         List<Reply> replies = (List<Reply>) result.get("response");
 
-      String response =  (String) wallService.serve("deleteReply",request);
-//
-//        LinkedHashMap<String, Object> testResult = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
-//        List<Reply> testReplies = (List<Reply>) testResult.get("response");
+        String response =  (String) wallService.serve("deleteReply",request);
+
+        LinkedHashMap<String, Object> testResult = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
+        List<Reply> testReplies = (List<Reply>) testResult.get("response");
+
+        assertEquals("Size should decrement by one",replies.size() - 1,testReplies.size());
 
         assertEquals("response should be Reply deleted",response,"Reply deleted");
     }
@@ -191,64 +195,58 @@ public class WallTest {
 
 
     @Test
-    public void testEditComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<String,String> request = new HashMap<String,String>();
-        request.put("commentId", "1234");
-        request.put("authorId", "12");
-        request.put("parentPostId", "14");
-        request.put("likesCount", 20+"");
-        request.put("repliesCount", 2+"");
-        request.put("images", "sdgg");
-        request.put("urls", "fhdfhj");
-        request.put("mentions", "sdgfh");
-        request.put("text", "Text");
-        request.put("timeStamp", "Time Stamp");
-        try {
-            LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("editComment", request);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        List<Comment> newComments = getComments("14");
-        assertEquals("The comment should have a new Text", newComments.get(0).getText(),"Text");
+    public void testEditComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ParseException {
+        HashMap<String,Object> request = new HashMap<String,Object>();
+        request.put("commentId", insertedComment.getCommentId());
+        request.put("authorId", "1");
+        request.put("parentPostId", insertedPost.getPostId());
+        request.put("likesCount", 45);
+        request.put("repliesCount", 45);
+        request.put("images", images);
+        request.put("urls", urls);
+        request.put("mentions", mentions);
+        request.put("text", "Edited Text");
+        request.put("timestamp","Thu Jan 19 2012 01:00 PM");
+
+        String response = (String) wallService.serve("editComment", request);
+
+        Comment updatedComment = getComment(insertedComment.getCommentId());
+        assertEquals("The comment should have a new Text", updatedComment.getText(),"Edited Text");
+        assertEquals("Response should be Comment Updated", response);
 
 
     }
 
     @Test
-    public void testDeleteComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<String,String> request = new HashMap<String,String>();
-        request.put("commentId", "1234");
-        request.put("authorId", "12");
-        request.put("parentPostId", "14");
-        request.put("likesCount", 20+"");
-        request.put("repliesCount", 2+"");
-        request.put("images", "sdgg");
-        request.put("urls", "fhdfhj");
-        request.put("mentions", "sdgfh");
+    public void testDeleteComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ParseException {
+        HashMap<String,Object> request = new HashMap<String,Object>();
+        request.put("commentId", insertedComment.getCommentId());
+        request.put("authorId", "1");
+        request.put("parentPostId", insertedPost.getPostId());
+        request.put("likesCount", 45);
+        request.put("repliesCount", 45);
+        request.put("images", images);
+        request.put("urls", urls);
+        request.put("mentions", mentions);
         request.put("text", "Text");
-        request.put("timeStamp", "Time Stamp");
-        try {
-            LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("deleteComment", request);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Comment newComment = getComment("1234");
+        request.put("timeStamp", "Thu Jan 19 2012 01:00 PM");
+        String response = (String) wallService.serve("deleteComment", request);
+
+        Comment newComment = getComment(insertedComment.getCommentId());
         assertEquals("The comment should not exist", newComment,null);
 
 
     }
 
     @Test
-    public void testGetComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<String,String> request = new HashMap<String,String>();
-        request.put("parentPostId", "14");
-        try {
+    public void testGetComments() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ParseException {
+        HashMap<String,Object> request = new HashMap<String,Object>();
+        request.put("parentPostId", insertedPost.getPostId());
+
             LinkedHashMap<String, Object> response = (LinkedHashMap<String, Object>) wallService.serve("getComments", request);
             List<Comment> newComments = (List<Comment>) response.get("response");
             assertEquals("The comment should not exist", newComments.size(),1);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
 
     }
 

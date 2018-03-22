@@ -74,9 +74,9 @@ public class ArangoHandlerTest {
         dbSeed = new DatabaseSeed();
         dbSeed.insertUsers();
         dbSeed.insertPosts();
+        dbSeed.insertComments();
         dbSeed.insertReplies();
         dbSeed.insertLikes();
-        dbSeed.insertComments();
 
         insertedComment = dbSeed.getInsertedComments().get(0);
         insertedLike = dbSeed.getInsertedLikes().get(0);

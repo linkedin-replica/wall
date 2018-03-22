@@ -284,6 +284,7 @@ public class ArangoWallHandler implements DatabaseHandler {
         String response = "";
         try {
              arangoDB.db(dbName).collection(commentsCollection).updateDocument(comment.getCommentId(),comment);
+             response = "Comment Updated";
         } catch (ArangoDBException e) {
             response = "Failed to update comment. " + e.getMessage();
         }
