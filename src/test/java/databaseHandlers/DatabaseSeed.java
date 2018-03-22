@@ -73,17 +73,21 @@ public class DatabaseSeed {
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Mon Mar 19 2012 01:00 PM");
         for(String text : lines){
-<<<<<<< HEAD
+            ArrayList<String> images = new ArrayList<String>();
+            images.add("images");
+            ArrayList<String> videos = new ArrayList<String>();
+            videos.add("videos");
+            ArrayList<String> urls = new ArrayList<String>();
+            urls.add("urls");
+            ArrayList<String> hashtags = new ArrayList<String>();
+            hashtags.add("hashtags");
+            ArrayList<String> mentions = new ArrayList<String>();
+            mentions.add("mentions");
+
             Post post = new Post( "2", "3",
-                    "4", "5", text, "",
-                    "y", 455, "", "",
-                    "", 455, "", timestamp, true,
-=======
-            Post post = new Post(counter + "", "2", "3",
-                    "4", "5", text, x,
-                    x, 455, x, x,
-                    x, 455, timestamp, true,
->>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
+                    "4", "5", text,hashtags,
+                    mentions, 12, images, videos,
+                    urls, 30, timestamp, true,
                     true);
 
 
@@ -140,11 +144,7 @@ public class DatabaseSeed {
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
-<<<<<<< HEAD
-            Reply reply = new Reply("3", insertedPosts.get(0).getPostId(), insertedComments.get(0).getCommentId(), x, 45L, text, date, x, x);
-=======
-            Reply reply = new Reply(counter + "", "3", "1", "45", x, 4500, text, date, x, x);
->>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
+            Reply reply = new Reply("3", insertedPosts.get(0).getPostId(), insertedComments.get(0).getCommentId(), x, 4500, text, date, x, x);
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             insertedReplies.add(reply);
             BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);

@@ -1,9 +1,5 @@
 package main;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -16,12 +12,9 @@ import com.arangodb.util.MapBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.config.Configuration;
-<<<<<<< HEAD
 import com.linkedin.replica.wall.config.DatabaseConnection;
 import com.linkedin.replica.wall.models.*;
-=======
 import com.linkedin.replica.wall.database.DatabaseConnection;
->>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
 
 import java.util.HashMap;
 import java.util.List;

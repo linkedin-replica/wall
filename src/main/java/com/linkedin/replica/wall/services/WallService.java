@@ -19,22 +19,8 @@ import java.util.HashMap;
  * It will call command execute method after passing to its DatabaseHandler
  */
 public class WallService {
-<<<<<<< HEAD
-    private Configuration config;
 
-
-    public WallService() throws IOException{
-        config = Configuration.getInstance();
-    }
-
-
-    public Object serve(String commandName, HashMap<String, Object> args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
-        Class<?> commandClass = config.getCommandClass(commandName);
-        Constructor constructor = commandClass.getConstructor(HashMap.class);
-        Command command = (Command) constructor.newInstance(args);
-=======
     private Configuration config = Configuration.getInstance();
->>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
 
     public  Object serve(String commandName, HashMap<String, Object> args) throws Exception {
         Class<?> dbHandlerClass = config.getHandlerClass(commandName);
