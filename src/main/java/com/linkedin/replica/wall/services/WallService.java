@@ -21,7 +21,7 @@ import java.util.HashMap;
 public class WallService {
     private Configuration config = Configuration.getInstance();
 
-    public  Object serve(String commandName, HashMap<String, String> args) throws Exception {
+    public  Object serve(String commandName, HashMap<String, Object> args) throws Exception {
         Class<?> dbHandlerClass = config.getHandlerClass(commandName);
         DatabaseHandler dbHandler = (DatabaseHandler) dbHandlerClass.newInstance();
 

@@ -72,9 +72,9 @@ public class DatabaseSeed {
         System.out.println("before loop");
         for(String text : lines){
             Post post = new Post(counter + "", "2", "3",
-                    "4", "5", text, "",
-                    "y", 455, "", "",
-                    "", 455, "", timestamp, true,
+                    "4", "5", text, x,
+                    x, 455, x, x,
+                    x, 455, timestamp, true,
                     true);
 
 
@@ -139,7 +139,7 @@ public class DatabaseSeed {
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
-            Reply reply = new Reply(counter + "", "3", "1", "45", x, 45L, text, date, x, x);
+            Reply reply = new Reply(counter + "", "3", "1", "45", x, 4500, text, date, x, x);
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             System.out.println("New Reply document insert with key = ");
             BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);

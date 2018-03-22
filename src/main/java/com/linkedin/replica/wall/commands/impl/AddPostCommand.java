@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.*;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
@@ -31,24 +33,24 @@ public class AddPostCommand extends Command{
         // call dbHandler to get error or success message from dbHandler
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Post post;
+        Gson googleJson = new Gson();
         String postId = args.get("postId").toString();
         String authorId = args.get("authorId").toString();
         String type = args.get("type").toString();
         String companyId = args.get("companyId").toString();
         String privacy = args.get("privacy").toString();
         String text = args.get("text").toString();
-        Date timestamp = format.parse(args.get("timeStamp").toString());
-        String hashtags = args.get("hashtags").toString();
-        String mentions = args.get("mentions").toString();
-        int likesCount = Integer.parseInt(args.get("likesCount").toString());
-        String images = args.get("images").toString();
-        String videos = args.get("videos").toString();
-        String urls = args.get("urls").toString();
-        int commentsCount = Integer.parseInt(args.get("commentsCount").toString());
-        String shares = args.get("shares").toString();
-        boolean isCompanyPost = Boolean.parseBoolean(args.get("isCompanyPost").toString());
-        boolean isPrior = Boolean.parseBoolean(args.get("isPrior").toString());
-        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, shares, timestamp, isCompanyPost, isPrior);
+        Date timestamp = format.parse(args.get("timestamp").toString());
+        ArrayList<String> hashtags = googleJson.fromJson((JsonArray) args.get("hashtags"), ArrayList.class);
+        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
+        int likesCount = (int) args.get("likesCount");
+        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
+        ArrayList<String> videos = googleJson.fromJson((JsonArray) args.get("videos"), ArrayList.class);
+        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
+        int commentsCount = (int) args.get("commentsCount");
+        boolean isCompanyPost = (boolean) args.get("isCompanyPost");
+        boolean isPrior = (boolean) args.get("isPrior");
+        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior);
 
         String response = dbHandler.addPost(post);
         return response;

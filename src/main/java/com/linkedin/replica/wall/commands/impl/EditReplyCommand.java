@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -29,17 +31,18 @@ public class EditReplyCommand extends Command{
 
         // call dbHandler to get error or success message from dbHandler
         Reply reply;
+        Gson googleJson = new Gson();
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         String replyId = args.get("replyId").toString();
         String authorId = args.get("authorId").toString();
         String parentPostId = args.get("parentPostId").toString();
         String parentCommentId = args.get("parentCommentId").toString();
-        ArrayList<String> mentions = new ArrayList<String>(Arrays.asList(args.get("mentions").toString().split(",")));
-        Long likesCount = Long.parseLong(args.get("likesCount").toString());
+        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
+        int likesCount = (int) args.get("likesCount");
         String text = (String) args.get("text");
         Date timestamp = format.parse(args.get("timestamp").toString());
-        ArrayList<String> images = new ArrayList<String>(Arrays.asList(args.get("images").toString().split(",")));
-        ArrayList<String> urls = new ArrayList<String>(Arrays.asList(args.get("urls").toString().split(",")));
+        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
+        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
 
         reply = new Reply(replyId, authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
         String response = dbHandler.editReply(reply);

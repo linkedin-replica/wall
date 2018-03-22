@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -28,17 +30,18 @@ public class DeleteCommentCommand extends Command{
 
         // call dbHandler to get error or success message from dbHandler
         Comment comment;
+        Gson googleJson = new Gson();
         String commentId = args.get("commentId").toString();
         String authorId = args.get("authorId").toString();
         String parentPostId = args.get("parentPostId").toString();
-        Integer likesCount = Integer.parseInt(args.get("likesCount").toString());
-        Integer repliesCount = Integer.parseInt(args.get("repliesCount").toString());
-        ArrayList<String> images = new ArrayList<String>(Arrays.asList(args.get("images").toString().split(",")));
-        ArrayList<String> urls = new ArrayList<String>(Arrays.asList(args.get("urls").toString().split(",")));
-        ArrayList<String> mentions = new ArrayList<String>(Arrays.asList(args.get("mentions").toString().split(",")));
+        int likesCount = (int) args.get("likesCount");
+        int repliesCount = (int) args.get("repliesCount");
+        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
+        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
+        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
-        String timeStamp = args.get("timeStamp").toString();
-        comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timeStamp);
+        String timestamp = args.get("timestamp").toString();
+        comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
         String response =  dbHandler.deleteComment(comment);
         return response;
     }
