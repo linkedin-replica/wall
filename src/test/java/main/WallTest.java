@@ -9,16 +9,15 @@ import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.util.MapBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.models.Bookmark;
-import com.linkedin.replica.wall.models.Comment;
+import com.linkedin.replica.wall.models.*;
 
 import java.util.HashMap;
 import java.util.List;
 
-import com.linkedin.replica.wall.models.Reply;
-import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.services.WallService;
 import databaseHandlers.DatabaseSeed;
 import org.junit.AfterClass;
@@ -34,8 +33,14 @@ public class WallTest {
     static Configuration config;
     private static DatabaseSeed dbSeed;
     private static String commentsCollection;
-
-
+    private static Post insertedPost;
+    private static Comment insertedComment;
+    private static Reply insertedReply;
+    private static UserProfile insertedUser;
+    private static Like insertedLike;
+    private static   JsonArray mentions;
+    private  static JsonArray urls;
+   private static JsonArray images;
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         String rootFolder = "src/main/resources/";
@@ -55,32 +60,51 @@ public class WallTest {
         dbSeed.insertComments();
         commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
 
+        insertedComment = dbSeed.getInsertedComments().get(0);
+        insertedLike = dbSeed.getInsertedLikes().get(0);
+        insertedPost = dbSeed.getInsertedPosts().get(0);
+        insertedReply = dbSeed.getInsertedReplies().get(0);
+        insertedUser = dbSeed.getInsertedUsers().get(0);
+        mentions = new JsonArray();
+        urls = new JsonArray();
+        images = new JsonArray();
+        mentions.add("yara");
+        images.add("bla bla ");
+        urls.add("hania");
+
     }
 
     @Test
     public void testAddReplyService() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        HashMap<String,String> request = new HashMap<String, String>();
-        request.put("authorId","3");
-        request.put("parentPostId","1");
-        request.put("parentCommentId","45");
-        request.put("mentions","y");
-        request.put("likesCount","45");
+
+        HashMap<String, Object> request = new HashMap<String, Object>();
+        request.put("authorId","1");
+        request.put("parentPostId", insertedPost.getPostId());
+        request.put("parentCommentId",insertedComment.getCommentId());
+        request.put("mentions",mentions);
+        request.put("likesCount",45);
         request.put("text","TestTestTest");
         request.put("timestamp","Thu Jan 19 2012 01:00 PM");
-        request.put("images","y");
-        request.put("urls","y");
-        wallService.serve("addReply",request);
+        request.put("images",images);
+        request.put("urls",urls);
+        int beforeReplyComment = insertedComment.getRepliesCount() + 1;
+        int beforeReplyPost = insertedPost.getCommentsCount() + 1;
+        String response = (String)wallService.serve("addReply",request);
+        int afterReplyPost = insertedPost.getCommentsCount();
+        int afterReplyComment = insertedComment.getRepliesCount();
+//        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
+//        List<Reply> replies = (List<Reply>) result.get("response");
+//        Boolean found = false;
+//        for(int i = 0;i < replies.size(); i++){
+//                if(replies.get(i).getText().equals("TestTestTest")){
+//                    found = true;
+//                    break;
+//                }
+//        }
+        assertEquals("response should be equal Reply created",response,"Reply created");
+        assertEquals("post comment count increased by one", beforeReplyPost, afterReplyPost) ;
+        assertEquals("comment reply count increased by one", beforeReplyComment, afterReplyComment) ;
 
-        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
-        List<Reply> replies = (List<Reply>) result.get("response");
-        Boolean found = false;
-        for(int i =0;i<replies.size();i++){
-            if(replies.get(i).getText().equals("TestTestTest")){
-                found = true;
-                break;
-            }
-        }
-        assertEquals("Texts should be the same",found,true);
     }
 
     @Test

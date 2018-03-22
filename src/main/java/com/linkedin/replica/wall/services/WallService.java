@@ -31,7 +31,7 @@ public class WallService {
     }
 
 
-    public Object serve(String commandName, HashMap<String, String> args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
+    public Object serve(String commandName, HashMap<String, Object> args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
         Class<?> commandClass = config.getCommandClass(commandName);
         Constructor constructor = commandClass.getConstructor(HashMap.class);
         Command command = (Command) constructor.newInstance(args);
