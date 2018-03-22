@@ -1,6 +1,5 @@
 package databaseHandlers;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -10,20 +9,17 @@ import java.util.*;
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.linkedin.replica.wall.config.Configuration;
-import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.DatabaseHandler;
-import com.linkedin.replica.wall.handlers.impl.ArangoWallHandler;
+import com.linkedin.replica.wall.database.DatabaseConnection;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
+import com.linkedin.replica.wall.database.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.UserProfile;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
 
-import com.linkedin.replica.wall.services.WallService;
-import java.io.FileNotFoundException;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 
 
 import com.arangodb.entity.DocumentCreateEntity;
@@ -40,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ArangoHandlerTest {
     private static DatabaseSeed dbSeed;
-    private static DatabaseHandler arangoWallHandler;
+    private static WallHandler arangoWallHandler;
     private static ArangoDB arangoDB;
     static Configuration config;
     private static String dbName;
@@ -58,10 +54,11 @@ public class ArangoHandlerTest {
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         // startup SearchEngine
         String rootFolder = "src/main/resources/";
-        Configuration.init(rootFolder + "app_config",
-                rootFolder + "arango_config",
-                rootFolder + "command_config");
+        Configuration.init(rootFolder + "app.config",
+                rootFolder + "arango.test.config",
+                rootFolder + "commands.config", rootFolder + "controller.config");
         config = Configuration.getInstance();
+        DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         arangoWallHandler = new ArangoWallHandler();
         dbName = Configuration.getInstance().getArangoConfig("arangodb.name");
@@ -133,10 +130,25 @@ public class ArangoHandlerTest {
        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
 
+       ArrayList<String> images = new ArrayList<String>();
+       images.add("images");
+       ArrayList<String> videos = new ArrayList<String>();
+       videos.add("videos");
+       ArrayList<String> urls = new ArrayList<String>();
+       urls.add("urls");
+       ArrayList<String> hashtags = new ArrayList<String>();
+       hashtags.add("hashtags");
+       ArrayList<String> mentions = new ArrayList<String>();
+       mentions.add("mentions");
 
+<<<<<<< HEAD
         Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
                 null,null, 12, "images", "videos", "urls", 30,
                 "shares", timestamp, true, false);
+=======
+        Post post = new Post("postId", "authorId", null, "companyId", null, null,
+                hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false);
+>>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
         arangoWallHandler.addPost(post);
         Post newPost = getPosts(post.getPostId());
         assertEquals("Expected to have a certain post in database", newPost.getCompanyId(), "companyId");
@@ -152,8 +164,26 @@ public class ArangoHandlerTest {
 
        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+<<<<<<< HEAD
        Post post = insertedPost;
        post.setLikesCount(13);
+=======
+
+       ArrayList<String> images = new ArrayList<String>();
+       images.add("images");
+       ArrayList<String> videos = new ArrayList<String>();
+       videos.add("videos");
+       ArrayList<String> urls = new ArrayList<String>();
+       urls.add("urls");
+       ArrayList<String> hashtags = new ArrayList<String>();
+       hashtags.add("hashtags");
+       ArrayList<String> mentions = new ArrayList<String>();
+       mentions.add("mentions");
+
+       Post post = new Post("postId", "authorId", null, "companyId", null, null,
+               hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false);
+
+>>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
        arangoWallHandler.editPost(post);
        Post newPost = getPosts(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database", newPost.getLikesCount(), 13);
@@ -169,8 +199,27 @@ public class ArangoHandlerTest {
 
        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+<<<<<<< HEAD
        arangoWallHandler.deletePost(insertedPost);
        Post newPost = getPosts(insertedPost.getPostId());
+=======
+       ArrayList<String> images = new ArrayList<String>();
+       images.add("images");
+       ArrayList<String> videos = new ArrayList<String>();
+       videos.add("videos");
+       ArrayList<String> urls = new ArrayList<String>();
+       urls.add("urls");
+       ArrayList<String> hashtags = new ArrayList<String>();
+       hashtags.add("hashtags");
+       ArrayList<String> mentions = new ArrayList<String>();
+       mentions.add("mentions");
+
+       Post post = new Post("postId", "authorId", null, "companyId", null, null,
+               hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false);
+
+       arangoWallHandler.deletePost(post);
+       Post newPost = getPosts("postId");
+>>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
        assertEquals("Expected to have a certain post in database", newPost, null);
    }
 
@@ -182,9 +231,27 @@ public class ArangoHandlerTest {
     public void testGetPosts() throws ParseException {
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+<<<<<<< HEAD
         Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
                 null,null, 12, "images", "videos", "urls", 30,
                 "shares", timestamp, true, false);
+=======
+
+        ArrayList<String> images = new ArrayList<String>();
+        images.add("images");
+        ArrayList<String> videos = new ArrayList<String>();
+        videos.add("videos");
+        ArrayList<String> urls = new ArrayList<String>();
+        urls.add("urls");
+        ArrayList<String> hashtags = new ArrayList<String>();
+        hashtags.add("hashtags");
+        ArrayList<String> mentions = new ArrayList<String>();
+        mentions.add("mentions");
+
+        Post post = new Post("postId", "authorId", null, "companyId", null, null,
+                hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false);
+
+>>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
         addPost(post);
         List<Post> newPost = arangoWallHandler.getPosts(insertedUser.getUserId());
         assertEquals("Expected to have 1 post with that post ID", newPost.size(), 1);
@@ -214,7 +281,11 @@ public class ArangoHandlerTest {
         mentionsImagesUrls.add("Test");
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+<<<<<<< HEAD
         Reply reply = new Reply(insertedUser.getUserId(),insertedPost.getPostId(),insertedComment.getCommentId(),mentionsImagesUrls,2l,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+=======
+        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2000,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+>>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
         arangoWallHandler.addReply(reply);
         Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(),Reply.class);
         assertEquals("Reply text should be", replyDocument.getText() , "You are so cute");
@@ -238,8 +309,12 @@ public class ArangoHandlerTest {
         String replyID = insertedReply.getReplyId();
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
+<<<<<<< HEAD
         Reply reply = insertedReply;
         reply.setText("Some edited text");
+=======
+        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2000,"Some edited text",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+>>>>>>> 5058ad292e336e812181cb773d8c5cedfcf0061a
         arangoWallHandler.editReply(reply);
         Reply testReply = arangoWallHandler.getReply(replyID);
         assertEquals("Texts should be the same", testReply.getText(), "Some edited text");

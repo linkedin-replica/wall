@@ -13,13 +13,14 @@ public class Reply {
     private String parentPostId;
     private String parentCommentId;
     private ArrayList<String> mentions;
-    private Long likesCount;
+    private int likesCount;
     private String text;
     private Date timestamp;
     private ArrayList<String> images;
     private ArrayList <String> urls;
 
-    public Reply(String authorId, String parentPostId, String parentCommentId, ArrayList<String> mentions, Long likesCount, String text, Date timestamp, ArrayList<String> images,  ArrayList<String> urls ) {
+    public Reply(String authorId, String parentPostId, String parentCommentId, ArrayList<String> mentions, int likesCount, String text, Date timestamp, ArrayList<String> images,  ArrayList<String> urls ) {
+
         this.authorId = authorId;
         this.parentPostId = parentPostId;
         this.parentCommentId = parentCommentId;
@@ -91,11 +92,11 @@ public class Reply {
         return mentions;
     }
 
-    public Long getLikesCount() {
+    public int getLikesCount() {
         return likesCount;
     }
 
-    public void setLikesCount(Long likesCount) {
+    public void setLikesCount(int likesCount) {
         this.likesCount = likesCount;
     }
 

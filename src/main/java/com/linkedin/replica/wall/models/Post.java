@@ -1,4 +1,5 @@
 package com.linkedin.replica.wall.models;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.arangodb.entity.DocumentField;
@@ -13,21 +14,20 @@ public class Post {
     private String companyId;
     private String privacy;
     private String text;
-    private String hashtags;
-    private String mentions;
+    private ArrayList<String> hashtags;
+    private ArrayList<String> mentions;
     private int likesCount;
-    private String images;
-    private String videos;
-    private String urls;
+    private ArrayList<String> images;
+    private ArrayList<String> videos;
+    private ArrayList<String> urls;
     private int commentsCount;
-    private String shares;
     private Date timestamp;
 
     private boolean isCompanyPost;
     private boolean isPrior;
 
-    public Post(String authorId,String type, String companyId, String privacy, String text, String hashtags, String mentions, int likesCount, String images, String videos, String urls, int commentsCount, String shares, Date timestamp, boolean isCompanyPost, boolean isPrior){
 
+    public Post(String authorId,String type, String companyId, String privacy, String text, ArrayList<String> hashtags, ArrayList<String> mentions, int likesCount, ArrayList<String> images, ArrayList<String> videos, ArrayList<String> urls, int commentsCount, Date timestamp, boolean isCompanyPost, boolean isPrior){
         this.authorId = authorId;
         this.type = type;
         this.companyId = companyId;
@@ -40,7 +40,6 @@ public class Post {
         this.videos = videos;
         this.urls = urls;
         this.commentsCount = commentsCount;
-        this.shares = shares;
         this.timestamp = timestamp;
         this.isCompanyPost = isCompanyPost;
         this.isPrior = isPrior;
@@ -74,11 +73,11 @@ public class Post {
         return text;
     }
 
-    public String getHashtags(){
+    public ArrayList<String> getHashtags(){
         return hashtags;
     }
 
-    public String getMentions() {
+    public ArrayList<String> getMentions() {
         return mentions;
     }
 
@@ -86,15 +85,15 @@ public class Post {
         return likesCount;
     }
 
-    public String getImages() {
+    public ArrayList<String> getImages() {
         return images;
     }
 
-    public String getVideos() {
+    public ArrayList<String> getVideos() {
         return videos;
     }
 
-    public String getUrls() {
+    public ArrayList<String> getUrls() {
         return urls;
     }
 
@@ -105,12 +104,6 @@ public class Post {
     public int getCommentsCount() {
         return commentsCount;
     }
-
-    public String getShares(){
-        return shares;
-    }
-
-
 
     public boolean isCompanyPost() {
         return isCompanyPost;
@@ -144,11 +137,11 @@ public class Post {
         this.text = text;
     }
 
-    public void setHashtags(String hashtags) {
+    public void setHashtags(ArrayList<String> hashtags) {
         this.hashtags = hashtags;
     }
 
-    public void setMentions(String mentions) {
+    public void setMentions(ArrayList<String> mentions) {
         this.mentions = mentions;
     }
 
@@ -156,24 +149,20 @@ public class Post {
         this.likesCount = likesCount;
     }
 
-    public void setImages(String images) {
+    public void setImages(ArrayList<String> images) {
         this.images = images;
     }
 
-    public void setVideos(String videos) {
+    public void setVideos(ArrayList<String> videos) {
         this.videos = videos;
     }
 
-    public void setUrls(String urls) {
+    public void setUrls(ArrayList<String> urls) {
         this.urls = urls;
     }
 
     public void setCommentsCount(int commentsCount) {
         this.commentsCount = commentsCount;
-    }
-
-    public void setShares(String shares) {
-        this.shares = shares;
     }
 
     public void setCompanyPost(boolean companyPost) {
@@ -200,7 +189,6 @@ public class Post {
                 ", videos = '" + videos + '\'' +
                 ", urls = '" + urls + '\'' +
                 ", commentsCount = '" + commentsCount + '\'' +
-                ", shares ='" + shares + '\'' +
                 ", timestamp = '" + timestamp + '\'' +
                 ", isCompanyPost = '" + isCompanyPost + '\'' +
                 ", isPrior = '" + isPrior + '\'' +

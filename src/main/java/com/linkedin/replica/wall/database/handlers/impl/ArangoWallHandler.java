@@ -1,16 +1,16 @@
-package com.linkedin.replica.wall.handlers.impl;
+package com.linkedin.replica.wall.database.handlers.impl;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
-import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.DocumentCreateEntity;
 import com.arangodb.entity.DocumentUpdateEntity;
 import com.arangodb.util.MapBuilder;
 
 import com.linkedin.replica.wall.config.Configuration;
-import com.linkedin.replica.wall.config.DatabaseConnection;
-import com.linkedin.replica.wall.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.DatabaseConnection;
+import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
+import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Like;
 import com.linkedin.replica.wall.models.Comment;
@@ -19,14 +19,13 @@ import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.models.UserProfile;
 import javafx.geometry.Pos;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ArangoWallHandler implements DatabaseHandler {
+public class ArangoWallHandler implements WallHandler {
     private ArangoDB arangoDB;
     private String dbName;
     String likesCollection;

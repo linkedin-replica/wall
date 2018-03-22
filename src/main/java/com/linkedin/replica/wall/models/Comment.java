@@ -13,7 +13,7 @@ public class Comment {
         private ArrayList<String> images;
         private ArrayList<String> urls;
         private ArrayList<String> mentions;
-        private String text,timeStamp;
+        private String text, timestamp;
 
         public Comment(){
 
@@ -29,7 +29,7 @@ public class Comment {
             this.urls = urls;
             this.mentions = mentions;
             this.text = text;
-            this.timeStamp = timeStamp;
+            this.timestamp = timestamp;
 
         }
 
@@ -105,12 +105,12 @@ public class Comment {
             this.text = text;
         }
 
-        public String getTimeStamp() {
-            return this.timeStamp;
+        public String getTimestamp() {
+            return this.timestamp;
         }
 
-        public void setTimeStamp(String timeStamp) {
-            this.timeStamp = timeStamp;
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
         }
 
     public String toString() {
@@ -121,7 +121,7 @@ public class Comment {
                 ", likesCount='" + likesCount + '\'' +
                 ", repliesCount='" + repliesCount + '\'' +
                 ", text='" + text + '\'' +
-                ", timeStamp='" + timeStamp + '\'' +
+                ", timestamp='" + timestamp + '\'' +
                 '}';
     }
     }
