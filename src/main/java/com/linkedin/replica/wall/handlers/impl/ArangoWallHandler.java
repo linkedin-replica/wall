@@ -387,6 +387,7 @@ public class ArangoWallHandler implements DatabaseHandler {
         String response = "";
         try {
             arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,reply);
+            response = "Reply updated";
         } catch (ArangoDBException e) {
             response = "Failed to update reply. " + e.getMessage();
         }
@@ -402,6 +403,7 @@ public class ArangoWallHandler implements DatabaseHandler {
         String response = "";
         try {
             arangoDB.db(dbName).collection(repliesCollection).deleteDocument(reply.getReplyId());
+            response = "Reply deleted";
         } catch (ArangoDBException e) {
             response = "Failed to delete reply. " + e.getMessage();
         }
@@ -418,7 +420,7 @@ public class ArangoWallHandler implements DatabaseHandler {
             editPost(post);
         }else
         {
-            response = "failed to update post's comment count";
+            response = "Failed to update post's comment count";
         }
         return response;
 
