@@ -59,7 +59,6 @@ public class RequestProcessingHandlerTest {
 
         // get response created after handling requests
         LinkedHashMap<String, Object> response = channel.readOutbound();
-        System.out.println(response);
         assertEquals("Wrong type", HttpResponseStatus.ACCEPTED, (HttpResponseStatus)response.get("type"));
         assertEquals("Wrong code", 202, response.get("code"));
         assertEquals("Wrong message", "Changes are applied successfully and configuration files are updated", response.get("message"));
