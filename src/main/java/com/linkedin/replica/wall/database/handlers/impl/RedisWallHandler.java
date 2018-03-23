@@ -130,4 +130,14 @@ public class RedisWallHandler implements WallHandler {
     public void getTopPosts()throws ParseException {
 
     }
+
+    @Override
+    public Comment getComment(String commentId) {
+        return null;
+    }
+
+    @Override
+    public Post getPost(String postId) {
+        return null;
+    }
 }

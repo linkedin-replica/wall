@@ -19,6 +19,7 @@ import java.util.HashMap;
  * It will call command execute method after passing to its DatabaseHandler
  */
 public class WallService {
+
     private Configuration config = Configuration.getInstance();
 
     public  Object serve(String commandName, HashMap<String, Object> args) throws Exception {

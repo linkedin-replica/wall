@@ -42,7 +42,17 @@ public class EditCommentCommand extends Command{
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
         String timestamp = args.get("timestamp").toString();
-        comment = new Comment(commentId, authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
+
+        comment = dbHandler.getComment(commentId);
+        comment.setAuthorId(authorId);
+        comment.setParentPostId(parentPostId);
+        comment.setLikesCount(likesCount);
+        comment.setRepliesCount(repliesCount);
+        comment.setImages(images);
+        comment.setUrls(urls);
+        comment.setMentions(mentions);
+        comment.setText(text);
+        comment.setTimestamp(timestamp);
         String response =  dbHandler.editComment(comment);
         return response;
     }

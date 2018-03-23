@@ -45,8 +45,11 @@ public class ArangoHandlerTest {
     private static String usersCollection;
     private static String  repliesCollection;
     private static String postsCollection;
-    private ArrayList<UserProfile> insertedUsers;
-
+    private static Post insertedPost;
+    private static Comment insertedComment;
+    private static Reply insertedReply;
+    private static UserProfile insertedUser;
+    private static Like insertedLike;
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         // startup SearchEngine
@@ -64,23 +67,32 @@ public class ArangoHandlerTest {
         commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
         repliesCollection = Configuration.getInstance().getArangoConfig("collections.replies.name");
         postsCollection = Configuration.getInstance().getArangoConfig("collections.posts.name");
+
         dbSeed = new DatabaseSeed();
-        dbSeed.insertUsers();
         dbSeed.insertPosts();
+        dbSeed.insertComments();
         dbSeed.insertReplies();
         dbSeed.insertLikes();
-        dbSeed.insertComments();
+        dbSeed.insertUsers();
+
+        insertedComment = dbSeed.getInsertedComments().get(0);
+        insertedLike = dbSeed.getInsertedLikes().get(0);
+        insertedPost = dbSeed.getInsertedPosts().get(0);
+        insertedReply = dbSeed.getInsertedReplies().get(0);
+        insertedUser = dbSeed.getInsertedUsers().get(0);
     }
 
-
+    /**
+     * adding post in database.
+     * @param post
+     * @return
+     */
     public String addPost(Post post) {
         String response = "";
         try {
-            DocumentCreateEntity addDoc =  arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
-            System.out.println("Post Created");
+            arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             response = "Post Created";
         }catch (ArangoDBException e){
-            System.err.println("Failed to add Post " + e.getMessage());
             response = "Failed to add Post " + e.getMessage();
         }
 
@@ -88,13 +100,17 @@ public class ArangoHandlerTest {
     }
 
 
-
-   public Post getPosts(String userID){
+    /**
+     * return specific post from database.
+     * @param postId
+     * @return
+     */
+   public Post getPosts(String postId){
 
         Post post = null;
        try {
 
-           post = arangoDB.db(dbName).collection(postsCollection).getDocument(userID, Post.class);
+           post = arangoDB.db(dbName).collection(postsCollection).getDocument(postId, Post.class);
 
        } catch (ArangoDBException e) {
 
@@ -104,6 +120,10 @@ public class ArangoHandlerTest {
         return post;
    }
 
+    /**
+     * Test to add post.
+     * @throws ParseException
+     */
    @Test
    public void testAddPost() throws ParseException {
 
@@ -121,65 +141,49 @@ public class ArangoHandlerTest {
        ArrayList<String> mentions = new ArrayList<String>();
        mentions.add("mentions");
 
-        Post post = new Post("postId", "authorId", null, "companyId", null, null,
+        Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
                 hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false);
         arangoWallHandler.addPost(post);
-        Post newPost = getPosts("postId");
+        Post newPost = getPosts(post.getPostId());
         assertEquals("Expected to have a certain post in database", newPost.getCompanyId(), "companyId");
 
    }
 
+    /**
+     * test of editing post arango handler.
+     * @throws ParseException
+     */
    @Test
    public void testEditPost() throws ParseException {
 
        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-
-       ArrayList<String> images = new ArrayList<String>();
-       images.add("images");
-       ArrayList<String> videos = new ArrayList<String>();
-       videos.add("videos");
-       ArrayList<String> urls = new ArrayList<String>();
-       urls.add("urls");
-       ArrayList<String> hashtags = new ArrayList<String>();
-       hashtags.add("hashtags");
-       ArrayList<String> mentions = new ArrayList<String>();
-       mentions.add("mentions");
-
-       Post post = new Post("postId", "authorId", null, "companyId", null, null,
-               hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false);
-
+       Post post = insertedPost;
+       post.setLikesCount(13);
        arangoWallHandler.editPost(post);
-       Post newPost = getPosts("postId");
+       Post newPost = getPosts(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database", newPost.getLikesCount(), 13);
 
    }
 
+    /**
+     * function to test delete post arango function.
+     * @throws ParseException
+     */
    @Test
    public void testDeletePost() throws ParseException {
 
        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-       ArrayList<String> images = new ArrayList<String>();
-       images.add("images");
-       ArrayList<String> videos = new ArrayList<String>();
-       videos.add("videos");
-       ArrayList<String> urls = new ArrayList<String>();
-       urls.add("urls");
-       ArrayList<String> hashtags = new ArrayList<String>();
-       hashtags.add("hashtags");
-       ArrayList<String> mentions = new ArrayList<String>();
-       mentions.add("mentions");
-
-       Post post = new Post("postId", "authorId", null, "companyId", null, null,
-               hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false);
-
-       arangoWallHandler.deletePost(post);
-       Post newPost = getPosts("postId");
+       arangoWallHandler.deletePost(insertedPost);
+       Post newPost = getPosts(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database", newPost, null);
    }
 
-
+    /**
+     * testing getPosts arango function.
+     * @throws ParseException
+     */
     @Test
     public void testGetPosts() throws ParseException {
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
@@ -196,114 +200,144 @@ public class ArangoHandlerTest {
         ArrayList<String> mentions = new ArrayList<String>();
         mentions.add("mentions");
 
-        Post post = new Post("postId", "authorId", null, "companyId", null, null,
+        Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
                 hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false);
 
         addPost(post);
-        List<Post> newPost = arangoWallHandler.getPosts("232");
+        List<Post> newPost = arangoWallHandler.getPosts(insertedUser.getUserId());
         assertEquals("Expected to have 1 post with that post ID", newPost.size(), 1);
-
     }
 
+    /**
+     * function to get specific reply from database.
+     * @param replyId
+     * @return
+     */
+    public Reply getReply(String replyId) {
+        Reply reply = null;
+        try {
+            reply = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
+                    Reply.class);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get reply: replyId; " + e.getMessage());
+        }
+        return reply;
+    }
+    /**
+     * @throws ParseException
+     */
     @Test
-    public void testAddReply() throws ClassNotFoundException, InstantiationException, ParseException, IllegalAccessException {
+    public void testAddReply() throws ParseException{
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
-        String replyID = "112";
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2000,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        Reply reply = new Reply(insertedUser.getUserId(),insertedPost.getPostId(),insertedComment.getCommentId(),mentionsImagesUrls,2000,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
         arangoWallHandler.addReply(reply);
-        Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyID,Reply.class);
-        System.out.println("reply doc " + replyDocument);
-        assertEquals("Reply ID should be", replyDocument.getReplyId() , "112");
+        Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(),Reply.class);
         assertEquals("Reply text should be", replyDocument.getText() , "You are so cute");
     }
 
     @Test
     public void testDeleteReply() throws ParseException {
-        arangoWallHandler.getTopPosts();
-//        String commentID = "45";
-//        List<Reply> replies = arangoWallHandler.getReplies(commentID);
-//        if(replies!=null){
-//            Reply reply = replies.get(0);
-//            arangoWallHandler.deleteReply(reply);
-//            assertEquals("Size should be decremented by one", replies.size()-1 , arangoWallHandler.getReplies(commentID).size());
-
-     //   }
+        arangoWallHandler.deleteReply(insertedReply);
+        Reply newReply = getReply(insertedReply.getReplyId());
+        assertEquals("Expected to not have that comment", newReply, null);
     }
 
+    /**
+     * test edit reply function.
+     * @throws ParseException
+     */
     @Test
     public void testEditReplies() throws ParseException {
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
-        String replyID = "1";
+        String replyID = insertedReply.getReplyId();
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-        Reply reply = new Reply(replyID,"6","1","4",mentionsImagesUrls,2000,"Some edited text",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        Reply reply = insertedReply;
+        reply.setText("Some edited text");
         arangoWallHandler.editReply(reply);
         Reply testReply = arangoWallHandler.getReply(replyID);
         assertEquals("Texts should be the same", testReply.getText(), "Some edited text");
-
-
     }
+
+    /**
+     * test get post likes.
+     */
     @Test
     public void testGetPostsLikes() {
-        String postId = "15";
-        boolean equalsPostId = false;
+        String postId = insertedPost.getPostId();
+        boolean equalsPostId = true;
         List<Like> postLikes = arangoWallHandler.getPostLikes(postId);
         for(Like like: postLikes) {
-            if(like.getLikedPostId().equals(postId))
-                equalsPostId = true;
-            assertEquals("Incorrect like retrieved as the likedPostId does not match the postId.", true, equalsPostId);
-            equalsPostId = false;
-
+            if(!like.getLikedPostId().equals(postId))
+                equalsPostId = false;
         }
+        assertEquals("Incorrect like retrieved as the likedPostId does not match the postId.", true, equalsPostId);
+
     }
+
+    /**
+     * test get comment likes arango function.
+     */
     @Test
     public void testGetCommentsLikes() {
-        String commentId = "16";
-        boolean equalsCommentId = false;
+        String commentId = insertedComment.getCommentId();
+        boolean equalsCommentId = true;
         List<Like> commentLikes = arangoWallHandler.getCommentLikes(commentId);
         for(Like like: commentLikes) {
-            if(like.getLikedCommentId().equals(commentId))
-                equalsCommentId = true;
-            assertEquals("Incorrect like retrieved as the likedCommentId does not match the commentId.", true, equalsCommentId);
-            equalsCommentId = false;
-
+            if(!like.getLikedCommentId().equals(commentId))
+                equalsCommentId = false;
         }
+        assertEquals("Incorrect like retrieved as the likedCommentId does not match the commentId.", true, equalsCommentId);
+
     }
+
+    /**
+     * test get replies likes arango function.
+     */
     @Test
     public void testGetRepliesLikes(){
-        String replyId = "18";
-        boolean equalsReplyId = false;
+        String replyId = insertedReply.getReplyId();
+        boolean equalsReplyId = true;
         List<Like> replyLikes = arangoWallHandler.getReplyLikes(replyId);
         for(Like like: replyLikes) {
-            if(like.getLikedReplyId().equals(replyId))
-                equalsReplyId = true;
-            assertEquals("Incorrect like retrieved as the likedReplyId does not match the replyId.", true, equalsReplyId);
-            equalsReplyId = false;
+            if(!like.getLikedReplyId().equals(replyId))
+                equalsReplyId = false;
         }
+        assertEquals("Incorrect like retrieved as the likedReplyId does not match the replyId.", true, equalsReplyId);
+
     }
+
+    /**
+     * test add likes arango handler.
+     */
     @Test
     public void testAddLikes() {
-        Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
-        Like like = new Like( "100", "200", null, null, "name", "headLine", "urlX");
+            Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
+        Like like = new Like(insertedUser.getUserId(), insertedPost.getPostId(), null, null, insertedUser.getFirstName(), "headLine", "urlX");
         arangoWallHandler.addLike(like);
         Long newLikesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Long expectedCollectionSize = likesCollectionSize + 1;
         Like retrievedLike = arangoDB.db(dbName).collection(likesCollection).getDocument(like.getLikeId(),Like.class);
         assertEquals("The size of the likesCollection should have increased by one", expectedCollectionSize, newLikesCollectionSize);
-        assertEquals("The likerId should match the one in the like inserted", "100", retrievedLike.getLikerId());
-        assertEquals("The likedPostId should match the one in the like inserted", "200", retrievedLike.getLikedPostId());
+        assertEquals("The likerId should match the one in the like inserted", insertedUser.getUserId(), retrievedLike.getLikerId());
+        assertEquals("The likedPostId should match the one in the like inserted", insertedPost.getPostId(), retrievedLike.getLikedPostId());
         assertEquals("The likedCommentId should match the one in the like inserted", null, retrievedLike.getLikedCommentId());
         assertEquals("The likedReplyId should match the one in the like inserted", null, retrievedLike.getLikedReplyId());
-        assertEquals("The userName should match the one in the like inserted", "name", retrievedLike.getUserName());
+        assertEquals("The userName should match the one in the like inserted", insertedUser.getFirstName(), retrievedLike.getUserName());
         assertEquals("The headLine should match the one in the like inserted", "headLine", retrievedLike.getHeadLine());
         assertEquals("The imageUrl should match the one in the like inserted", "urlX", retrievedLike.getImageUrl());
 
     }
-    @Test public void testDeleteLikes() {
+
+    /**
+     * test delete likes arango handler.
+     */
+    @Test
+    public void testDeleteLikes() {
         String query = "FOR l in " + likesCollection + " RETURN l";
         ArangoCursor<Like> likesCursor = arangoDB.db(dbName).query(query, new HashMap<String, Object>(), null, Like.class);
         ArrayList<Like> allLikes = new ArrayList<Like>(likesCursor.asListRemaining());
@@ -324,9 +358,9 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testAddBookmark() throws IOException, ClassNotFoundException {
-        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        UserProfile user = insertedUser;
         String userId = user.getUserId();
-        String postId = "P123";
+        String postId = insertedPost.getPostId();
         int bookmarkNo = user.getBookmarks().size() + 1;
         Bookmark bookmark = new Bookmark(userId, postId);
         arangoWallHandler.addBookmark(bookmark);
@@ -343,24 +377,25 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testDeleteBookmark(){
-        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        UserProfile user = insertedUser;
         String userId = user.getUserId();
-        int bookmarkNo = user.getBookmarks().size() - 1;
-        Bookmark bookmark = user.getBookmarks().get(0);
+        int bookmarkNo = user.getBookmarks().size();
+        Bookmark bookmark = new Bookmark(insertedUser.getUserId(), insertedPost.getPostId());
+        arangoWallHandler.addBookmark(bookmark);
         arangoWallHandler.deleteBookmark(bookmark);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
         ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
         System.out.println(updatedBookmarks.size());
+        System.out.println(bookmarkNo);
         assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo);
-
     }
 
     /**
-     * testing getBookmarks function
+     * testing getBookmarks arango function
      */
     @Test
     public void testGetBookmarks(){
-        UserProfile user = dbSeed.getInsertedUsers().get(0);
+        UserProfile user = insertedUser;
         String userId = user.getUserId();
         ArrayList<Bookmark> bookmarks = user.getBookmarks();
         ArrayList<Bookmark> retrievedBookmarks = arangoWallHandler.getBookmarks(userId);
@@ -369,7 +404,6 @@ public class ArangoHandlerTest {
         for (int i = 0; i < bookmarks.size(); i++){
             if(!bookmarks.get(i).equals(retrievedBookmarks.get(i))){
                 check = false;
-                break;
             }
         }
 
@@ -377,6 +411,12 @@ public class ArangoHandlerTest {
 
 
     }
+
+    /**
+     * function to get specific comment from database.
+     * @param commentId
+     * @return
+     */
     public Comment getComment(String commentId) {
         Comment comment = null;
         try {
@@ -388,43 +428,58 @@ public class ArangoHandlerTest {
         return comment;
     }
 
+    /**
+     * testing add comment arango handler function.
+     */
     @Test
     public void testAddComment(){
-        Comment comment  = new Comment("commentID2","authorID","parentPostID",12,22,null,null,null,"comment Text","time Stamp");
+        Comment comment  = new Comment(insertedUser.getUserId(),insertedPost.getPostId(),12,22,null,null,null,"comment Text","time Stamp");
         arangoWallHandler.addComment(comment);
-        Comment newComment = getComment("commentID2");
-        assertEquals("Expected to have a certain comment in database", newComment.getParentPostId(), "parentPostID");
+        Comment newComment = getComment(comment.getCommentId());
+        assertEquals("Expected to have a certain comment in database", newComment.getParentPostId(), insertedPost.getPostId());
 
     }
 
+    /**
+     * testing editing comment arango handler function.
+     */
     @Test
     public void testEditComment(){
-        Comment comment  = new Comment("commentID2","authorID","parentPostID2",12,22,null,null,null,"comment Text","time Stamp");
-        arangoWallHandler.editComment(comment);
-        Comment newComment = getComment("commentID2");
-        assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), "parentPostID2");
+        Comment updatedComment  = insertedComment;
+        updatedComment.setParentPostId(dbSeed.getInsertedPosts().get(1).getPostId());
+        arangoWallHandler.editComment(updatedComment);
+        Comment newComment = getComment(insertedComment.getCommentId());
+        assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), dbSeed.getInsertedPosts().get(1).getPostId());
     }
 
+    /**
+     * testing deleting comment arango handler function.
+     */
     @Test
     public void testDeleteComment(){
-        Comment comment  = new Comment("commentID2","authorID","parentPostID2",12,22,null,null,null,"comment Text","time Stamp");
-        arangoWallHandler.deleteComment(comment);
-        Comment newComment = getComment("commentID2");
+        arangoWallHandler.deleteComment(insertedComment);
+        Comment newComment = getComment(insertedComment.getCommentId());
         assertEquals("Expected to not have that comment", newComment, null);
 
     }
 
+    /**
+     * test get comments.
+     */
     @Test
     public void testGetComments(){
-        List<Comment> newComments = arangoWallHandler.getComments("123");
-        assertEquals("Expected to have 1 comment with that post ID", newComments.size(), 1);
+        List<Comment> newComments = arangoWallHandler.getComments(insertedComment.getParentPostId());
+        assertEquals("Expected to have 1 comment with that post ID", newComments.size(), 10);
 
     }
 
+    /**
+     * test get comment.
+     */
     @Test
     public void testGetComment() {
-        Comment newComment = getComment("commentID");
-        assertEquals("Expected to get a certain comment", newComment.getAuthorId(), "authorID");
+        Comment newComment = getComment(insertedComment.getCommentId());
+        assertEquals("Expected to get a certain comment", newComment.getAuthorId(), insertedComment.getAuthorId());
 
     }
 

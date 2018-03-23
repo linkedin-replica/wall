@@ -28,13 +28,12 @@ public class AddPostCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"postId", "authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior"});
+        validateArgs(new String[]{"authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior"});
 
         // call dbHandler to get error or success message from dbHandler
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Post post;
         Gson googleJson = new Gson();
-        String postId = args.get("postId").toString();
         String authorId = args.get("authorId").toString();
         String type = args.get("type").toString();
         String companyId = args.get("companyId").toString();
@@ -50,7 +49,7 @@ public class AddPostCommand extends Command{
         int commentsCount = (int) args.get("commentsCount");
         boolean isCompanyPost = (boolean) args.get("isCompanyPost");
         boolean isPrior = (boolean) args.get("isPrior");
-        post = new Post(postId, authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior);
+        post = new Post(authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior);
 
         String response = dbHandler.addPost(post);
         return response;
