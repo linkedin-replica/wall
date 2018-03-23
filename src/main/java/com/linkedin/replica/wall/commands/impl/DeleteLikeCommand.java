@@ -22,19 +22,12 @@ public class DeleteLikeCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likerId", "userName", "headLine", "imageUrl", "likedPostId", "likedCommentId", "likedReplyId"});
+        validateArgs(new String[]{"likeId"});
 
         // call dbHandler to get error or success message from dbHandler
         Like like;
-        String likerId = args.get("likerId").toString();
-        String userName = args.get("userName").toString();
-        String headLine = args.get("headLine").toString();
-        String imageUrl = args.get("imageUrl").toString();
-        String likedPostId = args.get("likedPostId").toString();
-        String likedCommentId = args.get("likedCommentId").toString();
-        String likedReplyId = args.get("likedReplyId").toString();
-        like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
-
+        String likeId = args.get("likeId").toString();
+        like = dbHandler.getLike(likeId);
         String response = dbHandler.deleteLike(like);
         return response;
     }

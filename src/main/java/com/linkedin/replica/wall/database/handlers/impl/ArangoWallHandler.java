@@ -522,7 +522,7 @@ public class ArangoWallHandler implements WallHandler {
         if((postId!= null && getPost(postId) != null) || (commentId != null && getComment(commentId) != null) || (replyId!= null && getReply(replyId) != null)) {
             try {
                 DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
-                response = "Like added" + "," + likeDoc.getKey();
+                response = "Like added";
             } catch (ArangoDBException e) {
                 response = "Failed to add a like. " + e.getMessage();
             }
@@ -569,6 +569,7 @@ public class ArangoWallHandler implements WallHandler {
         String response = "";
         try {
             arangoDB.db(dbName).collection(likesCollection).deleteDocument(like.getLikeId());
+            response = "Like deleted";
         } catch (ArangoDBException e) {
             response = "Failed to delete a like. " + e.getMessage();
         }
