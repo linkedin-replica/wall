@@ -57,4 +57,6 @@ public interface WallHandler extends DatabaseHandler {
 
     public Post getPost(String postId);
 
+    public Like getLike(String likeId);
+
 }

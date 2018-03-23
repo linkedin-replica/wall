@@ -95,7 +95,7 @@ public class DatabaseSeed {
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             insertedPosts.add(post);
             Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostId(), Post.class);
-            System.out.println(retrievedDoc +" YAAAARAAAA333");
+            System.out.println(retrievedDoc);
             counter ++;
         }
     }
@@ -167,7 +167,7 @@ public class DatabaseSeed {
         }
         String [] userNames = new String [] {"Mohammed", "Nada", "Rana", "Safa", "Yara"};
         Random rand;
-        for(int i = 1 ; i<11; i++) {
+        for(int i = 0 ; i<10; i++) {
             rand = new Random();
             String likerId = "12";
             String likedPostId = null;

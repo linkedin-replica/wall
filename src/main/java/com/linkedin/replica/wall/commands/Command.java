@@ -36,11 +36,14 @@ public abstract class Command {
     }
 
     protected void validateArgs(String[] requiredArgs) {
-        for(String arg: requiredArgs)
+        for(String arg: requiredArgs){
             if(!args.containsKey(arg)) {
                 String exceptionMsg = String.format("Cannot execute command. %s argument is missing", arg);
                 throw new WallException(exceptionMsg);
             }
+
+        }
+
     }
 
 
