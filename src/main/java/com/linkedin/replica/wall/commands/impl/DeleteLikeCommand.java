@@ -22,7 +22,6 @@ public class DeleteLikeCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        System.out.println("args" + args.toString());
         validateArgs(new String[]{"likeId"});
 
         // call dbHandler to get error or success message from dbHandler
