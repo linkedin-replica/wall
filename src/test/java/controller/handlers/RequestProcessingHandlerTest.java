@@ -66,12 +66,12 @@ public class RequestProcessingHandlerTest {
         // get .class folder path from configuration
         String folderPath = Configuration.getInstance().getAppConfigProp("app.classes.path");
         // get full path of new file
-        Path path = Paths.get(System.getProperty("user.dir")+ "/" +folderPath +"/commands/impl/testCommand.class");
+        Path path = Paths.get(System.getProperty("user.dir")+ "/" +folderPath +"/commands/impl/TestCommand.class");
         // check that the file was added
         assertTrue(Files.exists(path));
         // check that app.config file was updated
-        assertEquals(Configuration.getInstance().getCommandConfigProp("search.test"), "testCommand");
-        assertEquals(Configuration.getInstance().getCommandConfigProp("search.test.handler"), "ArangoSearchHandler");
+        assertEquals(Configuration.getInstance().getCommandConfigProp("wall.test"), "TestCommand");
+        assertEquals(Configuration.getInstance().getCommandConfigProp("wall.test.handler"), "ArangoWallHandler");
         // delete added file
         Files.deleteIfExists(path);
     }
@@ -85,10 +85,10 @@ public class RequestProcessingHandlerTest {
         Path path = Paths.get("src/test/resources/testCommand.class");
         // create JsonObject that is passed to RequestProcessingChannel
         LinkedHashMap<String, Object> htbl = new LinkedHashMap<String, Object>();
-        htbl.put("fileName", "testCommand");
+        htbl.put("fileName", "TestCommand");
 
         // add property key that will be added to command configuration file
-        htbl.put("configPropKey", "search.test");
+        htbl.put("configPropKey", "wall.test");
 
 
         // construct json
@@ -110,12 +110,12 @@ public class RequestProcessingHandlerTest {
         // get .class folder path from configuration
         String folderPath = Configuration.getInstance().getAppConfigProp("app.classes.path");
         // get full path of new file
-        path = Paths.get(System.getProperty("user.dir")+ "/" +folderPath +"/commands/impl/testCommand.class");
+        path = Paths.get(System.getProperty("user.dir")+ "/" +folderPath +"/commands/impl/TestCommand.class");
         // check that the file was deleted
         assertFalse(Files.exists(path));
         // check that app.config file was updated
-        assertNotEquals(Configuration.getInstance().getCommandConfigProp("search.test"), "testCommand");
-        assertNotEquals(Configuration.getInstance().getCommandConfigProp("search.test.handler"), "ArangoSearchHandler");
+        assertNotEquals(Configuration.getInstance().getCommandConfigProp("wall.test"), "TestCommand");
+        assertNotEquals(Configuration.getInstance().getCommandConfigProp("wall.test.handler"), "ArangoWallHandler");
     }
 
     /**
@@ -125,7 +125,7 @@ public class RequestProcessingHandlerTest {
     @Test
     public void testMissingParameter() throws IOException{
         // get path of testCommand class
-        Path path = Paths.get("src/test/resources/testCommand.class");
+        Path path = Paths.get("src/test/resources/TestCommand.class");
         // create JsonObject that is passed to RequestProcessingChannel
         LinkedHashMap<String, Object> htbl = new LinkedHashMap<String, Object>();
         htbl.put("fileName", "testCommand");
@@ -166,10 +166,10 @@ public class RequestProcessingHandlerTest {
 
     private void addCommandFile() throws IOException{
         // get path of testCommand class
-        Path path = Paths.get("src/test/resources/testCommand.class");
+        Path path = Paths.get("src/test/resources/TestCommand.class");
         // create JsonObject that is passed to RequestProcessingChannel
         LinkedHashMap<String, Object> htbl = new LinkedHashMap<String, Object>();
-        htbl.put("fileName", "testCommand");
+        htbl.put("fileName", "TestCommand");
 
         // convert file to bytes and encode it to string
         byte[] bytes = Files.readAllBytes(path);
@@ -177,7 +177,7 @@ public class RequestProcessingHandlerTest {
         htbl.put("bytes", s);
 
         // add property key that will be added to command configuration file
-        htbl.put("configPropKey", "search.test");
+        htbl.put("configPropKey", "wall.test");
         // add handler class name that will be added to command configuration file
         htbl.put("handler", "ArangoWallHandler");
 

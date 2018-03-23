@@ -140,4 +140,9 @@ public class RedisWallHandler implements WallHandler {
     public Post getPost(String postId) {
         return null;
     }
+
+    @Override
+    public Like getLike(String likeId) {
+        return null;
+    }
 }

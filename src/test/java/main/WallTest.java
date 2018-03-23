@@ -38,9 +38,9 @@ public class WallTest {
     private static Reply insertedReply;
     private static UserProfile insertedUser;
     private static Like insertedLike;
-    private static   JsonArray mentions;
-    private  static JsonArray urls;
-   private static JsonArray images;
+    private static JsonArray mentions;
+    private static JsonArray urls;
+    private static JsonArray images;
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         String rootFolder = "src/main/resources/";
@@ -163,41 +163,6 @@ public class WallTest {
         assertEquals("response should be Reply deleted",response,"Reply deleted");
     }
 
-    public Comment getComment(String commentId) {
-        Comment comment = null;
-        try {
-            comment = arangoDB.collection(commentsCollection).getDocument(commentId,
-                    Comment.class);
-            System.out.println("das");
-            System.out.println(comment.toString());
-
-        } catch (ArangoDBException e) {
-            System.out.println("catch");
-            System.err.println("Failed to get comment: commentId; " + e.getMessage());
-        }
-        return comment;
-    }
-
-    public List<Comment> getComments(String postId) {
-        ArrayList<Comment> comments = new ArrayList<Comment>();
-        try {
-            String query = "FOR l IN " + commentsCollection + " FILTER l.parentPostId == @parentPostId RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", postId).get();
-            ArangoCursor<Comment> cursor = arangoDB.query(query, bindVars, null,
-                    Comment.class);
-            cursor.forEachRemaining(commentDocument -> {
-                comments.add(commentDocument);
-                System.out.println("Key: " + commentDocument.getCommentId());
-            });
-        } catch (ArangoDBException e) {
-            System.err.println("Failed to get posts' comments." + e.getMessage());
-        }
-        return comments;
-    }
-
-
-
-
     @Test
     public void testEditComments() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
@@ -261,6 +226,16 @@ public class WallTest {
 
 
     }
+    public Comment getComment(String commentId) {
+        Comment comment = null;
+        try {
+            comment = arangoDB.collection(commentsCollection).getDocument(commentId,
+                    Comment.class);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get comment: commentId; " + e.getMessage());
+        }
+        return comment;
+    }
 
     @Test
     public void testGetComments() throws Exception {
@@ -314,8 +289,61 @@ public class WallTest {
         request.put("userName", "Yara");
         request.put("headLine", "Yara and 5 others");
         request.put("imageUrl", "urlX");
-        wallService.serve("addLike", request);
+        String response = (String)wallService.serve("addLike",request);
+        List<Like> likes = (List<Like>)  wallService.serve("getPostLikes", request);
+        assertEquals("response should be equal Reply created",response,"Like added");
+    }
+
+    @Test
+    public void testDeleteLikeCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        request.put("likeId", insertedLike.getLikeId());
+        String response = (String) wallService.serve("deleteLike",request);
+        assertEquals("response should be equal Reply created",response,"Like deleted");
+    }
+
+    @Test
+    public void testGetPostLikesCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        String existingPostId =insertedLike.getLikedPostId();
+        request.put("likedPostId", existingPostId);
+        boolean equalsPostId = true;
+        List<Like> likes = (List<Like>) wallService.serve("getPostLikes",request);
+        for(Like like:likes){
+            if(!like.getLikedPostId().equals(existingPostId))
+                equalsPostId = false;
         }
+        assertEquals("Incorrect like retrieved as the likedPostId does not match the existingPostId.", true, equalsPostId);
+    }
+
+    @Test
+    public void testGetCommentLikesCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        String existingCommentId = dbSeed.getInsertedLikes().get(1).getLikedCommentId();
+        request.put("likedCommentId", existingCommentId);
+        boolean equalsCommentId = true;
+        List<Like> likes = (List<Like>) wallService.serve("getCommentLikes",request);
+        for(Like like:likes){
+            if(!like.getLikedCommentId().equals(existingCommentId))
+                equalsCommentId = false;
+        }
+        assertEquals("Incorrect like retrieved as the likedCommentId does not match the existingCommentId.", true, equalsCommentId);
+    }
+
+    @Test
+    public void testGetReplyLikesCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        String existingReplyId = dbSeed.getInsertedLikes().get(2).getLikedReplyId();
+        request.put("likedReplyId", existingReplyId);
+        boolean equalsReplyId = true;
+        List<Like> likes = (List<Like>) wallService.serve("getReplyLikes",request);
+        for(Like like:likes){
+            if(!like.getLikedReplyId().equals(existingReplyId))
+                equalsReplyId = false;
+        }
+        assertEquals("Incorrect like retrieved as the likedReplyId does not match the existingReplyId.", true, equalsReplyId);
+
+    }
 
 
     @AfterClass

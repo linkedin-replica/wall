@@ -316,7 +316,7 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testAddLikes() {
-            Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
+        Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Like like = new Like(insertedUser.getUserId(), insertedPost.getPostId(), null, null, insertedUser.getFirstName(), "headLine", "urlX");
         arangoWallHandler.addLike(like);
         Long newLikesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
