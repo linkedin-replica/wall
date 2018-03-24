@@ -76,6 +76,36 @@ public class WallTest {
 
     }
 
+
+
+    @Test
+    public void testNewsfeed() throws Exception {
+        HashMap<String, Object> request = new HashMap<String, Object>();
+        request.put("mail",dbSeed.getInsertedUsers().get(5).getEmail());
+        request.put("firstName",dbSeed.getInsertedUsers().get(5).getFirstName());
+        request.put("lastName",dbSeed.getInsertedUsers().get(5).getLastName());
+        request.put("limit",10);
+        request.put("offset",0);
+        dbSeed.getInsertedUsers().get(5).getFriendsList().add(dbSeed.getInsertedUsers().get(0).getUserId());
+        dbSeed.getInsertedUsers().get(5).getFriendsList().add(dbSeed.getInsertedUsers().get(1).getUserId());
+        dbSeed.getInsertedPosts().get(0).setAuthorId(dbSeed.getInsertedUsers().get(0).getUserId());
+        dbSeed.getInsertedPosts().get(1).setAuthorId(dbSeed.getInsertedUsers().get(0).getUserId());
+        dbSeed.getInsertedPosts().get(2).setAuthorId(dbSeed.getInsertedUsers().get(1).getUserId());
+        dbSeed.getInsertedPosts().get(3).setAuthorId(dbSeed.getInsertedUsers().get(1).getUserId());
+        dbSeed.getInsertedPosts().get(0).setTimestamp(new Date(2010,6,24));
+        dbSeed.getInsertedPosts().get(1).setTimestamp(new Date(2009,8,10));
+        dbSeed.getInsertedPosts().get(2).setTimestamp(new Date(2016,9,6));
+        dbSeed.getInsertedPosts().get(3).setTimestamp(new Date(2018,2,22));
+        dbSeed.getInsertedPosts().get(0).setText("Post 1");
+        dbSeed.getInsertedPosts().get(1).setText("Post 2");
+        dbSeed.getInsertedPosts().get(2).setText("Post 3");
+        dbSeed.getInsertedPosts().get(3).setText("Post 4");
+        List<Post> newsfeed = (List<Post>) wallService.serve("getNewsfeed", request);
+        assertEquals("Newsfeed Size should be 4", newsfeed.size(), 4);
+        assertEquals("Newsfeed should be ordered", newsfeed.get(0).getText(), "Post 2");
+        assertEquals("Newsfeed should be ordered", newsfeed.get(3).getText(), "Post 4");
+    }
+
     @Test
     public void testAddReplyService() throws Exception {
 

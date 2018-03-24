@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.arangodb.entity.DocumentField;
 
-public class Post {
+public class Post implements Comparable<Post>{
 
 
     @DocumentField(DocumentField.Type.KEY)
@@ -45,6 +45,12 @@ public class Post {
         this.isPrior = isPrior;
 
     }
+
+    public int compareTo(Post post) {
+        return this.getTimeStamp().compareTo(post.getTimeStamp());
+    }
+
+
     public Post(){
         super();
     }
@@ -171,6 +177,10 @@ public class Post {
 
     public void setPrior(boolean prior) {
         isPrior = prior;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override

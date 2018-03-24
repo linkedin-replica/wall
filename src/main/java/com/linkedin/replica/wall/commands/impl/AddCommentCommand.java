@@ -42,7 +42,7 @@ public class AddCommentCommand extends Command{
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
-        String timestamp = args.get("timestamp").toString();
+        Date timestamp = new Date(args.get("timestamp").toString());
         comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
         String response =  dbHandler.addComment(comment);
         return response;

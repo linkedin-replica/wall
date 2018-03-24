@@ -17,7 +17,7 @@ import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.models.UserProfile;
-import javafx.geometry.Pos;
+
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -45,6 +45,35 @@ public class ArangoWallHandler implements WallHandler {
         commentsCollection = config.getArangoConfig("collections.comments.name");
         postsCollection = config.getArangoConfig("collections.posts.name");
 
+    }
+
+    public List<Post> getFriendsPosts(UserProfile user,int limit, int offset){
+        ArrayList<Post> returnedPosts = new ArrayList<Post>();
+        for(int i=0; i<user.getFriendsList().size(); i++){
+            returnedPosts.addAll(getPostsWithLimit(user.getFriendsList().get(i),limit,offset));
+        }
+
+        Collections.sort(returnedPosts);
+        return returnedPosts;
+    }
+
+    public List<Post> getPostsWithLimit(String userID,int limit, int offset) {
+        ArrayList<Post> posts = new ArrayList<Post>();
+        try {
+            String query = "FOR l IN " + postsCollection + " FILTER l.authorId == @authorId SORT l.timestamp DESC\n" +
+                    "  LIMIT "+offset+" , "+limit+" RETURN l";
+            Map<String, Object> bindVars = new MapBuilder().put("authorId", userID).get();
+            ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                    Post.class);
+            cursor.forEachRemaining(postDocument -> {
+
+                posts.add(postDocument);
+                System.out.println("Key: " + postDocument.getPostId());
+            });
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to get posts." + e.getMessage());
+        }
+        return posts;
     }
 
     /**

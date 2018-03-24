@@ -117,7 +117,7 @@ public class DatabaseSeed {
        ArrayList<String> x =  new ArrayList<String>() ;
        x.add("y");
        for(String text : lines) {
-           Comment comment = new Comment("3", insertedPosts.get(0).getPostId(), 45, 34, x, x, x, text, "11");
+           Comment comment = new Comment("3", insertedPosts.get(0).getPostId(), 45, 34, x, x, x, text, null);
            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
            insertedComments.add(comment);
            Comment retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), Comment.class);
