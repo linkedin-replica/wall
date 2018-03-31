@@ -118,7 +118,6 @@ public class WallTest {
         request.put("mentions", mentions);
         request.put("likesCount",45);
         request.put("text","Testing service edit");
-        request.put("timestamp","Thu Jan 19 2012 01:00 PM");
         request.put("images", images);
         request.put("urls", urls);
         String response = (String) wallService.serve("editReply",request);
@@ -175,7 +174,6 @@ public class WallTest {
         request.put("urls", urls);
         request.put("mentions", mentions);
         request.put("text", "Edited Text");
-        request.put("timestamp","Thu Jan 19 2012 01:00 PM");
 
         String response = (String) wallService.serve("editComment", request);
 

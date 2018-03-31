@@ -40,7 +40,6 @@ public class EditPostCommand extends Command{
         String companyId = args.get("companyId").toString();
         String privacy = args.get("privacy").toString();
         String text = args.get("text").toString();
-        Date timestamp = format.parse(args.get("timestamp").toString());
         ArrayList<String> hashtags = googleJson.fromJson((JsonArray) args.get("hashtags"), ArrayList.class);
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         int likesCount = (int) args.get("likesCount");
@@ -53,6 +52,22 @@ public class EditPostCommand extends Command{
         boolean isPrior = (boolean) args.get("isPrior");
 
         post = dbHandler.getPost(postId);
+        post.setAuthorId(authorId);
+        post.setType(type);
+        post.setCompanyId(companyId);
+        post.setPrivacy(privacy);
+        post.setText(text);
+        post.setTimestamp(post.getTimeStamp());
+        post.setHashtags(hashtags);
+        post.setMentions(mentions);
+        post.setLikesCount(likesCount);
+        post.setImages(images);
+        post.setVideos(videos);
+        post.setUrls(urls);
+        post.setCommentsCount(commentsCount);
+        post.setCompanyPost(isCompanyPost);
+        post.setPrior(isPrior);
+
         String response = dbHandler.editPost(post);
         return response;
     }

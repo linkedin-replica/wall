@@ -27,7 +27,12 @@ public class Post {
     private boolean isPrior;
 
 
-    public Post(String authorId,String type, String companyId, String privacy, String text, ArrayList<String> hashtags, ArrayList<String> mentions, int likesCount, ArrayList<String> images, ArrayList<String> videos, ArrayList<String> urls, int commentsCount, Date timestamp, boolean isCompanyPost, boolean isPrior){
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Post(String authorId, String type, String companyId, String privacy, String text, ArrayList<String> hashtags, ArrayList<String> mentions, int likesCount, ArrayList<String> images, ArrayList<String> videos, ArrayList<String> urls, int commentsCount, Date timestamp, boolean isCompanyPost, boolean isPrior){
+
         this.authorId = authorId;
         this.type = type;
         this.companyId = companyId;
