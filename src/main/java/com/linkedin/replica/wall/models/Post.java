@@ -14,15 +14,17 @@ public class Post {
     private String companyId;
     private String privacy;
     private String text;
+    private String headLine;
     private ArrayList<String> hashtags;
     private ArrayList<String> mentions;
     private int likesCount;
     private ArrayList<String> images;
     private ArrayList<String> videos;
     private ArrayList<String> urls;
+    private ArrayList<String> shares;
     private int commentsCount;
     private Date timestamp;
-
+    private boolean isArticle;
     private boolean isCompanyPost;
     private boolean isPrior;
 
@@ -31,7 +33,31 @@ public class Post {
         this.timestamp = timestamp;
     }
 
-    public Post(String authorId, String type, String companyId, String privacy, String text, ArrayList<String> hashtags, ArrayList<String> mentions, int likesCount, ArrayList<String> images, ArrayList<String> videos, ArrayList<String> urls, int commentsCount, Date timestamp, boolean isCompanyPost, boolean isPrior){
+    public String getHeadLine() {
+        return headLine;
+    }
+
+    public void setHeadLine(String headLine) {
+        this.headLine = headLine;
+    }
+
+    public ArrayList<String> getShares() {
+        return shares;
+    }
+
+    public void setShares(ArrayList<String> shares) {
+        this.shares = shares;
+    }
+
+    public boolean isArticle() {
+        return isArticle;
+    }
+
+    public void setArticle(boolean article) {
+        isArticle = article;
+    }
+
+    public Post(String authorId, String type, String companyId, String privacy, String text, ArrayList<String> hashtags, ArrayList<String> mentions, int likesCount, ArrayList<String> images, ArrayList<String> videos, ArrayList<String> urls, int commentsCount, Date timestamp, boolean isCompanyPost, boolean isPrior, ArrayList<String> shares, String headLine, boolean isArticle){
 
         this.authorId = authorId;
         this.type = type;
@@ -48,6 +74,9 @@ public class Post {
         this.timestamp = timestamp;
         this.isCompanyPost = isCompanyPost;
         this.isPrior = isPrior;
+        this.shares = shares;
+        this.headLine = headLine;
+        this.isArticle = isArticle;
 
     }
     public Post(){
@@ -102,7 +131,7 @@ public class Post {
         return urls;
     }
 
-    public Date getTimeStamp() {
+    public Date getTimestamp() {
         return this.timestamp;
     }
 
@@ -181,22 +210,25 @@ public class Post {
     @Override
     public String toString() {
         return "Post{" +
-                "PostId = '" + postId + '\'' +
-                ", authorId = '" + authorId + '\''+
-                ", type = '" + type + '\''+
-                ", comapnyId = '" + companyId + '\'' +
-                ", privacy = '" + privacy + '\'' +
-                ", text = '" + text + '\'' +
-                ", hashtags = '" + hashtags + '\''+
-                ", mentions ='" + mentions + '\'' +
-                ", likesCount = '" + likesCount + '\'' +
-                ", images = '" + images + '\'' +
-                ", videos = '" + videos + '\'' +
-                ", urls = '" + urls + '\'' +
-                ", commentsCount = '" + commentsCount + '\'' +
-                ", timestamp = '" + timestamp + '\'' +
-                ", isCompanyPost = '" + isCompanyPost + '\'' +
-                ", isPrior = '" + isPrior + '\'' +
-                "}";
+                "postId='" + postId + '\'' +
+                ", authorId='" + authorId + '\'' +
+                ", type='" + type + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", privacy='" + privacy + '\'' +
+                ", text='" + text + '\'' +
+                ", headLine='" + headLine + '\'' +
+                ", hashtags=" + hashtags +
+                ", mentions=" + mentions +
+                ", likesCount=" + likesCount +
+                ", images=" + images +
+                ", videos=" + videos +
+                ", urls=" + urls +
+                ", shares=" + shares +
+                ", commentsCount=" + commentsCount +
+                ", timestamp=" + timestamp +
+                ", isArticle=" + isArticle +
+                ", isCompanyPost=" + isCompanyPost +
+                ", isPrior=" + isPrior +
+                '}';
     }
 }

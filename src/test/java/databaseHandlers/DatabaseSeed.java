@@ -83,12 +83,14 @@ public class DatabaseSeed {
             hashtags.add("hashtags");
             ArrayList<String> mentions = new ArrayList<String>();
             mentions.add("mentions");
+            ArrayList<String> shares = new ArrayList<String>();
+            mentions.add("shares");
 
             Post post = new Post( "2", "3",
                     "4", "5", text,hashtags,
                     mentions, 12, images, videos,
                     urls, 30, timestamp, true,
-                    true);
+                    true, shares,"headLine", false);
 
 
 

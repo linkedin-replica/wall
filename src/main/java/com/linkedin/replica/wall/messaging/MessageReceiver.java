@@ -81,6 +81,10 @@ public class MessageReceiver {
                                 args.put(key,object.get(key).getAsBoolean());
                             else if(key.equals("hashtags"))
                                 args.put(key,object.get(key).getAsJsonArray());
+                            else if(key.equals("shares"))
+                                args.put(key,object.get(key).getAsJsonArray());
+                            else if(key.equals("isArticle"))
+                                args.put(key,object.get(key).getAsBoolean());
                             else if (!key.equals("commandName"))
                                 args.put(key, object.get(key).getAsString());
 

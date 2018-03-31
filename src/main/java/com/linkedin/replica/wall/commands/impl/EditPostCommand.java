@@ -28,7 +28,7 @@ public class EditPostCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"postId", "authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior"});
+        validateArgs(new String[]{"postId", "authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior", "headLine", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
@@ -40,6 +40,7 @@ public class EditPostCommand extends Command{
         String companyId = args.get("companyId").toString();
         String privacy = args.get("privacy").toString();
         String text = args.get("text").toString();
+        String headLine = args.get("headLine").toString();
         ArrayList<String> hashtags = googleJson.fromJson((JsonArray) args.get("hashtags"), ArrayList.class);
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         int likesCount = (int) args.get("likesCount");
@@ -47,9 +48,10 @@ public class EditPostCommand extends Command{
         ArrayList<String> videos = googleJson.fromJson((JsonArray) args.get("videos"), ArrayList.class);
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
         int commentsCount = (int) args.get("commentsCount");
-        String shares = args.get("shares").toString();
+        ArrayList<String> shares = googleJson.fromJson((JsonArray) args.get("shares"), ArrayList.class);
         boolean isCompanyPost = (boolean) args.get("isCompanyPost");
         boolean isPrior = (boolean) args.get("isPrior");
+        boolean isArticle = (boolean) args.get("isArticle");
 
         post = dbHandler.getPost(postId);
         post.setAuthorId(authorId);
@@ -57,7 +59,7 @@ public class EditPostCommand extends Command{
         post.setCompanyId(companyId);
         post.setPrivacy(privacy);
         post.setText(text);
-        post.setTimestamp(post.getTimeStamp());
+        post.setTimestamp(post.getTimestamp());
         post.setHashtags(hashtags);
         post.setMentions(mentions);
         post.setLikesCount(likesCount);
@@ -67,6 +69,9 @@ public class EditPostCommand extends Command{
         post.setCommentsCount(commentsCount);
         post.setCompanyPost(isCompanyPost);
         post.setPrior(isPrior);
+        post.setHeadLine(headLine);
+        post.setShares(shares);
+        post.setArticle(isArticle);
 
         String response = dbHandler.editPost(post);
         return response;
