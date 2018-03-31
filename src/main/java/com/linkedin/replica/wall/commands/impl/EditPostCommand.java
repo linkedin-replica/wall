@@ -31,7 +31,6 @@ public class EditPostCommand extends Command{
         validateArgs(new String[]{"postId", "authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior", "headLine", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         Post post;
         Gson googleJson = new Gson();
         String postId = args.get("postId").toString();
