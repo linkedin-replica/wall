@@ -59,35 +59,23 @@ public class MessageReceiver {
                         String commandName = object.get("commandName").getAsString();
                         HashMap<String, Object> args = new HashMap<>();
                         for(String key: object.keySet()) {
-                            if(key.equals("mentions"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("images"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("videos"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("urls"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("likesCount"))
-                                args.put(key,object.get(key).getAsInt());
-                            else if(key.equals("repliesCount"))
-                                args.put(key,object.get(key).getAsInt());
-                            else if(key.equals("commentsCount"))
-                                args.put(key,object.get(key).getAsInt());
-                            else if(key.equals("timestamp"))
-                                args.put(key,object.get(key).getAsString());
-                            else if(key.equals("isCompanyPost"))
-                                args.put(key,object.get(key).getAsBoolean());
-                            else if(key.equals("isPrior"))
-                                args.put(key,object.get(key).getAsBoolean());
-                            else if(key.equals("hashtags"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("shares"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("isArticle"))
-                                args.put(key,object.get(key).getAsBoolean());
-                            else if (!key.equals("commandName"))
-                                args.put(key, object.get(key).getAsString());
-
+                            switch(key){
+                                case "mentions":
+                                case "images":
+                                case "videos":
+                                case "urls":
+                                case "hashtags":
+                                case "shares":
+                                case "friendsList":args.put(key,object.get(key).getAsJsonArray());break;
+                                case "likesCount":
+                                case "repliesCount":
+                                case "commentsCount": args.put(key,object.get(key).getAsInt());break;
+                                case "isCompanyPost":
+                                case "isPrior":
+                                case "isArticle":args.put(key,object.get(key).getAsBoolean());break;
+                                case "commandName": break;
+                                default: args.put(key, object.get(key).getAsString());break;
+                            }
 
                         }
 
