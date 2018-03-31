@@ -31,8 +31,6 @@ public class DeletePostCommand extends Command{
         validateArgs(new String[]{"postId"});
 
         // call dbHandler to get error or success message from dbHandler
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-
         Post post;
         String postId = args.get("postId").toString();
         post = dbHandler.getPost(postId);
