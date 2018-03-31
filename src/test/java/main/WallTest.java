@@ -91,7 +91,7 @@ public class WallTest {
         request.put("urls",urls);
         int beforeReplyComment = insertedComment.getRepliesCount() + 1;
         int beforeReplyPost = insertedPost.getCommentsCount() + 1;
-        String response = (String)wallService.serve("addReply",request);
+        String response = (String) wallService.serve("addReply",request);
         int afterReplyPost = insertedPost.getCommentsCount();
         int afterReplyComment = insertedComment.getRepliesCount();
         List<Reply> replies = (List<Reply>)  wallService.serve("getReplies", request);
