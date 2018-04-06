@@ -11,6 +11,7 @@ import redis.clients.jedis.Pipeline;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class JedisCacheHandler implements PostsCacheHandler{
 
@@ -36,6 +37,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
         Class postClass = post.getClass();
         Field [] postFields = postClass.getDeclaredFields();
         for (int i = 0; i<postFields.length; i++){
+            postFields[i].setAccessible(true);
             String fieldName = postFields[i].getName();
             Object value =  postFields[i].get(post);
             jedisPipeline.hset(postId,fieldName,gson.toJson(value));
@@ -52,12 +54,10 @@ public class JedisCacheHandler implements PostsCacheHandler{
     public Object getPost(String postId, Class<?> postClass) throws IllegalAccessException, InstantiationException, NoSuchFieldException, IOException {
 
         Jedis cacheResource = jedisPool.getResource();
-        cacheResource.select(postDBIndex);
-
-        if(!cacheResource.exists(postId))
+        if(!cacheResource.exists(postId)){
             return null;
+        }
 
-        Class classPost = postClass;
         Pipeline jedisPipeline = cacheResource.pipelined();
         Object post = postClass.newInstance();
         Field [] postFields = postClass.getDeclaredFields();
@@ -65,9 +65,20 @@ public class JedisCacheHandler implements PostsCacheHandler{
             String fieldName = postFields[i].getName();
             String value = cacheResource.hget(postId,fieldName);
             Object objectValue = gson.fromJson(value,postFields[i].getType());
-            classPost.getField(fieldName).set(post,value);
-        }
 
+            try {
+                Field field = postClass.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(post,objectValue);
+            }
+            catch (NoSuchFieldException e){
+                throw new NoSuchFieldException(
+                        "Could not find field named '" + fieldName + "' in class '" + postClass +
+                                "'.  All fields: " + Arrays.asList(postClass.getDeclaredFields()));
+
+            }
+
+        }
         jedisPipeline.sync();
         jedisPipeline.close();
         cacheResource.close();
