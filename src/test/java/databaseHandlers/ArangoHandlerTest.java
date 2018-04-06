@@ -56,7 +56,7 @@ public class ArangoHandlerTest {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config");
+                rootFolder + "commands.config", rootFolder + "controller.config", rootFolder+"cache.config");
         config = Configuration.getInstance();
         DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -486,11 +486,11 @@ public class ArangoHandlerTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
-        dbSeed.deleteAllReplies();
-        dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
+//        dbSeed.deleteAllUsers();
+//        dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllReplies();
+//        dbSeed.deleteAllComments();
+//        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
       }
 
