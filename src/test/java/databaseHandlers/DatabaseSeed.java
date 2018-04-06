@@ -13,6 +13,7 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.DocumentCreateEntity;
+import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.models.*;
@@ -56,7 +57,6 @@ public class DatabaseSeed {
 
     public void insertPosts() throws IOException, ClassNotFoundException, ParseException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/posts"));
-        System.out.println("posts inserted");
         try{
             arangoDB.db(dbName).createCollection(postsCollection);
 
