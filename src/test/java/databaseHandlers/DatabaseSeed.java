@@ -37,7 +37,7 @@ public class DatabaseSeed {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config");
+                rootFolder + "commands.config", rootFolder + "controller.config", rootFolder+"cache.config");
         config = Configuration.getInstance();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         dbName = Configuration.getInstance().getArangoConfig("arangodb.name");
