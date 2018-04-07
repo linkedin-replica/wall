@@ -1,7 +1,7 @@
 package com.linkedin.replica.wall.main;
 
 import com.linkedin.replica.wall.config.Configuration;
-//import com.linkedin.replica.wall.controller.Server;
+import com.linkedin.replica.wall.controller.Server;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.messaging.MessageReceiver;
 //import messaging.ClientMessagesReceiver;
@@ -45,11 +45,11 @@ public class Main {
 
             @Override
             public void run() {
-//                try {
-//                    new Server().start();
-//                } catch (InterruptedException e) {
-//                    //TODO logging
-//                }
+                try {
+                    new Server().start();
+                } catch (InterruptedException e) {
+                    //TODO logging
+                }
             }
         }).start();
     }
