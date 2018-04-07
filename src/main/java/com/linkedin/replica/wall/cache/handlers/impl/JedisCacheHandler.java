@@ -12,6 +12,7 @@ import redis.clients.jedis.Pipeline;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Set;
 
 public class JedisCacheHandler implements PostsCacheHandler{
 
@@ -43,7 +44,6 @@ public class JedisCacheHandler implements PostsCacheHandler{
             jedisPipeline.hset(postId,fieldName,gson.toJson(value));
 
         }
-
         System.out.println("post added in cache");
         jedisPipeline.sync();
         jedisPipeline.close();
@@ -54,6 +54,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
     public Object getPost(String postId, Class<?> postClass) throws IllegalAccessException, InstantiationException, NoSuchFieldException, IOException {
 
         Jedis cacheResource = jedisPool.getResource();
+        cacheResource.select(postDBIndex);
         if(!cacheResource.exists(postId)){
             return null;
         }
@@ -84,4 +85,25 @@ public class JedisCacheHandler implements PostsCacheHandler{
         cacheResource.close();
         return post;
     }
+
+    @Override
+    public void deletePost(String postId) {
+
+        Jedis cacheResource = jedisPool.getResource();
+        cacheResource.select(postDBIndex);
+        if(!cacheResource.exists(postId)){
+            System.out.println("doesn't exist");
+            return;
+        }
+        Set<String> fields = cacheResource.hgetAll(postId).keySet();
+        String [] fieldNames = fields.toArray(new String[cacheResource.hgetAll(postId).keySet().size()]);
+        cacheResource.hdel(postId, fieldNames);
+        System.out.println("deleted");
+
+    }
+
+
+
+
+
 }

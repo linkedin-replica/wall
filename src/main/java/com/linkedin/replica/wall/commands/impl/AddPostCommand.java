@@ -9,6 +9,7 @@ import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
@@ -26,9 +27,10 @@ public class AddPostCommand extends Command{
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
+        PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior"});
+        validateArgs(new String[]{"authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "isCompanyPost", "isPrior"});
 
         // call dbHandler to get error or success message from dbHandler
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);

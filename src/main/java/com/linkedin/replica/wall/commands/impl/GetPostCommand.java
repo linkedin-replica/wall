@@ -13,7 +13,6 @@ import java.util.List;
 
 public class GetPostCommand extends Command{
 
-    private PostsCacheHandler cacheHandler;
 
     public GetPostCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
         super(args,dbHandler);
@@ -23,16 +22,20 @@ public class GetPostCommand extends Command{
     @Override
     public Object execute() throws NoSuchMethodException, IllegalAccessException, ParseException, NoSuchFieldException, IOException, InstantiationException {
 
-        Object post;
         WallHandler dbHandler = (WallHandler) this.dbHandler;
-         cacheHandler = (PostsCacheHandler) cacheHandler;
+        PostsCacheHandler postsCacheHandler = (PostsCacheHandler)this.cacheHandler;
         validateArgs(new String[]{"postId"});
         String postId = args.get("postId").toString();
-        post = cacheHandler.getPost((String) args.get("postId"),Post.class);
-        if (post == null){
-            post = dbHandler.getPost(postId);
-            cacheHandler.cachePost(postId,post);
+        Object post;
+        if( postsCacheHandler.getPost((String) args.get("postId"),Post.class)!=null){
+            post = postsCacheHandler.getPost((String) args.get("postId"),Post.class);
         }
+        else{
+            post = dbHandler.getPost(postId);
+            postsCacheHandler.cachePost(postId,post);
+        }
+
+
 
         return post;
 
