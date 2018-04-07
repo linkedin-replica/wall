@@ -380,14 +380,11 @@ public class ArangoHandlerTest {
         UserProfile user = insertedUser;
         String userId = user.getUserId();
         int bookmarkNo = user.getBookmarks().size();
-        Bookmark bookmark = new Bookmark(insertedUser.getUserId(), insertedPost.getPostId());
-        arangoWallHandler.addBookmark(bookmark);
+        Bookmark bookmark = insertedUser.getBookmarks().get(0);
         arangoWallHandler.deleteBookmark(bookmark);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
         ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
-        System.out.println(updatedBookmarks.size());
-        System.out.println(bookmarkNo);
-        assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo);
+        assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo - 1);
     }
 
     /**
