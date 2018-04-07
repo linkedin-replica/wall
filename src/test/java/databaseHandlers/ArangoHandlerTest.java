@@ -140,9 +140,11 @@ public class ArangoHandlerTest {
        hashtags.add("hashtags");
        ArrayList<String> mentions = new ArrayList<String>();
        mentions.add("mentions");
+       ArrayList<String> shares = new ArrayList<String>();
+       mentions.add("shares");
 
         Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
-                hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false);
+                hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false, shares, "headLine", false);
         arangoWallHandler.addPost(post);
         Post newPost = getPosts(post.getPostId());
         assertEquals("Expected to have a certain post in database", newPost.getCompanyId(), "companyId");
@@ -156,8 +158,6 @@ public class ArangoHandlerTest {
    @Test
    public void testEditPost() throws ParseException {
 
-       DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-       Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
        Post post = insertedPost;
        post.setLikesCount(13);
        arangoWallHandler.editPost(post);
@@ -199,9 +199,11 @@ public class ArangoHandlerTest {
         hashtags.add("hashtags");
         ArrayList<String> mentions = new ArrayList<String>();
         mentions.add("mentions");
+        ArrayList<String> shares = new ArrayList<String>();
+        mentions.add("shares");
 
         Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
-                hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false);
+                hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false, shares,"headLine", false);
 
         addPost(post);
         List<Post> newPost = arangoWallHandler.getPosts(insertedUser.getUserId());
@@ -254,8 +256,6 @@ public class ArangoHandlerTest {
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
         String replyID = insertedReply.getReplyId();
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
         Reply reply = insertedReply;
         reply.setText("Some edited text");
         arangoWallHandler.editReply(reply);

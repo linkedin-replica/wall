@@ -40,7 +40,6 @@ public class EditReplyCommand extends Command{
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         int likesCount = (int) args.get("likesCount");
         String text = (String) args.get("text");
-        Date timestamp = format.parse(args.get("timestamp").toString());
         ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
 
@@ -53,7 +52,7 @@ public class EditReplyCommand extends Command{
         reply.setImages(images);
         reply.setLikesCount(likesCount);
         reply.setUrls(urls);
-        reply.setTimestamp(timestamp);
+        reply.setTimestamp(reply.getTimestamp());
         reply.setText(text);
         String response = dbHandler.editReply(reply);
         return response;

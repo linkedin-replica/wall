@@ -25,23 +25,14 @@ public class DeleteCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"commentId", "authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text"});
+        validateArgs(new String[]{"commentId"});
 
 
         // call dbHandler to get error or success message from dbHandler
         Comment comment;
 
-        Gson googleJson = new Gson();
         String commentId = args.get("commentId").toString();
-//        String authorId = args.get("authorId").toString();
-//        String parentPostId = args.get("parentPostId").toString();
-//        int likesCount = (int) args.get("likesCount");
-//        int repliesCount = (int) args.get("repliesCount");
-//        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-//        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
-//        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
-//        String text = args.get("text").toString();
-//        String timestamp = args.get("timestamp").toString();
+
         comment = dbHandler.getComment(commentId);
         String response =  dbHandler.deleteComment(comment);
         return response;
