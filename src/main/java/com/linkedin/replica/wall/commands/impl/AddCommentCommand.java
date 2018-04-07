@@ -27,7 +27,7 @@ public class AddCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text"});
+        validateArgs(new String[]{"authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text", "timestamp"});
 
 
         // call dbHandler to get error or success message from dbHandler
@@ -42,9 +42,10 @@ public class AddCommentCommand extends Command{
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
-        Date timestamp = new Date(args.get("timestamp").toString());
+        String timestamp = args.get("timestamp").toString();
         comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
         String response =  dbHandler.addComment(comment);
         return response;
     }
 }
+

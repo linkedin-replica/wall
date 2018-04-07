@@ -120,24 +120,6 @@ public class ArangoHandlerTest {
         return post;
    }
 
-    @Test
-    public void testNewsfeed(){
-        Post post1 = new Post(dbSeed.getInsertedUsers().get(0).getUserId(),null,null,null,"post 1",null,null,3,null,null,null,5,new Date(2010,6,24,23,15,30),false,false);
-        Post post2 = new Post(dbSeed.getInsertedUsers().get(0).getUserId(),null,null,null,"post 2",null,null,8,null,null,null,20,new Date(2010,6,24,4,15,50),false,false);
-        Post post3 = new Post(dbSeed.getInsertedUsers().get(1).getUserId(),null,null,null,"post 3",null,null,9,null,null,null,6,new Date(2010,6,24,23,16,30),false,false);
-        Post post4 = new Post(dbSeed.getInsertedUsers().get(1).getUserId(),null,null,null,"post 4",null,null,10,null,null,null,18,new Date(2010,6,24,16,40,30),false,false);
-        addPost(post1);
-        addPost(post2);
-        addPost(post3);
-        addPost(post4);
-        UserProfile user = dbSeed.getInsertedUsers().get(dbSeed.getInsertedUsers().size()-1);
-        user.getFriendsList().add(dbSeed.getInsertedUsers().get(0).getUserId());
-        user.getFriendsList().add(dbSeed.getInsertedUsers().get(1).getUserId());
-        List<Post> newsfeed = arangoWallHandler.getFriendsPosts(user,10,0);
-        assertEquals("Expected to have the list ordered", newsfeed.get(0).getText(), "post 2");
-        assertEquals("Expected to have a 4 posts returned", newsfeed.size(), 4);
-    }
-
     /**
      * Test to add post.
      * @throws ParseException
@@ -158,9 +140,11 @@ public class ArangoHandlerTest {
        hashtags.add("hashtags");
        ArrayList<String> mentions = new ArrayList<String>();
        mentions.add("mentions");
+       ArrayList<String> shares = new ArrayList<String>();
+       mentions.add("shares");
 
         Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
-                hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false);
+                hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false, shares, "headLine", false);
         arangoWallHandler.addPost(post);
         Post newPost = getPosts(post.getPostId());
         assertEquals("Expected to have a certain post in database", newPost.getCompanyId(), "companyId");
@@ -174,8 +158,6 @@ public class ArangoHandlerTest {
    @Test
    public void testEditPost() throws ParseException {
 
-       DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-       Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
        Post post = insertedPost;
        post.setLikesCount(13);
        arangoWallHandler.editPost(post);
@@ -217,9 +199,11 @@ public class ArangoHandlerTest {
         hashtags.add("hashtags");
         ArrayList<String> mentions = new ArrayList<String>();
         mentions.add("mentions");
+        ArrayList<String> shares = new ArrayList<String>();
+        mentions.add("shares");
 
         Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
-                hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false);
+                hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false, shares,"headLine", false);
 
         addPost(post);
         List<Post> newPost = arangoWallHandler.getPosts(insertedUser.getUserId());
@@ -272,8 +256,6 @@ public class ArangoHandlerTest {
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
         String replyID = insertedReply.getReplyId();
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
         Reply reply = insertedReply;
         reply.setText("Some edited text");
         arangoWallHandler.editReply(reply);
@@ -398,14 +380,11 @@ public class ArangoHandlerTest {
         UserProfile user = insertedUser;
         String userId = user.getUserId();
         int bookmarkNo = user.getBookmarks().size();
-        Bookmark bookmark = new Bookmark(insertedUser.getUserId(), insertedPost.getPostId());
-        arangoWallHandler.addBookmark(bookmark);
+        Bookmark bookmark = insertedUser.getBookmarks().get(0);
         arangoWallHandler.deleteBookmark(bookmark);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
         ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
-        System.out.println(updatedBookmarks.size());
-        System.out.println(bookmarkNo);
-        assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo);
+        assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo - 1);
     }
 
     /**
@@ -451,7 +430,7 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testAddComment(){
-        Comment comment  = new Comment(insertedUser.getUserId(),insertedPost.getPostId(),12,22,null,null,null,"comment Text",null);
+        Comment comment  = new Comment(insertedUser.getUserId(),insertedPost.getPostId(),12,22,null,null,null,"comment Text","time Stamp");
         arangoWallHandler.addComment(comment);
         Comment newComment = getComment(comment.getCommentId());
         assertEquals("Expected to have a certain comment in database", newComment.getParentPostId(), insertedPost.getPostId());
@@ -500,6 +479,23 @@ public class ArangoHandlerTest {
         assertEquals("Expected to get a certain comment", newComment.getAuthorId(), insertedComment.getAuthorId());
 
     }
+      @Test
+    public void testNewsfeed(){
+        Post post1 = new Post(dbSeed.getInsertedUsers().get(0).getUserId(),null,null,null,"post 1",null,null,3,null,null,null,5,new Date(2010,6,24,23,15,30),false,false);
+        Post post2 = new Post(dbSeed.getInsertedUsers().get(0).getUserId(),null,null,null,"post 2",null,null,8,null,null,null,20,new Date(2010,6,24,4,15,50),false,false);
+        Post post3 = new Post(dbSeed.getInsertedUsers().get(1).getUserId(),null,null,null,"post 3",null,null,9,null,null,null,6,new Date(2010,6,24,23,16,30),false,false);
+        Post post4 = new Post(dbSeed.getInsertedUsers().get(1).getUserId(),null,null,null,"post 4",null,null,10,null,null,null,18,new Date(2010,6,24,16,40,30),false,false);
+        addPost(post1);
+        addPost(post2);
+        addPost(post3);
+        addPost(post4);
+        UserProfile user = dbSeed.getInsertedUsers().get(dbSeed.getInsertedUsers().size()-1);
+        user.getFriendsList().add(dbSeed.getInsertedUsers().get(0).getUserId());
+        user.getFriendsList().add(dbSeed.getInsertedUsers().get(1).getUserId());
+        List<Post> newsfeed = arangoWallHandler.getFriendsPosts(user,10,0);
+        assertEquals("Expected to have the list ordered", newsfeed.get(0).getText(), "post 2");
+        assertEquals("Expected to have a 4 posts returned", newsfeed.size(), 4);
+    }
 
 
     @AfterClass
@@ -511,5 +507,6 @@ public class ArangoHandlerTest {
         dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
       }
+
 
 }

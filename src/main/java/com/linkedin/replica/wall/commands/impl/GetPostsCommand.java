@@ -23,11 +23,11 @@ public class GetPostsCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorID"});
+        validateArgs(new String[]{"authorId"});
 
 
         // call dbHandler to list of posts from db
-        String authorID = args.get("authorID").toString();
+        String authorID = args.get("authorId").toString();
 
         List<Post> posts = dbHandler.getPosts(authorID);
         return posts;

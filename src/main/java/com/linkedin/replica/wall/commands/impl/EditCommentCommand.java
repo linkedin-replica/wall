@@ -1,7 +1,10 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -38,7 +41,6 @@ public class EditCommentCommand extends Command{
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
-        Date timestamp = new Date(args.get("timestamp").toString());
 
         comment = dbHandler.getComment(commentId);
         comment.setAuthorId(authorId);
@@ -49,8 +51,9 @@ public class EditCommentCommand extends Command{
         comment.setUrls(urls);
         comment.setMentions(mentions);
         comment.setText(text);
-        comment.setTimestamp(timestamp);
+        comment.setTimestamp(comment.getTimestamp());
         String response =  dbHandler.editComment(comment);
         return response;
     }
 }
+
