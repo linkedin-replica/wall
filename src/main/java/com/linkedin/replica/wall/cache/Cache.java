@@ -39,11 +39,4 @@ public class Cache {
         redis.destroy();
     }
 
-    public static void main(String[] args) {
-        //Connecting to Redis server on localhost
-        JedisPool jedisPool = new JedisPool(new JedisPoolConfig(),"localhost",6379);
-        Jedis cacheResource = jedisPool.getResource();
-        Pipeline jedisPipeline = cacheResource.pipelined();
-        System.out.println("Server is running: "+jedisPool.getResource().ping());
-    }
 }

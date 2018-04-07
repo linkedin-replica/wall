@@ -26,17 +26,11 @@ public class GetPostCommand extends Command{
         PostsCacheHandler postsCacheHandler = (PostsCacheHandler)this.cacheHandler;
         validateArgs(new String[]{"postId"});
         String postId = args.get("postId").toString();
-        Object post;
-        if( postsCacheHandler.getPost((String) args.get("postId"),Post.class)!=null){
-            post = postsCacheHandler.getPost((String) args.get("postId"),Post.class);
-        }
-        else{
+        Object post = postsCacheHandler.getPost((String) args.get("postId"),Post.class);
+        if( post == null){
             post = dbHandler.getPost(postId);
             postsCacheHandler.cachePost(postId,post);
-        }
-
-
-
+            }
         return post;
 
     }
