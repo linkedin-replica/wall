@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface WallHandler extends DatabaseHandler {
 
+    public List<Post> getFriendsPosts(UserProfile user,int limit, int offset);
+
     public ArrayList<Bookmark> getBookmarks(String userId);
 
     public String addBookmark(Bookmark bookmark);
@@ -58,5 +60,7 @@ public interface WallHandler extends DatabaseHandler {
     public Post getPost(String postId);
 
     public Like getLike(String likeId);
+
+    public UserProfile getUser(String userId);
 
 }

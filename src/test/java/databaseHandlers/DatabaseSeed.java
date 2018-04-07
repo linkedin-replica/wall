@@ -55,6 +55,37 @@ public class DatabaseSeed {
 
     }
 
+    public void setFriendsAndTheirPosts(){
+        ArrayList<String> friends = new ArrayList<String>();
+        friends.add(this.getInsertedUsers().get(0).getUserId());
+        friends.add(this.getInsertedUsers().get(1).getUserId());
+        System.out.println(friends.toString() + " Friends in  WallTest");
+        this.getInsertedUsers().get(5).setFriendsList(friends);
+        this.getInsertedPosts().get(0).setAuthorId(this.getInsertedUsers().get(0).getUserId());
+        this.getInsertedPosts().get(1).setAuthorId(this.getInsertedUsers().get(0).getUserId());
+        this.getInsertedPosts().get(2).setAuthorId(this.getInsertedUsers().get(1).getUserId());
+        this.getInsertedPosts().get(3).setAuthorId(this.getInsertedUsers().get(1).getUserId());
+        this.getInsertedPosts().get(0).setTimestamp(new Date(2010,6,24));
+        this.getInsertedPosts().get(1).setTimestamp(new Date(2009,8,10));
+        this.getInsertedPosts().get(2).setTimestamp(new Date(2016,9,6));
+        this.getInsertedPosts().get(3).setTimestamp(new Date(2018,2,22));
+        this.getInsertedPosts().get(0).setText("Post 1");
+        this.getInsertedPosts().get(1).setText("Post 2");
+        this.getInsertedPosts().get(2).setText("Post 3");
+        this.getInsertedPosts().get(3).setText("Post 4");
+
+        arangoDB.db(dbName).collection(usersCollection).updateDocument(this.getInsertedUsers().get(5).getUserId(),this.getInsertedUsers().get(5));
+        arangoDB.db(dbName).collection(postsCollection).updateDocument(this.getInsertedPosts().get(0).getPostId(),this.getInsertedPosts().get(0));
+        arangoDB.db(dbName).collection(postsCollection).updateDocument(this.getInsertedPosts().get(1).getPostId(),this.getInsertedPosts().get(1));
+        arangoDB.db(dbName).collection(postsCollection).updateDocument(this.getInsertedPosts().get(2).getPostId(),this.getInsertedPosts().get(2));
+        arangoDB.db(dbName).collection(postsCollection).updateDocument(this.getInsertedPosts().get(3).getPostId(),this.getInsertedPosts().get(3));
+
+
+
+
+
+    }
+
     public void insertPosts() throws IOException, ClassNotFoundException, ParseException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/posts"));
         try{
@@ -119,7 +150,7 @@ public class DatabaseSeed {
        ArrayList<String> x =  new ArrayList<String>() ;
        x.add("y");
        for(String text : lines) {
-           Comment comment = new Comment("3", insertedPosts.get(0).getPostId(), 45, 34, x, x, x, text, "11");
+           Comment comment = new Comment("3", insertedPosts.get(0).getPostId(), 45, 34, x, x, x, text, null);
            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
            insertedComments.add(comment);
            Comment retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), Comment.class);
@@ -216,6 +247,7 @@ public class DatabaseSeed {
             String firstName = arr[0];
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
+
             UserProfile user = new UserProfile(email, firstName, lastName);
             arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
 
@@ -301,4 +333,5 @@ public class DatabaseSeed {
     public void closeDBConnection() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
+
 }

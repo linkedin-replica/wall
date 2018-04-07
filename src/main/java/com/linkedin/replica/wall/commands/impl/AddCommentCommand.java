@@ -1,6 +1,7 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,7 +22,7 @@ public class AddCommentCommand extends Command{
     }
 
 
-    public Object execute() {
+    public Object execute() throws ParseException {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
@@ -34,6 +35,7 @@ public class AddCommentCommand extends Command{
         Comment comment;
 
         Gson googleJson = new Gson();
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         String authorId = args.get("authorId").toString();
         String parentPostId = args.get("parentPostId").toString();
         int likesCount = (int) args.get("likesCount");
@@ -42,9 +44,10 @@ public class AddCommentCommand extends Command{
         ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
         ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
-        String timestamp = args.get("timestamp").toString();
+        Date timestamp = format.parse(args.get("timestamp").toString());
         comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
         String response =  dbHandler.addComment(comment);
         return response;
     }
 }
+
