@@ -13,6 +13,7 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.DocumentCreateEntity;
+import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.models.*;
@@ -56,7 +57,6 @@ public class DatabaseSeed {
 
     public void insertPosts() throws IOException, ClassNotFoundException, ParseException {
         List<String> lines = Files.readAllLines(Paths.get("src/test/resources/posts"));
-        System.out.println("posts inserted");
         try{
             arangoDB.db(dbName).createCollection(postsCollection);
 
@@ -83,12 +83,14 @@ public class DatabaseSeed {
             hashtags.add("hashtags");
             ArrayList<String> mentions = new ArrayList<String>();
             mentions.add("mentions");
+            ArrayList<String> shares = new ArrayList<String>();
+            mentions.add("shares");
 
             Post post = new Post( "2", "3",
                     "4", "5", text,hashtags,
                     mentions, 12, images, videos,
                     urls, 30, timestamp, true,
-                    true);
+                    true, shares,"headLine", false);
 
 
 
@@ -215,12 +217,14 @@ public class DatabaseSeed {
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
             UserProfile user = new UserProfile(email, firstName, lastName);
+            arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
+
             Bookmark bookmark = new Bookmark(user.getUserId(), insertedPosts.get(0).getPostId());
             ArrayList<Bookmark> b = new ArrayList<>();
             b.add(bookmark);
             user.setBookmarks(b);
+            arangoDB.db(dbName).collection(usersCollection).updateDocument(user.getUserId(), user);
             insertedUsers.add(user);
-            arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
             System.out.println("New user document insert with key = " + user.getUserId());
             counter++;
             UserProfile retrievedUser= arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
