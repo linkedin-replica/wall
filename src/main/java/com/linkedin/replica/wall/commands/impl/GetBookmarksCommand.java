@@ -28,8 +28,6 @@ public class GetBookmarksCommand extends Command{
 
         // call dbHandler to list of bookmarks from db
         String userId = args.get("userId").toString();
-        String postId = args.get("postId").toString();
-        Bookmark bookmark = new Bookmark(userId, postId);
 
         List<Bookmark> bookmarks = dbHandler.getBookmarks(userId);
         return bookmarks;

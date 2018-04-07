@@ -27,7 +27,7 @@ public class AddReplyCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "parentCommentId", "mentions", "likesCount", "text", "images", "urls"});
+        validateArgs(new String[]{"authorId", "parentPostId", "parentCommentId", "mentions", "likesCount", "text", "images", "urls", "timestamp"});
 
         // call dbHandler to get error or success message from dbHandler
         Reply reply;
