@@ -28,7 +28,7 @@ public class Main {
     }
 
     public static void start(String... args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, TimeoutException{
-        if(args.length != 4)
+        if(args.length != 5)
             throw new IllegalArgumentException("Expected three arguments. 1- app config file path \n "
                     + "2- database config file path \n  3- commands config file path \n 4- controller config file path \n 5- redis config file path");
 
