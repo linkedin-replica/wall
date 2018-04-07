@@ -59,7 +59,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, TimeoutException {
-        String[] arr = {"src/main/resources/app.config","src/main/resources/arango.test.config", "src/main/resources/commands.config", "src/main/resources/controller.config"};
+        String[] arr = {"src/main/resources/app.config","src/main/resources/arango.test.config", "src/main/resources/commands.config", "src/main/resources/controller.config","src/main/resources/cache.config"};
         start(arr);
     }
 

@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.config;
 
+import com.linkedin.replica.wall.cache.handlers.CacheHandler;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 
@@ -70,6 +71,13 @@ public class Configuration {
         if(handlerName == null)
             handlerName = "ArangoWallHandler";
         String handlerClassPath = handlerPackageName + "." + handlerName;
+        return Class.forName(handlerClassPath);
+    }
+    public Class getCacheClass(String commandName) throws ClassNotFoundException {
+        String handlerPackageName = CacheHandler.class.getPackage().getName() + ".impl";
+        String handlerName = "JedisCacheHandler";
+        String handlerClassPath = handlerPackageName + "." + handlerName;
+        System.out.println("class path is " + handlerClassPath);
         return Class.forName(handlerClassPath);
     }
     public String getControllerConfigProp(String key){

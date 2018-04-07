@@ -486,11 +486,11 @@ public class ArangoHandlerTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-//        dbSeed.deleteAllUsers();
-//        dbSeed.deleteAllPosts();
-//        dbSeed.deleteAllReplies();
-//        dbSeed.deleteAllComments();
-//        dbSeed.deleteAllLikes();
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
+        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
       }
 

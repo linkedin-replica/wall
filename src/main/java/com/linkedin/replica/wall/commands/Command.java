@@ -37,6 +37,9 @@ public abstract class Command {
     public void setDbHandler(DatabaseHandler dbHandler) {
         this.dbHandler = dbHandler;
     }
+    public void setCacheHandler(CacheHandler cacheHandler) {
+        this.cacheHandler = cacheHandler;
+    }
 
     protected void validateArgs(String[] requiredArgs) {
         for(String arg: requiredArgs)
