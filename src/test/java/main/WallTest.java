@@ -1,3 +1,4 @@
+
 package main;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class WallTest {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config" ,rootFolder + "cache.config");
+                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+ "cache.config");
         config = Configuration.getInstance();
         wallService = new WallService();
         DatabaseConnection.init();
@@ -62,6 +63,7 @@ public class WallTest {
         dbSeed.insertReplies();
         dbSeed.insertLikes();
         dbSeed.insertUsers();
+        dbSeed.setFriendsAndTheirPosts();
 
         commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
         insertedComment = dbSeed.getInsertedComments().get(0);
@@ -83,6 +85,18 @@ public class WallTest {
         shares.add("shares");
 
 
+    }
+      @Test
+    public void testNewsfeed() throws Exception {
+        HashMap<String, Object> request = new HashMap<String, Object>();
+        request.put("user",dbSeed.getInsertedUsers().get(5));
+        request.put("limit",10);
+        request.put("offset",0);
+
+        List<Post> newsfeed = (List<Post>) wallService.serve("getNewsfeed", request);
+        assertEquals("Newsfeed Size should be 4", 4, newsfeed.size());
+        assertEquals("Newsfeed should be ordered", "Post 2", newsfeed.get(0).getText());
+        assertEquals("Newsfeed should be ordered", "Post 4", newsfeed.get(3).getText());
     }
 
     @Test
@@ -464,3 +478,4 @@ public class WallTest {
     }
 
 }
+

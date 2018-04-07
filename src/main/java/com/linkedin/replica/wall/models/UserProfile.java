@@ -13,7 +13,7 @@ public class UserProfile {
     private String email;
     private String firstName;
     private String lastName;
-
+    private ArrayList<String> friendsList;
     public UserProfile() {
         super();
     }
@@ -24,6 +24,16 @@ public class UserProfile {
         this.firstName = firstName;
         this.lastName = lastName;
         this.bookmarks = new ArrayList<>();
+        this.friendsList = new ArrayList<>();
+    }
+
+
+    public ArrayList<String> getFriendsList() {
+        return this.friendsList;
+    }
+
+    public void setFriendsList(ArrayList<String> friendsList) {
+        this.friendsList = friendsList;
     }
 
     public ArrayList<Bookmark> getBookmarks(){return this.bookmarks;}

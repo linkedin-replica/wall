@@ -11,6 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RedisWallHandler implements WallHandler {
+
+    /**
+     * get posts of user's friends
+     * @param user,limit,offset
+     * @return
+     */
+    public List<Post> getFriendsPosts(UserProfile user,int limit, int offset){
+        return null;
+    }
     /**
      * add bookmark to user's bookmarks
      * @param bookmark
@@ -143,6 +152,11 @@ public class RedisWallHandler implements WallHandler {
 
     @Override
     public Like getLike(String likeId) {
+        return null;
+    }
+
+    @Override
+    public UserProfile getUser(String userId) {
         return null;
     }
 }
