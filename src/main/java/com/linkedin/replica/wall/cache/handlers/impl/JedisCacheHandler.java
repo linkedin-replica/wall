@@ -12,6 +12,7 @@ import redis.clients.jedis.Pipeline;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Set;
 
 public class JedisCacheHandler implements PostsCacheHandler{
@@ -34,7 +35,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
 
         Jedis cacheResource = jedisPool.getResource();
         Pipeline jedisPipeline = cacheResource.pipelined();
-        cacheResource.select(postDBIndex);
+        //cacheResource.select(postDBIndex);
         Class postClass = post.getClass();
         Field [] postFields = postClass.getDeclaredFields();
         for (int i = 0; i<postFields.length; i++){
@@ -54,7 +55,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
     public Object getPost(String postId, Class<?> postClass) throws IllegalAccessException, InstantiationException, NoSuchFieldException, IOException {
 
         Jedis cacheResource = jedisPool.getResource();
-        cacheResource.select(postDBIndex);
+        //cacheResource.select(postDBIndex);
         if(!cacheResource.exists(postId)){
             return null;
         }
@@ -90,7 +91,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
     public void deletePost(String postId) {
 
         Jedis cacheResource = jedisPool.getResource();
-        cacheResource.select(postDBIndex);
+       // cacheResource.select(postDBIndex);
         if(!cacheResource.exists(postId)){
             System.out.println("doesn't exist");
             return;
@@ -102,8 +103,27 @@ public class JedisCacheHandler implements PostsCacheHandler{
 
     }
 
+    @Override
+    public void editPost(String postId, HashMap<String, Object> hm) throws IOException {
+        Jedis cacheResource = jedisPool.getResource();
+        System.out.println("postId fel cache" + postId);
+        if(!cacheResource.exists(postId)){
+            return;
+        }
+        Pipeline jedisPipeline = cacheResource.pipelined();
+        for (String key : hm.keySet())
+        {
+            System.out.println("key: " + key);
+            jedisPipeline.hset(postId,key,gson.toJson(hm.get(key)));
+            System.out.println("value: " + hm.get(key));
+
+        }
+        jedisPipeline.sync();
+        jedisPipeline.close();
+        cacheResource.close();
 
 
+    }
 
 
 }

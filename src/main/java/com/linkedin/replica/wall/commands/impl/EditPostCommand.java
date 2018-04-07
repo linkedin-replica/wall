@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,6 +10,7 @@ import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
@@ -22,10 +24,11 @@ public class EditPostCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() throws ParseException, IOException {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
+        PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
         validateArgs(new String[]{"postId", "authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior", "headLine", "isArticle"});
@@ -73,6 +76,8 @@ public class EditPostCommand extends Command{
         post.setArticle(isArticle);
 
         String response = dbHandler.editPost(post);
+        cacheHandler.editPost(postId,args);
+
         return response;
     }
 }
