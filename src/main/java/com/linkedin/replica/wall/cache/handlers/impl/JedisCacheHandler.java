@@ -26,8 +26,6 @@ public class JedisCacheHandler implements PostsCacheHandler{
         configuration = Configuration.getInstance();
         postDBIndex = Integer.parseInt(configuration.getRedisConfigProp("cache.post.index"));
         gson = new Gson();
-
-
     }
 
     @Override
@@ -35,7 +33,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
 
         Jedis cacheResource = jedisPool.getResource();
         Pipeline jedisPipeline = cacheResource.pipelined();
-        //cacheResource.select(postDBIndex);
+        cacheResource.select(postDBIndex);
         Class postClass = post.getClass();
         Field [] postFields = postClass.getDeclaredFields();
         for (int i = 0; i<postFields.length; i++){
@@ -55,7 +53,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
     public Object getPost(String postId, Class<?> postClass) throws IllegalAccessException, InstantiationException, NoSuchFieldException, IOException {
 
         Jedis cacheResource = jedisPool.getResource();
-        //cacheResource.select(postDBIndex);
+        cacheResource.select(postDBIndex);
         if(!cacheResource.exists(postId)){
             return null;
         }
@@ -91,7 +89,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
     public void deletePost(String postId) {
 
         Jedis cacheResource = jedisPool.getResource();
-       // cacheResource.select(postDBIndex);
+        cacheResource.select(postDBIndex);
         if(!cacheResource.exists(postId)){
             System.out.println("doesn't exist");
             return;
@@ -110,6 +108,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
         if(!cacheResource.exists(postId)){
             return;
         }
+        cacheResource.select(postDBIndex);
         Pipeline jedisPipeline = cacheResource.pipelined();
         for (String key : hm.keySet())
         {
