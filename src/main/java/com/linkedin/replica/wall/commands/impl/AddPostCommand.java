@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,7 @@ public class AddPostCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() throws ParseException, IllegalAccessException, IOException, InstantiationException {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
@@ -59,6 +60,7 @@ public class AddPostCommand extends Command{
         post = new Post(authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior, shares, headLine,isArticle);
 
         String response = dbHandler.addPost(post);
+        cacheHandler.cachePost(post.getPostId(),post);
         return response;
     }
 }
