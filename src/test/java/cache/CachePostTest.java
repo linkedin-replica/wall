@@ -2,6 +2,7 @@ package cache;
 
 import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.linkedin.replica.wall.cache.Cache;
 import com.linkedin.replica.wall.cache.handlers.impl.JedisCacheHandler;
@@ -16,17 +17,17 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-public class cachePostTest {
+public class CachePostTest {
     private static WallService wallService;
     private static ArangoDatabase arangoDB;
     static Configuration config;
     private static DatabaseSeed dbSeed;
     private static JedisCacheHandler postsCacheHandler;
+    private static Gson gson;
 
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
@@ -36,18 +37,19 @@ public class cachePostTest {
                 rootFolder + "commands.config", rootFolder + "controller.config" ,rootFolder + "cache.config");
         config = Configuration.getInstance();
         wallService = new WallService();
+        gson = new Gson();
         Cache.init();
         postsCacheHandler = new JedisCacheHandler();
         DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb().db(
                 Configuration.getInstance().getArangoConfig("db.name")
         );
-       dbSeed = new DatabaseSeed();
-//        dbSeed.insertPosts();
-//        dbSeed.insertComments();
-//        dbSeed.insertReplies();
-//        dbSeed.insertLikes();
-//        dbSeed.insertUsers();
+        dbSeed = new DatabaseSeed();
+        dbSeed.insertPosts();
+        dbSeed.insertComments();
+        dbSeed.insertReplies();
+        dbSeed.insertLikes();
+        dbSeed.insertUsers();
 
 
     }
@@ -70,14 +72,13 @@ public class cachePostTest {
         Post postCached = (Post) postsCacheHandler.getPost(postId,Post.class);
         assertEquals("Returned post should be null",null,postCached);
     }
-
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-//        dbSeed.deleteAllUsers();
-//        dbSeed.deleteAllPosts();
-//        dbSeed.deleteAllReplies();
-//        dbSeed.deleteAllComments();
-//        dbSeed.deleteAllLikes();
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
+        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
     }
 }
