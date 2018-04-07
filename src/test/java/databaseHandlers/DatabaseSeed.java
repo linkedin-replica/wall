@@ -217,12 +217,14 @@ public class DatabaseSeed {
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
             UserProfile user = new UserProfile(email, firstName, lastName);
+            arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
+
             Bookmark bookmark = new Bookmark(user.getUserId(), insertedPosts.get(0).getPostId());
             ArrayList<Bookmark> b = new ArrayList<>();
             b.add(bookmark);
             user.setBookmarks(b);
+            arangoDB.db(dbName).collection(usersCollection).updateDocument(user.getUserId(), user);
             insertedUsers.add(user);
-            arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
             System.out.println("New user document insert with key = " + user.getUserId());
             counter++;
             UserProfile retrievedUser= arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);

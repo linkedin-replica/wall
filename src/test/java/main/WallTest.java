@@ -267,7 +267,7 @@ public class WallTest {
         HashMap<String, Object> request = new HashMap<>();
         String userId = insertedUser.getUserId();
         request.put("userId", userId);
-        LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getBookmarks", request);
+        List <Bookmark>result = (List<Bookmark>)wallService.serve("getBookmarks", request);
         int size = 1;
         assertEquals("response should be user's bookmark arraylist", result.size(), size);
     }
