@@ -61,4 +61,6 @@ public interface WallHandler extends DatabaseHandler {
 
     public Like getLike(String likeId);
 
+    public UserProfile getUser(String userId);
+
 }

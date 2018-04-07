@@ -154,4 +154,9 @@ public class RedisWallHandler implements WallHandler {
     public Like getLike(String likeId) {
         return null;
     }
+
+    @Override
+    public UserProfile getUser(String userId) {
+        return null;
+    }
 }

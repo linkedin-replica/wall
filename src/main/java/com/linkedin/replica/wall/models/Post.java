@@ -29,10 +29,6 @@ public class Post implements Comparable<Post>{
     private boolean isPrior;
 
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getHeadLine() {
         return headLine;
     }
@@ -81,7 +77,7 @@ public class Post implements Comparable<Post>{
     }
 
     public int compareTo(Post post) {
-        return this.getTimeStamp().compareTo(post.getTimeStamp());
+        return this.getTimestamp().compareTo(post.getTimestamp());
     }
 
 

@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class GetNewsfeed extends Command{
+public class GetNewsfeedCommand extends Command{
 
-    public GetNewsfeed(HashMap<String, Object> args, DatabaseHandler dbHandler){
+    public GetNewsfeedCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
         super(args,dbHandler);
     }
 
@@ -26,21 +26,21 @@ public class GetNewsfeed extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"mail","firstName","lastName","limit","offset"});
+        validateArgs(new String[]{"user","limit","offset"});
 
 
         // call dbHandler to get error or success message from dbHandler
         UserProfile user;
 
         Gson googleJson = new Gson();
-        String mail = args.get("mail").toString();
-        String firstName = args.get("firstName").toString();
-        String lastName = args.get("lastName").toString();
+        user = (UserProfile) args.get("user");
         int limit = (int) args.get("limit");
         int offset = (int) args.get("offset");
 
-        user = new UserProfile(mail,firstName,lastName);
+
+        ;
         List<Post> retrievedPosts = dbHandler.getFriendsPosts(user,limit,offset);
+
         return retrievedPosts;
     }
 }
