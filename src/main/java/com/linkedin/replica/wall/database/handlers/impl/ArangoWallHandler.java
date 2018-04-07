@@ -49,13 +49,10 @@ public class ArangoWallHandler implements WallHandler {
 
     public List<Post> getFriendsPosts(UserProfile user,int limit, int offset){
         ArrayList<Post> returnedPosts = new ArrayList<Post>();
-        System.out.println("Friends " + user.getFriendsList().size());
         for(int i=0; i<user.getFriendsList().size(); i++){
-            System.out.println("In For");
-            System.out.println("FOr " + i + " " + getPostsWithLimit(user.getFriendsList().get(i),limit,offset));
             returnedPosts.addAll(getPostsWithLimit(user.getFriendsList().get(i),limit,offset));
         }
-        System.out.println("No Of Posts: " + returnedPosts.size());
+
 
         Collections.sort(returnedPosts);
         return returnedPosts;
@@ -70,7 +67,6 @@ public class ArangoWallHandler implements WallHandler {
             ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                     Post.class);
             cursor.forEachRemaining(postDocument -> {
-                System.out.print("hereeeeeeeeeee");
                 posts.add(postDocument);
                 System.out.println("Key: " + postDocument.getPostId());
             });
