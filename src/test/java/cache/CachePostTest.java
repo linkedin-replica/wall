@@ -72,15 +72,6 @@ public class CachePostTest {
         insertedPost = dbSeed.getInsertedPosts().get(0);
     }
     @Test
-    public void testGetCachedPost() throws Exception {
-        HashMap<String, Object> request = new HashMap<>();
-        String postId = "317844";
-        request.put("postId", postId);
-        Post post = (Post) wallService.serve("getPost", request);
-        Post postCached = (Post) postsCacheHandler.getPost(postId,Post.class);
-       assertEquals("Both posts should have the same ID",post.getPostId(),postCached.getPostId());
-    }
-    @Test
     public void testDeleteCachedPost() throws Exception {
 
         HashMap<String, Object> request = new HashMap<String, Object>();
