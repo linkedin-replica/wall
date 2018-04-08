@@ -43,7 +43,6 @@ public class JedisCacheHandler implements PostsCacheHandler{
             jedisPipeline.hset(postId,fieldName,gson.toJson(value));
 
         }
-        System.out.println("post added in cache");
         jedisPipeline.sync();
         jedisPipeline.close();
         cacheResource.close();
@@ -91,20 +90,17 @@ public class JedisCacheHandler implements PostsCacheHandler{
         Jedis cacheResource = jedisPool.getResource();
         cacheResource.select(postDBIndex);
         if(!cacheResource.exists(postId)){
-            System.out.println("doesn't exist");
             return;
         }
         Set<String> fields = cacheResource.hgetAll(postId).keySet();
         String [] fieldNames = fields.toArray(new String[cacheResource.hgetAll(postId).keySet().size()]);
         cacheResource.hdel(postId, fieldNames);
-        System.out.println("deleted");
 
     }
 
     @Override
     public void editPost(String postId, HashMap<String, Object> hm) throws IOException {
         Jedis cacheResource = jedisPool.getResource();
-        System.out.println("postId fel cache" + postId);
         if(!cacheResource.exists(postId)){
             return;
         }
@@ -112,17 +108,11 @@ public class JedisCacheHandler implements PostsCacheHandler{
         Pipeline jedisPipeline = cacheResource.pipelined();
         for (String key : hm.keySet())
         {
-            System.out.println("key: " + key);
             jedisPipeline.hset(postId,key,gson.toJson(hm.get(key)));
-            System.out.println("value: " + hm.get(key));
 
         }
         jedisPipeline.sync();
         jedisPipeline.close();
         cacheResource.close();
-
-
     }
-
-
 }
