@@ -8,6 +8,7 @@ import com.linkedin.replica.wall.models.Post;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.exceptions.JedisException;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -31,88 +32,108 @@ public class JedisCacheHandler implements PostsCacheHandler{
     @Override
     public void cachePost(String postId, Object post) throws IOException, IllegalAccessException, InstantiationException {
 
-        Jedis cacheResource = jedisPool.getResource();
-        Pipeline jedisPipeline = cacheResource.pipelined();
-        cacheResource.select(postDBIndex);
-        Class postClass = post.getClass();
-        Field [] postFields = postClass.getDeclaredFields();
-        for (int i = 0; i<postFields.length; i++){
-            postFields[i].setAccessible(true);
-            String fieldName = postFields[i].getName();
-            Object value =  postFields[i].get(post);
-            jedisPipeline.hset(postId,fieldName,gson.toJson(value));
+        try(Jedis cacheResource = jedisPool.getResource()){
+            Pipeline jedisPipeline = cacheResource.pipelined();
+            cacheResource.select(postDBIndex);
+            Class postClass = post.getClass();
+            Field [] postFields = postClass.getDeclaredFields();
+            for (int i = 0; i<postFields.length; i++){
+                postFields[i].setAccessible(true);
+                String fieldName = postFields[i].getName();
+                Object value =  postFields[i].get(post);
+                jedisPipeline.hset(postId,fieldName,gson.toJson(value));
 
+            }
+            jedisPipeline.sync();
+            jedisPipeline.close();
+            cacheResource.close();
         }
-        jedisPipeline.sync();
-        jedisPipeline.close();
-        cacheResource.close();
+        catch (JedisException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     @Override
     public Object getPost(String postId, Class<?> postClass) throws IllegalAccessException, InstantiationException, NoSuchFieldException, IOException {
 
-        Jedis cacheResource = jedisPool.getResource();
-        cacheResource.select(postDBIndex);
-        if(!cacheResource.exists(postId)){
-            return null;
-        }
-
-        Pipeline jedisPipeline = cacheResource.pipelined();
         Object post = postClass.newInstance();
-        Field [] postFields = postClass.getDeclaredFields();
-        for (int i = 0; i<postFields.length; i++){
-            String fieldName = postFields[i].getName();
-            String value = cacheResource.hget(postId,fieldName);
-            Object objectValue = gson.fromJson(value,postFields[i].getType());
-
-            try {
-                Field field = postClass.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                field.set(post,objectValue);
-            }
-            catch (NoSuchFieldException e){
-                throw new NoSuchFieldException(
-                        "Could not find field named '" + fieldName + "' in class '" + postClass +
-                                "'.  All fields: " + Arrays.asList(postClass.getDeclaredFields()));
-
+        try(Jedis cacheResource = jedisPool.getResource()){
+            cacheResource.select(postDBIndex);
+            if(!cacheResource.exists(postId)){
+                return null;
             }
 
+            Pipeline jedisPipeline = cacheResource.pipelined();
+            Field [] postFields = postClass.getDeclaredFields();
+            for (int i = 0; i<postFields.length; i++){
+                String fieldName = postFields[i].getName();
+                String value = cacheResource.hget(postId,fieldName);
+                Object objectValue = gson.fromJson(value,postFields[i].getType());
+
+                try {
+                    Field field = postClass.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    field.set(post,objectValue);
+                }
+                catch (NoSuchFieldException e){
+                    throw new NoSuchFieldException(
+                            "Could not find field named '" + fieldName + "' in class '" + postClass +
+                                    "'.  All fields: " + Arrays.asList(postClass.getDeclaredFields()));
+
+                }
+
+            }
+            jedisPipeline.sync();
+            jedisPipeline.close();
+            cacheResource.close();
         }
-        jedisPipeline.sync();
-        jedisPipeline.close();
-        cacheResource.close();
+        catch (JedisException e){
+            System.out.println(e.getMessage());
+        }
+
         return post;
     }
 
     @Override
     public void deletePost(String postId) {
 
-        Jedis cacheResource = jedisPool.getResource();
-        cacheResource.select(postDBIndex);
-        if(!cacheResource.exists(postId)){
-            return;
+        try(Jedis cacheResource = jedisPool.getResource()){
+            cacheResource.select(postDBIndex);
+            if(!cacheResource.exists(postId)){
+                return;
+            }
+            Set<String> fields = cacheResource.hgetAll(postId).keySet();
+            String [] fieldNames = fields.toArray(new String[cacheResource.hgetAll(postId).keySet().size()]);
+            cacheResource.hdel(postId, fieldNames);
         }
-        Set<String> fields = cacheResource.hgetAll(postId).keySet();
-        String [] fieldNames = fields.toArray(new String[cacheResource.hgetAll(postId).keySet().size()]);
-        cacheResource.hdel(postId, fieldNames);
+        catch (JedisException e){
+            System.out.println(e.getMessage());
+        }
+
 
     }
 
     @Override
     public void editPost(String postId, HashMap<String, Object> hm) throws IOException {
-        Jedis cacheResource = jedisPool.getResource();
-        if(!cacheResource.exists(postId)){
-            return;
-        }
-        cacheResource.select(postDBIndex);
-        Pipeline jedisPipeline = cacheResource.pipelined();
-        for (String key : hm.keySet())
-        {
-            jedisPipeline.hset(postId,key,gson.toJson(hm.get(key)));
+        try(Jedis cacheResource = jedisPool.getResource()){
+            if(!cacheResource.exists(postId)){
+                return;
+            }
+            cacheResource.select(postDBIndex);
+            Pipeline jedisPipeline = cacheResource.pipelined();
+            for (String key : hm.keySet())
+            {
+                jedisPipeline.hset(postId,key,gson.toJson(hm.get(key)));
 
+            }
+            jedisPipeline.sync();
+            jedisPipeline.close();
+            cacheResource.close();
         }
-        jedisPipeline.sync();
-        jedisPipeline.close();
-        cacheResource.close();
+        catch (JedisException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 }
