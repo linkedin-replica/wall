@@ -1,8 +1,6 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;

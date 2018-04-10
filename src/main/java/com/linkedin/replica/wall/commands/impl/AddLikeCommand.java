@@ -23,18 +23,27 @@ public class AddLikeCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likerId", "userName", "headLine", "imageUrl", "likedPostId", "likedCommentId", "likedReplyId"});
+        validateArgs(new String[]{"likerId", "firstName", "lastName", "imageUrl", "likedPostId", "likedCommentId", "likedReplyId"});
 
         // call dbHandler to get error or success message from dbHandler
         Like like;
         String likerId = args.get("likerId").toString();
-        String userName = args.get("userName").toString();
-        String headLine = args.get("headLine").toString();
+        String firstName = args.get("firstName").toString();
+        String lastName = args.get("lastName").toString();
         String imageUrl = args.get("imageUrl").toString();
         String likedPostId = (String) args.get("likedPostId");
         String likedCommentId = (String) args.get("likedCommentId");
         String likedReplyId = (String) args.get("likedReplyId");
-        like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
+
+        like = new Like();
+        like.setFirstName(firstName);
+        like.setImageUrl(imageUrl);
+        like.setLastName(lastName);
+        like.setLikedCommentId(likedCommentId);
+        like.setLikedPostId(likedPostId);
+        like.setLikedReplyId(likedReplyId);
+        like.setLikerId(likerId);
+
         String response = dbHandler.addLike(like);
         return response;
     }

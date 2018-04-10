@@ -59,16 +59,11 @@ public class DatabaseSeed {
         ArrayList<String> friends = new ArrayList<String>();
         friends.add(this.getInsertedUsers().get(0).getUserId());
         friends.add(this.getInsertedUsers().get(1).getUserId());
-        System.out.println(friends.toString() + " Friends in  WallTest");
         this.getInsertedUsers().get(5).setFriendsList(friends);
         this.getInsertedPosts().get(0).setAuthorId(this.getInsertedUsers().get(0).getUserId());
         this.getInsertedPosts().get(1).setAuthorId(this.getInsertedUsers().get(0).getUserId());
         this.getInsertedPosts().get(2).setAuthorId(this.getInsertedUsers().get(1).getUserId());
         this.getInsertedPosts().get(3).setAuthorId(this.getInsertedUsers().get(1).getUserId());
-        this.getInsertedPosts().get(0).setTimestamp(new Date(2010,6,24));
-        this.getInsertedPosts().get(1).setTimestamp(new Date(2009,8,10));
-        this.getInsertedPosts().get(2).setTimestamp(new Date(2016,9,6));
-        this.getInsertedPosts().get(3).setTimestamp(new Date(2018,2,22));
         this.getInsertedPosts().get(0).setText("Post 1");
         this.getInsertedPosts().get(1).setText("Post 2");
         this.getInsertedPosts().get(2).setText("Post 3");
@@ -79,10 +74,6 @@ public class DatabaseSeed {
         arangoDB.db(dbName).collection(postsCollection).updateDocument(this.getInsertedPosts().get(1).getPostId(),this.getInsertedPosts().get(1));
         arangoDB.db(dbName).collection(postsCollection).updateDocument(this.getInsertedPosts().get(2).getPostId(),this.getInsertedPosts().get(2));
         arangoDB.db(dbName).collection(postsCollection).updateDocument(this.getInsertedPosts().get(3).getPostId(),this.getInsertedPosts().get(3));
-
-
-
-
 
     }
 
@@ -100,9 +91,6 @@ public class DatabaseSeed {
                 throw ex;
             }
         }
-        int counter = 1;
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Date timestamp = format.parse("Mon Mar 19 2012 01:00 PM");
         for(String text : lines){
             ArrayList<String> images = new ArrayList<String>();
             images.add("images");
@@ -117,19 +105,22 @@ public class DatabaseSeed {
             ArrayList<String> shares = new ArrayList<String>();
             mentions.add("shares");
 
-            Post post = new Post( "2", "3",
-                    "4", "5", text,hashtags,
-                    mentions, 12, images, videos,
-                    urls, 30, timestamp, true,
-                    true, shares,"headLine", false);
-
-
+            Post post = new Post();
+            post.setArticle(false);
+            post.setHeadLine("headLine");
+            post.setAuthorId("2");
+            post.setCommentsCount(12);
+            post.setLikesCount(22);
+            post.setMedia(new Media(images,videos));
+            post.setType("type");
+            post.setText(text);
+            post.setTimestamp(System.currentTimeMillis());
 
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             insertedPosts.add(post);
+            System.out.println("DBSEED   " + post.toString());
             Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostId(), Post.class);
             System.out.println(retrievedDoc);
-            counter ++;
         }
     }
    public void insertComments() throws IOException, ClassNotFoundException {
@@ -146,15 +137,18 @@ public class DatabaseSeed {
                throw ex;
            }
        }
-       int counter = 1;
        ArrayList<String> x =  new ArrayList<String>() ;
        x.add("y");
        for(String text : lines) {
-           Comment comment = new Comment("3", insertedPosts.get(0).getPostId(), 45, 34, x, x, x, text, null);
+           Comment comment = new Comment();
+           comment.setAuthorId("3");
+           comment.setParentPostId(insertedPosts.get(0).getPostId());
+           comment.setLikesCount(12);
+           comment.setRepliesCount(22);
+           comment.setText(text);
+           comment.setTimestamp(System.currentTimeMillis());
            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
            insertedComments.add(comment);
-           Comment retrievedDoc = arangoDB.db(dbName).collection(commentsCollection).getDocument(comment.getCommentId(), Comment.class);
-           counter++;
        }
    }
 
@@ -172,16 +166,19 @@ public class DatabaseSeed {
                 throw ex;
             }
         }
-        int counter = 1;
         ArrayList<String> x =  new ArrayList<String>() ;
         x.add("y");
         Date date = new Date();
         for(String text : lines) {
-            Reply reply = new Reply("3", insertedPosts.get(0).getPostId(), insertedComments.get(0).getCommentId(), x, 4500, text, date, x, x);
+            Reply reply = new Reply();
+            reply.setAuthorId("3");
+            reply.setParentPostId(insertedPosts.get(0).getPostId());
+            reply.setParentCommentId(insertedComments.get(0).getCommentId());
+            reply.setLikesCount(4500);
+            reply.setText("You are so cute");
+            reply.setTimestamp(System.currentTimeMillis());
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             insertedReplies.add(reply);
-            BaseDocument retrievedDoc = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(), BaseDocument.class);
-            counter++;
         }
     }
 
@@ -214,9 +211,15 @@ public class DatabaseSeed {
                 likedReplyId = insertedReplies.get(0).getReplyId();
             }
             String userName = userNames[rand.nextInt(5)];
-            String headLine = userNames[rand.nextInt(5)] + ", " + userNames[rand.nextInt(5)] + " and 2 others";
             String imageUrl = "url" + i;
-            Like like = new Like( likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine, imageUrl);
+            Like like = new Like();
+            like.setFirstName(userName);
+            like.setImageUrl(imageUrl);
+            like.setLastName("Ahmed");
+            like.setLikedCommentId(likedCommentId);
+            like.setLikedPostId(likedPostId);
+            like.setLikedReplyId(likedReplyId);
+            like.setLikerId(likerId);
             DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
             insertedLikes.add(like);
             System.out.println("New like document insert with key = "  + likeDoc.getKey());
@@ -240,7 +243,6 @@ public class DatabaseSeed {
                 throw ex;
             }
         }
-        int counter = 1;
         String[] arr;
         for(String text : lines){
             arr = text.split(" ");
@@ -258,7 +260,6 @@ public class DatabaseSeed {
             arangoDB.db(dbName).collection(usersCollection).updateDocument(user.getUserId(), user);
             insertedUsers.add(user);
             System.out.println("New user document insert with key = " + user.getUserId());
-            counter++;
             UserProfile retrievedUser= arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
             System.out.println("user: " + retrievedUser.toString());
         }

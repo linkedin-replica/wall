@@ -28,24 +28,28 @@ public class AddCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text", "timestamp"});
+        validateArgs(new String[]{"authorId", "parentPostId", "likesCount", "repliesCount", "text"});
 
 
         // call dbHandler to get error or success message from dbHandler
         Comment comment;
 
-        Gson googleJson = new Gson();
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
         String authorId = args.get("authorId").toString();
         String parentPostId = args.get("parentPostId").toString();
         int likesCount = (int) args.get("likesCount");
         int repliesCount = (int) args.get("repliesCount");
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
-        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
         String text = args.get("text").toString();
-        Date timestamp = format.parse(args.get("timestamp").toString());
-        comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
+        Long timestamp = System.currentTimeMillis();
+
+        comment = new Comment();
+        comment.setAuthorId(authorId);
+        comment.setParentPostId(parentPostId);
+        comment.setLikesCount(likesCount);
+        comment.setRepliesCount(repliesCount);
+        comment.setText(text);
+        comment.setTimestamp(timestamp);
+
         String response =  dbHandler.addComment(comment);
         return response;
     }

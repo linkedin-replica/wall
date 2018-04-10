@@ -404,8 +404,6 @@ public class WallTest {
         request.put("postId", insertedPost.getPostId());
         request.put("authorId",insertedPost.getAuthorId());
         request.put("type",insertedPost.getType());
-        request.put("companyId", insertedPost.getCompanyId());
-        request.put("privacy", insertedPost.getPrivacy());
         request.put("text", "Testing edit post command");
         request.put("hashtags", hashtags);
         request.put("mentions", mentions);
@@ -415,8 +413,6 @@ public class WallTest {
         request.put("urls", urls);
         request.put("commentsCount", insertedPost.getCommentsCount());
         request.put("shares", shares);
-        request.put("isCompanyPost", insertedPost.isCompanyPost());
-        request.put("isPrior", insertedPost.isPrior());
         request.put("headLine", insertedPost.getHeadLine());
         request.put("isArticle", insertedPost.isArticle());
 
