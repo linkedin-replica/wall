@@ -170,22 +170,15 @@ public class WallTest {
     public void testEditComments() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
         request.put("commentId", insertedComment.getCommentId());
+        System.out.println("edited post id " +insertedComment.getCommentId());
         request.put("authorId", "1");
         request.put("parentPostId", insertedPost.getPostId());
-        request.put("likesCount", 45);
-        request.put("repliesCount", 45);
-        request.put("images", images);
-        request.put("urls", urls);
-        request.put("mentions", mentions);
-        request.put("text", "Edited Text");
-
+        request.put("text", "Edited Text in comment");
         String response = (String) wallService.serve("editComment", request);
-
-
         List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
         Boolean found = false;
         for(int i = 0;i < comments.size(); i++){
-            if(comments.get(i).getText().equals("Edited Text") && comments.get(i).getCommentId().equals(insertedComment.getCommentId())){
+            if(comments.get(i).getText().equals("Edited Text in comment") && comments.get(i).getCommentId().equals(insertedComment.getCommentId())){
                 found = true;
                 break;
             }
@@ -464,11 +457,11 @@ public class WallTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
-        dbSeed.deleteAllReplies();
-        dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
+//        dbSeed.deleteAllUsers();
+//        dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllReplies();
+//        dbSeed.deleteAllComments();
+//        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
     }
 

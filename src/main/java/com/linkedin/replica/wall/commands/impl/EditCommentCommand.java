@@ -26,32 +26,32 @@ public class EditCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"commentId", "authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text"});
+        validateArgs(new String[]{"commentId", "authorId", "parentPostId"});
 
 
         // call dbHandler to get error or success message from dbHandler
         Comment comment;
-        Gson googleJson = new Gson();
         String commentId = args.get("commentId").toString();
         String authorId = args.get("authorId").toString();
         String parentPostId = args.get("parentPostId").toString();
-        int likesCount = (int) args.get("likesCount");
-        int repliesCount = (int) args.get("repliesCount");
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
-        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
-        String text = args.get("text").toString();
 
         comment = dbHandler.getComment(commentId);
         comment.setAuthorId(authorId);
         comment.setParentPostId(parentPostId);
-        comment.setLikesCount(likesCount);
-        comment.setRepliesCount(repliesCount);
-        comment.setImages(images);
-        comment.setUrls(urls);
-        comment.setMentions(mentions);
-        comment.setText(text);
         comment.setTimestamp(comment.getTimestamp());
+        if(args.containsKey("likesCount")){
+            int likesCount = (int) args.get("likesCount");
+            comment.setLikesCount(likesCount);
+        }
+        if(args.containsKey("repliesCount")){
+            int repliesCount = (int) args.get("repliesCount");
+            comment.setRepliesCount(repliesCount);
+        }
+        if(args.containsKey("text")){
+            String text = args.get("text").toString();
+            comment.setText(text);
+        }
+
         String response =  dbHandler.editComment(comment);
         return response;
     }
