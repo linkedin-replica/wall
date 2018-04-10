@@ -252,9 +252,8 @@ public class ArangoHandlerTest {
      * @throws ParseException
      */
     @Test
-    public void testEditReplies() throws ParseException {
-        ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
-        mentionsImagesUrls.add("Test");
+    public void testEditReply() throws ParseException {
+
         String replyID = insertedReply.getReplyId();
         Reply reply = insertedReply;
         reply.setText("Some edited text");
@@ -500,11 +499,11 @@ public class ArangoHandlerTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
-        dbSeed.deleteAllReplies();
-        dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
+//        dbSeed.deleteAllUsers();
+//        dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllReplies();
+//        dbSeed.deleteAllComments();
+//        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
       }
 

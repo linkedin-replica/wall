@@ -137,16 +137,12 @@ public class WallTest {
         request.put("authorId","1");
         request.put("parentPostId",insertedPost.getPostId());
         request.put("parentCommentId",insertedComment.getCommentId());
-        request.put("mentions", mentions);
-        request.put("likesCount",45);
-        request.put("text","Testing service edit");
-        request.put("images", images);
-        request.put("urls", urls);
+        request.put("text","Edit test");
         String response = (String) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
-            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
+            if(replies.get(i).getText().equals("Edit test") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
                 found = true;
                 break;
             }
