@@ -1,6 +1,5 @@
 package com.linkedin.replica.wall.database.handlers.impl;
 
-import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.models.Bookmark;
@@ -60,7 +59,7 @@ public class RedisWallHandler implements WallHandler {
         return null;
     }
 
-    public String deletePost(Post post) {
+    public String deletePost(String post) {
         return null;
     }
 

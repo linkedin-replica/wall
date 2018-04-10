@@ -35,7 +35,7 @@ public class DeletePostCommand extends Command{
         String postId = args.get("postId").toString();
         post = dbHandler.getPost(postId);
 
-        String response = dbHandler.deletePost(post);
+        boolean response = dbHandler.deletePost(postId);
         return response;
     }
 }
