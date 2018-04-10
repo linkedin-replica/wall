@@ -391,26 +391,9 @@ public class WallTest {
     public void testEditPostCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<String, Object>();
         request.put("postId", insertedPost.getPostId());
-        request.put("authorId",insertedPost.getAuthorId());
-        request.put("type",insertedPost.getType());
-        request.put("companyId", insertedPost.getCompanyId());
-        request.put("privacy", insertedPost.getPrivacy());
+        request.put("authorId", insertedPost.getAuthorId());
         request.put("text", "Testing edit post command");
-        request.put("hashtags", hashtags);
-        request.put("mentions", mentions);
-        request.put("likesCount",insertedPost.getLikesCount());
-        request.put("images", images);
-        request.put("videos", videos);
-        request.put("urls", urls);
-        request.put("commentsCount", insertedPost.getCommentsCount());
-        request.put("shares", shares);
-        request.put("isCompanyPost", insertedPost.isCompanyPost());
-        request.put("isPrior", insertedPost.isPrior());
-        request.put("headLine", insertedPost.getHeadLine());
-        request.put("isArticle", insertedPost.isArticle());
-
         String response = (String) wallService.serve("editPost",request);
-
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);
         Boolean found = false;
         for(int i = 0;i < posts.size(); i++){
@@ -457,11 +440,11 @@ public class WallTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-//        dbSeed.deleteAllUsers();
-//        dbSeed.deleteAllPosts();
-//        dbSeed.deleteAllReplies();
-//        dbSeed.deleteAllComments();
-//        dbSeed.deleteAllLikes();
+        dbSeed.deleteAllUsers();
+        dbSeed.deleteAllPosts();
+        dbSeed.deleteAllReplies();
+        dbSeed.deleteAllComments();
+        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
     }
 
