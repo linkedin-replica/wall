@@ -31,7 +31,6 @@ public class EditReplyCommand extends Command{
 
         // call dbHandler to get error or success message from dbHandler
         Reply reply;
-        Gson googleJson = new Gson();
         String replyId = args.get("replyId").toString();
         String authorId = args.get("authorId").toString();
         String parentPostId = args.get("parentPostId").toString();
