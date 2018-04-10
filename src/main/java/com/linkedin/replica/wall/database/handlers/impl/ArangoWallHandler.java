@@ -205,12 +205,12 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to delete specific post from database.
-     * @param postId
+     * @param post
      * @return
      */
-    public boolean deletePost(String postId) throws ArangoDBException{
+    public boolean deletePost(Post post) throws ArangoDBException{
         boolean response = false;
-        arangoDB.db(dbName).collection(postsCollection).deleteDocument(postId);
+        arangoDB.db(dbName).collection(postsCollection).deleteDocument(post.getPostId());
         response = true;
 
         return response;
@@ -565,6 +565,7 @@ public class ArangoWallHandler implements WallHandler {
                 Post.class);
         cursor.forEachRemaining(postDocument -> {
         });
+
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a");
         Date postDate = dateFormat.parse("Mon Mar 19 2018 01:00 PM");
         Date currentDate = new Date();

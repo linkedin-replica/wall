@@ -1,6 +1,7 @@
 package com.linkedin.replica.wall.database.handlers;
 
 import com.linkedin.replica.wall.models.*;
+import javafx.geometry.Pos;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean editPost(Post post);
 
-    public boolean deletePost(String post);
+    public boolean deletePost(Post post);
 
     public List<Comment> getComments(String postID);
 
