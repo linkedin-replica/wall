@@ -1,14 +1,10 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.*;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Media;
@@ -23,31 +19,30 @@ public class AddPostCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "type", "text", "likesCount", "images", "videos", "commentsCount", "headLine", "isArticle"});
+        validateArgs(new String[]{"authorId", "type", "text", "images", "videos", "headLine", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Post post;
-        Gson googleJson = new Gson();
-        String authorId = args.get("authorId").toString();
-        String type = args.get("type").toString();
-        String text = args.get("text").toString();
-        String headLine = args.get("headLine").toString();
+        Gson gson = new Gson();
+        JsonObject request = (JsonObject) args.get("request");
+        String authorId = request.get("authorId").getAsString();
+        String type = request.get("type").getAsString();
+        String text = request.get("text").getAsString();
+        String headLine = request.get("headLine").getAsString();
         Long timestamp = System.currentTimeMillis();
-        int likesCount = (int) args.get("likesCount");
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> videos = googleJson.fromJson((JsonArray) args.get("videos"), ArrayList.class);
+        int likesCount = request.get("likesCount").getAsInt();
+        ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
+        ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
         Media media = new Media(images,videos);
-        int commentsCount = (int) args.get("commentsCount");
-        boolean isArticle = (boolean) args.get("isArticle");
+        int commentsCount = request.get("commentsCount").getAsInt();
+        boolean isArticle = request.get("isArticle").getAsBoolean();
 
-        post = new Post();
+        Post post = new Post();
         post.setArticle(isArticle);
         post.setHeadLine(headLine);
         post.setAuthorId(authorId);

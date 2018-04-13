@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.commands.impl;
 import java.text.ParseException;
 import java.util.*;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -25,15 +26,15 @@ public class EditReplyCommand extends Command{
         validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId", "likesCount", "text"});
 
         // call dbHandler to get error or success message from dbHandler
-        Reply reply;
-        String replyId = args.get("replyId").toString();
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        String parentCommentId = args.get("parentCommentId").toString();
-        int likesCount = (int) args.get("likesCount");
-        String text = (String) args.get("text");
+        JsonObject request = (JsonObject) args.get("request");
+        String replyId = request.get("replyId").getAsString();
+        String authorId = request.get("authorId").getAsString();
+        String parentPostId = request.get("parentPostId").getAsString();
+        String parentCommentId = request.get("parentCommentId").getAsString();
+        int likesCount = request.get("likesCount").getAsInt();
+        String text = request.get("text").getAsString();
 
-        reply = dbHandler.getReply(replyId);
+        Reply reply = dbHandler.getReply(replyId);
         reply.setAuthorId(authorId);
         reply.setParentPostId(parentPostId);
         reply.setParentCommentId(parentCommentId);

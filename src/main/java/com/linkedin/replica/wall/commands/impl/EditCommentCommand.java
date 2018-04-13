@@ -1,13 +1,8 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -30,15 +25,15 @@ public class EditCommentCommand extends Command{
 
 
         // call dbHandler to get error or success message from dbHandler
-        Comment comment;
-        String commentId = args.get("commentId").toString();
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        int likesCount = (int) args.get("likesCount");
-        int repliesCount = (int) args.get("repliesCount");
-         String text = args.get("text").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String commentId = request.get("commentId").getAsString();
+        String authorId = request.get("authorId").getAsString();
+        String parentPostId = request.get("parentPostId").getAsString();
+        int likesCount = request.get("likesCount").getAsInt();
+        int repliesCount = request.get("repliesCount").getAsInt();
+         String text = request.get("text").getAsString();
 
-        comment = dbHandler.getComment(commentId);
+        Comment comment = dbHandler.getComment(commentId);
         comment.setAuthorId(authorId);
         comment.setParentPostId(parentPostId);
         comment.setLikesCount(likesCount);

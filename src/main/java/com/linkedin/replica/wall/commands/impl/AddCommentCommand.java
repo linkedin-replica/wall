@@ -1,14 +1,8 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Comment;
@@ -22,27 +16,25 @@ public class AddCommentCommand extends Command{
     }
 
 
-    public Object execute() throws ParseException {
+    public Object execute() {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "likesCount", "repliesCount", "text"});
+        validateArgs(new String[]{"authorId", "parentPostId", "text"});
 
 
         // call dbHandler to get error or success message from dbHandler
-        Comment comment;
-
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        int likesCount = (int) args.get("likesCount");
-        int repliesCount = (int) args.get("repliesCount");
-        String text = args.get("text").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String authorId = request.get("authorId").getAsString();
+        String parentPostId = request.get("parentPostId").getAsString();
+        int likesCount = request.get("likesCount").getAsInt();
+        int repliesCount = request.get("repliesCount").getAsInt();
+        String text = request.get("text").getAsString();
         Long timestamp = System.currentTimeMillis();
 
-        comment = new Comment();
+        Comment comment = new Comment();
         comment.setAuthorId(authorId);
         comment.setParentPostId(parentPostId);
         comment.setLikesCount(likesCount);

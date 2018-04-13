@@ -1,10 +1,8 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -18,24 +16,24 @@ public class AddReplyCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "parentCommentId", "likesCount", "text"});
+        validateArgs(new String[]{"authorId", "parentPostId", "parentCommentId", "text"});
 
         // call dbHandler to get error or success message from dbHandler
-        Reply reply;
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        String parentCommentId = args.get("parentCommentId").toString();
-        int likesCount = (int) args.get("likesCount");
-        String text = args.get("text").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String authorId = request.get("authorId").getAsString();
+        String parentPostId = request.get("parentPostId").getAsString();
+        String parentCommentId = request.get("parentCommentId").getAsString();
+        int likesCount = request.get("likesCount").getAsInt();
+        String text = request.get("text").getAsString();
         Long timestamp = System.currentTimeMillis();
 
-        reply = new Reply();
+        Reply reply = new Reply();
         reply.setAuthorId(authorId);
         reply.setParentPostId(parentPostId);
         reply.setParentCommentId(parentCommentId);

@@ -11,6 +11,8 @@ import com.arangodb.ArangoDatabase;
 import com.arangodb.util.MapBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.database.DatabaseConnection;
@@ -38,12 +40,8 @@ public class WallTest {
     private static Reply insertedReply;
     private static UserProfile insertedUser;
     private static Like insertedLike;
-    private static JsonArray mentions;
     private static JsonArray videos;
-    private static JsonArray urls;
     private static JsonArray images;
-    private static JsonArray hashtags;
-    private static JsonArray shares;
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         String rootFolder = "src/main/resources/";
@@ -70,31 +68,36 @@ public class WallTest {
         insertedPost = dbSeed.getInsertedPosts().get(0);
         insertedReply = dbSeed.getInsertedReplies().get(0);
         insertedUser = dbSeed.getInsertedUsers().get(0);
-        mentions = new JsonArray();
-        hashtags = new JsonArray();
-        urls = new JsonArray();
         images = new JsonArray();
         videos = new JsonArray();
-        shares = new JsonArray();
-        mentions.add("yara");
-        hashtags.add("#msa");
         images.add("bla bla ");
-        urls.add("hania");
         videos.add("videos");
-        shares.add("shares");
 
 
     }
       @Test
     public void testNewsfeed() throws Exception {
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("user",dbSeed.getInsertedUsers().get(5));
-        request.put("limit",10);
-        request.put("offset",0);
+        JsonObject object = new JsonObject();
+        JsonObject user = new JsonObject();
+        JsonArray friends = new JsonArray();
+
+        for(String friend:dbSeed.getInsertedUsers().get(5).getFriendsList())
+            friends.add(friend);
+        user.addProperty("email", dbSeed.getInsertedUsers().get(5).getEmail());
+        user.addProperty("firstName", dbSeed.getInsertedUsers().get(5).getFirstName());
+        user.addProperty("lastName", dbSeed.getInsertedUsers().get(5).getLastName());
+        user.addProperty("firstName", dbSeed.getInsertedUsers().get(5).getFirstName());
+        user.addProperty("userId", dbSeed.getInsertedUsers().get(5).getUserId());
+        user.add("friendsList", friends);
+          object.add("user", user);
+        object.addProperty("limit",10);
+        object.addProperty("offset",0);
+        request.put("request", object);
 
         List<Post> newsfeed = (List<Post>) wallService.serve("getNewsfeed", request);
         assertEquals("Newsfeed Size should be 4", 4, newsfeed.size());
-        assertEquals("Newsfeed should be ordered", "Post 2", newsfeed.get(0).getText());
+        assertEquals("Newsfeed should be ordered", "Post 1", newsfeed.get(0).getText());
         assertEquals("Newsfeed should be ordered", "Post 4", newsfeed.get(3).getText());
     }
 
@@ -102,11 +105,14 @@ public class WallTest {
     public void testAddReplyService() throws Exception {
 
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("authorId","1");
-        request.put("parentPostId", insertedPost.getPostId());
-        request.put("parentCommentId",insertedComment.getCommentId());
-        request.put("likesCount",45);
-        request.put("text","TestTestTest");
+        JsonObject object = new JsonObject();
+        object.addProperty("authorId","1");
+        object.addProperty("parentPostId", insertedPost.getPostId());
+        object.addProperty("parentCommentId",insertedComment.getCommentId());
+        object.addProperty("likesCount",45);
+        object.addProperty("text","TestTestTest");
+        request.put("request", object);
+
         String response = (String) wallService.serve("addReply",request);
         List<Reply> replies = (List<Reply>)  wallService.serve("getReplies", request);
         Boolean found = false;
@@ -125,15 +131,15 @@ public class WallTest {
     @Test
     public void testEditReply() throws Exception {
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("replyId", insertedReply.getReplyId());
-        request.put("authorId","1");
-        request.put("parentPostId",insertedPost.getPostId());
-        request.put("parentCommentId",insertedComment.getCommentId());
-        request.put("mentions", mentions);
-        request.put("likesCount",45);
-        request.put("text","Testing service edit");
-        request.put("images", images);
-        request.put("urls", urls);
+        JsonObject object = new JsonObject();
+        object.addProperty("replyId", insertedReply.getReplyId());
+        object.addProperty("authorId","1");
+        object.addProperty("parentPostId",insertedPost.getPostId());
+        object.addProperty("parentCommentId",insertedComment.getCommentId());
+        object.addProperty("likesCount",45);
+        object.addProperty("text","Testing service edit");
+        request.put("request", object);
+
         String response = (String) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
@@ -151,8 +157,10 @@ public class WallTest {
     public void testDeleteReply() throws Exception {
 
         HashMap<String,Object> request = new HashMap<String, Object>();
-        request.put("replyId",insertedReply.getReplyId());
-        request.put("parentCommentId", insertedReply.getParentCommentId());
+        JsonObject object = new JsonObject();
+        object.addProperty("replyId",insertedReply.getReplyId());
+        object.addProperty("parentCommentId", insertedReply.getParentCommentId());
+        request.put("request", object);
 
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         String response =  (String) wallService.serve("deleteReply",request);
@@ -165,15 +173,14 @@ public class WallTest {
     @Test
     public void testEditComments() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
-        request.put("commentId", insertedComment.getCommentId());
-        request.put("authorId", "1");
-        request.put("parentPostId", insertedPost.getPostId());
-        request.put("likesCount", 45);
-        request.put("repliesCount", 45);
-        request.put("images", images);
-        request.put("urls", urls);
-        request.put("mentions", mentions);
-        request.put("text", "Edited Text");
+        JsonObject object = new JsonObject();
+        object.addProperty("commentId", insertedComment.getCommentId());
+        object.addProperty("authorId", "1");
+        object.addProperty("parentPostId", insertedPost.getPostId());
+        object.addProperty("likesCount", 45);
+        object.addProperty("repliesCount", 45);
+        object.addProperty("text", "Edited Text");
+        request.put("request", object);
 
         String response = (String) wallService.serve("editComment", request);
 
@@ -197,18 +204,10 @@ public class WallTest {
     @Test
     public void testDeleteComments() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
-        request.put("commentId", insertedComment.getCommentId());
-        request.put("authorId", "1");
-        request.put("parentPostId", insertedPost.getPostId());
-        request.put("likesCount", 45);
-        request.put("repliesCount", 45);
-        request.put("images", images);
-        request.put("urls", urls);
-        request.put("mentions", mentions);
-
-        request.put("text", "Text");
-        request.put("timeStamp", "Thu Jan 19 2012 01:00 PM");
-
+        JsonObject object = new JsonObject();
+        object.addProperty("commentId", insertedComment.getCommentId());
+        object.addProperty("parentPostId", insertedPost.getPostId());
+        request.put("request", object);
 
         // LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
         List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
@@ -238,9 +237,11 @@ public class WallTest {
     @Test
     public void testGetComments() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
-        request.put("parentPostId", insertedPost.getPostId());
-            List<Comment> newComments = (List<Comment>) wallService.serve("getComments", request);
-            assertEquals("The comment should not exist", newComments.size(),10);
+        JsonObject object = new JsonObject();
+        object.addProperty("parentPostId", insertedPost.getPostId());
+        request.put("request", object);
+        List<Comment> newComments = (List<Comment>) wallService.serve("getComments", request);
+        assertEquals("The comment should not exist", newComments.size(),10);
 
 
     }
@@ -248,10 +249,12 @@ public class WallTest {
     @Test
     public void testAddBookmark() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
         String userId = insertedUser.getUserId();
         String postId = insertedPost.getPostId();
-        request.put("userId", userId);
-        request.put("postId", postId);
+        object.addProperty("userId", userId);
+        object.addProperty("postId", postId);
+        request.put("request", object);
         String response = (String) wallService.serve("addBookmark", request);
         assertEquals("response should be Success to add bookmark", response, "Success to add bookmark");
     }
@@ -259,10 +262,12 @@ public class WallTest {
     @Test
     public void testDeleteBookmark() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
         String userId = insertedUser.getUserId();
         String postId = insertedPost.getPostId();
-        request.put("userId", userId);
-        request.put("postId", postId);
+        object.addProperty("userId", userId);
+        object.addProperty("postId", postId);
+        request.put("request", object);
         String response = (String) wallService.serve("deleteBookmark", request);
         assertEquals("response should be Success to delete bookmark", response, "Success to delete bookmark");
     }
@@ -270,8 +275,10 @@ public class WallTest {
     @Test
     public void testGetBookmark() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
         String userId = insertedUser.getUserId();
-        request.put("userId", userId);
+        object.addProperty("userId", userId);
+        request.put("request", object);
         List <Bookmark>result = (List<Bookmark>)wallService.serve("getBookmarks", request);
         int size = 1;
         assertEquals("response should be user's bookmark arraylist", result.size(), size);
@@ -280,14 +287,17 @@ public class WallTest {
     @Test
     public void testAddLikeCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
-        request.put("likerId", "100");
-        request.put("likedPostId", insertedPost.getPostId());
-        request.put("likedCommentId", null);
-        request.put("likedReplyId", null);
-        request.put("firstName", "Yara");
-        request.put("lastName", "Yara");
-        request.put("headLine", "Yara and 5 others");
-        request.put("imageUrl", "urlX");
+        JsonObject object = new JsonObject();
+        object.addProperty("likerId", "100");
+        object.addProperty("likedPostId", insertedPost.getPostId());
+        object.add("likedCommentId", null);
+        object.add("likedReplyId", null);
+        object.addProperty("firstName", "Yara");
+        object.addProperty("lastName", "Yehia");
+        object.addProperty("headLine", "Yara and 5 others");
+        object.addProperty("imageUrl", "urlX");
+        request.put("request", object);
+
         List<Like> likes = (List<Like>) wallService.serve("getPostLikes", request);
         String response = (String)wallService.serve("addLike",request);
         List<Like> testLikes = (List<Like>)  wallService.serve("getPostLikes", request);
@@ -300,8 +310,11 @@ public class WallTest {
     @Test
     public void testDeleteLikeCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
-        request.put("likeId", insertedLike.getLikeId());
-        request.put("likedPostId", insertedPost.getPostId());
+        JsonObject object = new JsonObject();
+        object.addProperty("likeId", insertedLike.getLikeId());
+        object.addProperty("likedPostId", insertedPost.getPostId());
+        request.put("request", object);
+
         List<Like> likes = (List<Like>) wallService.serve("getPostLikes", request);
         String response = (String) wallService.serve("deleteLike",request);
         List<Like> testLikes = (List<Like>) wallService.serve("getPostLikes", request);
@@ -314,8 +327,11 @@ public class WallTest {
     @Test
     public void testGetPostLikesCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
         String existingPostId =insertedLike.getLikedPostId();
-        request.put("likedPostId", existingPostId);
+        object.addProperty("likedPostId", existingPostId);
+        request.put("request", object);
+
         boolean equalsPostId = true;
         List<Like> likes = (List<Like>) wallService.serve("getPostLikes",request);
         for(Like like:likes){
@@ -329,7 +345,10 @@ public class WallTest {
     public void testGetCommentLikesCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
         String existingCommentId = dbSeed.getInsertedLikes().get(1).getLikedCommentId();
-        request.put("likedCommentId", existingCommentId);
+        JsonObject object = new JsonObject();
+        object.addProperty("likedCommentId", existingCommentId);
+        request.put("request", object);
+
         boolean equalsCommentId = true;
         List<Like> likes = (List<Like>) wallService.serve("getCommentLikes",request);
         for(Like like:likes){
@@ -343,7 +362,10 @@ public class WallTest {
     public void testGetReplyLikesCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<>();
         String existingReplyId = dbSeed.getInsertedLikes().get(2).getLikedReplyId();
-        request.put("likedReplyId", existingReplyId);
+        JsonObject object = new JsonObject();
+        object.addProperty("likedReplyId", existingReplyId);
+        request.put("request", object);
+
         boolean equalsReplyId = true;
         List<Like> likes = (List<Like>) wallService.serve("getReplyLikes",request);
         for(Like like:likes){
@@ -357,24 +379,17 @@ public class WallTest {
     @Test
     public void testAddPostCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("authorId","1");
-        request.put("type","post");
-        request.put("companyId", "3");
-        request.put("privacy", "friends");
-        request.put("text", "Testing add post command");
-        request.put("hashtags", hashtags);
-        request.put("mentions", mentions);
-        request.put("likesCount",55);
-        request.put("images", images);
-        request.put("videos", videos);
-        request.put("urls", urls);
-        request.put("commentsCount", 50);
-        request.put("shares", shares);
-        request.put("isCompanyPost", false);
-        request.put("isPrior", false);
-        request.put("headLine", "test");
-        request.put("isArticle", false);
-        request.put("timestamp", "Mon Mar 19 2012 01:00 PM");
+        JsonObject object = new JsonObject();
+        object.addProperty("authorId","1");
+        object.addProperty("type","post");
+        object.addProperty("text", "Testing add post command");
+        object.addProperty("likesCount",55);
+        object.add("images", images);
+        object.add("videos", videos);
+        object.addProperty("commentsCount", 50);
+        object.addProperty("headLine", "test");
+        object.addProperty("isArticle", false);
+        request.put("request", object);
 
         String response = (String) wallService.serve("addPost",request);
         List<Post> posts = (List<Post>)  wallService.serve("getPosts", request);
@@ -394,20 +409,18 @@ public class WallTest {
     @Test
     public void testEditPostCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("postId", insertedPost.getPostId());
-        request.put("authorId",insertedPost.getAuthorId());
-        request.put("type",insertedPost.getType());
-        request.put("text", "Testing edit post command");
-        request.put("hashtags", hashtags);
-        request.put("mentions", mentions);
-        request.put("likesCount",insertedPost.getLikesCount());
-        request.put("images", images);
-        request.put("videos", videos);
-        request.put("urls", urls);
-        request.put("commentsCount", insertedPost.getCommentsCount());
-        request.put("shares", shares);
-        request.put("headLine", insertedPost.getHeadLine());
-        request.put("isArticle", insertedPost.isArticle());
+        JsonObject object = new JsonObject();
+        object.addProperty("postId", insertedPost.getPostId());
+        object.addProperty("authorId",insertedPost.getAuthorId());
+        object.addProperty("type",insertedPost.getType());
+        object.addProperty("text", "Testing edit post command");
+        object.addProperty("likesCount",insertedPost.getLikesCount());
+        object.add("images", images);
+        object.add("videos", videos);
+        object.addProperty("commentsCount", insertedPost.getCommentsCount());
+        object.addProperty("headLine", insertedPost.getHeadLine());
+        object.addProperty("isArticle", insertedPost.isArticle());
+        request.put("request", object);
 
         String response = (String) wallService.serve("editPost",request);
 
@@ -427,8 +440,10 @@ public class WallTest {
     public void testDeletePostCommand() throws Exception {
 
         HashMap<String,Object> request = new HashMap<String, Object>();
-        request.put("postId",insertedPost.getPostId());
-        request.put("authorId", insertedPost.getAuthorId());
+        JsonObject object = new JsonObject();
+        object.addProperty("postId",insertedPost.getPostId());
+        object.addProperty("authorId", insertedPost.getAuthorId());
+        request.put("request", object);
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);
         String response =  (String) wallService.serve("deletePost",request);
         List<Post> testPosts = (List<Post>) wallService.serve("getPosts", request);
@@ -441,7 +456,9 @@ public class WallTest {
     @Test
     public void testGetPostsCommand() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
-        request.put("authorId", insertedPost.getAuthorId());
+        JsonObject object = new JsonObject();
+        object.addProperty("authorId", insertedPost.getAuthorId());
+        request.put("request", object);
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);
         Boolean found = false;
         for(int i = 0;i < posts.size(); i++){

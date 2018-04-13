@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -27,7 +28,8 @@ public class GetPostsCommand extends Command{
 
 
         // call dbHandler to list of posts from db
-        String authorID = args.get("authorId").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String authorID = request.get("authorId").getAsString();
 
         List<Post> posts = dbHandler.getPosts(authorID);
         return posts;
