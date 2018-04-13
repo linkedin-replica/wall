@@ -35,19 +35,15 @@ public class AddPostCommand extends Command{
         String text = request.get("text").getAsString();
         String headLine = request.get("headLine").getAsString();
         Long timestamp = System.currentTimeMillis();
-        int likesCount = request.get("likesCount").getAsInt();
         ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
         ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
         Media media = new Media(images,videos);
-        int commentsCount = request.get("commentsCount").getAsInt();
         boolean isArticle = request.get("isArticle").getAsBoolean();
 
         Post post = new Post();
         post.setArticle(isArticle);
         post.setHeadLine(headLine);
         post.setAuthorId(authorId);
-        post.setCommentsCount(commentsCount);
-        post.setLikesCount(likesCount);
         post.setMedia(media);
         post.setType(type);
         post.setText(text);

@@ -29,7 +29,6 @@ public class AddReplyCommand extends Command{
         String authorId = request.get("authorId").getAsString();
         String parentPostId = request.get("parentPostId").getAsString();
         String parentCommentId = request.get("parentCommentId").getAsString();
-        int likesCount = request.get("likesCount").getAsInt();
         String text = request.get("text").getAsString();
         Long timestamp = System.currentTimeMillis();
 
@@ -37,7 +36,6 @@ public class AddReplyCommand extends Command{
         reply.setAuthorId(authorId);
         reply.setParentPostId(parentPostId);
         reply.setParentCommentId(parentCommentId);
-        reply.setLikesCount(likesCount);
         reply.setText(text);
         reply.setTimestamp(timestamp);
 

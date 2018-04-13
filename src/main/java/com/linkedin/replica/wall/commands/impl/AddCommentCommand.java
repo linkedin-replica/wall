@@ -29,16 +29,12 @@ public class AddCommentCommand extends Command{
         JsonObject request = (JsonObject) args.get("request");
         String authorId = request.get("authorId").getAsString();
         String parentPostId = request.get("parentPostId").getAsString();
-        int likesCount = request.get("likesCount").getAsInt();
-        int repliesCount = request.get("repliesCount").getAsInt();
         String text = request.get("text").getAsString();
         Long timestamp = System.currentTimeMillis();
 
         Comment comment = new Comment();
         comment.setAuthorId(authorId);
         comment.setParentPostId(parentPostId);
-        comment.setLikesCount(likesCount);
-        comment.setRepliesCount(repliesCount);
         comment.setText(text);
         comment.setTimestamp(timestamp);
 

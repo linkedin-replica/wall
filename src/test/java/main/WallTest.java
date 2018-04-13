@@ -109,7 +109,6 @@ public class WallTest {
         object.addProperty("authorId","1");
         object.addProperty("parentPostId", insertedPost.getPostId());
         object.addProperty("parentCommentId",insertedComment.getCommentId());
-        object.addProperty("likesCount",45);
         object.addProperty("text","TestTestTest");
         request.put("request", object);
 
@@ -383,10 +382,8 @@ public class WallTest {
         object.addProperty("authorId","1");
         object.addProperty("type","post");
         object.addProperty("text", "Testing add post command");
-        object.addProperty("likesCount",55);
         object.add("images", images);
         object.add("videos", videos);
-        object.addProperty("commentsCount", 50);
         object.addProperty("headLine", "test");
         object.addProperty("isArticle", false);
         request.put("request", object);
