@@ -105,17 +105,9 @@ public class WallTest {
         request.put("authorId","1");
         request.put("parentPostId", insertedPost.getPostId());
         request.put("parentCommentId",insertedComment.getCommentId());
-        request.put("mentions",mentions);
         request.put("likesCount",45);
         request.put("text","TestTestTest");
-        request.put("timestamp","Thu Jan 19 2012 01:00 PM");
-        request.put("images",images);
-        request.put("urls",urls);
-        int beforeReplyComment = insertedComment.getRepliesCount() + 1;
-        int beforeReplyPost = insertedPost.getCommentsCount() + 1;
         String response = (String) wallService.serve("addReply",request);
-        int afterReplyPost = insertedPost.getCommentsCount();
-        int afterReplyComment = insertedComment.getRepliesCount();
         List<Reply> replies = (List<Reply>)  wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
@@ -292,7 +284,8 @@ public class WallTest {
         request.put("likedPostId", insertedPost.getPostId());
         request.put("likedCommentId", null);
         request.put("likedReplyId", null);
-        request.put("userName", "Yara");
+        request.put("firstName", "Yara");
+        request.put("lastName", "Yara");
         request.put("headLine", "Yara and 5 others");
         request.put("imageUrl", "urlX");
         List<Like> likes = (List<Like>) wallService.serve("getPostLikes", request);
