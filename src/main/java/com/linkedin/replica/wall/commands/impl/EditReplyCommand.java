@@ -23,7 +23,7 @@ public class EditReplyCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId", "likesCount", "text"});
+        validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId", "text"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");

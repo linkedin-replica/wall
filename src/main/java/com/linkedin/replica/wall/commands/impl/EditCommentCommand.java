@@ -21,7 +21,7 @@ public class EditCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"commentId", "authorId", "parentPostId", "likesCount", "repliesCount", "text"});
+        validateArgs(new String[]{"commentId", "authorId", "parentPostId", "text"});
 
 
         // call dbHandler to get error or success message from dbHandler

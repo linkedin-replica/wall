@@ -25,7 +25,7 @@ public class AddPostCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "type", "text", "images", "videos", "headLine", "isArticle"});
+        validateArgs(new String[]{"authorId", "type", "text", "headLine", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
         Gson gson = new Gson();

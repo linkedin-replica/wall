@@ -25,7 +25,7 @@ public class EditPostCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"postId", "authorId", "type", "text", "likesCount", "commentsCount", "headLine", "isArticle"});
+        validateArgs(new String[]{"postId", "authorId", "type", "text", "headLine", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
