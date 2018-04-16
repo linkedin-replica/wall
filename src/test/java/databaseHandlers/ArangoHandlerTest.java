@@ -160,7 +160,10 @@ public class ArangoHandlerTest {
 
        Post post = insertedPost;
        post.setLikesCount(13);
-       arangoWallHandler.editPost(post);
+       HashMap<String, Object> editArgs = new HashMap<String, Object>();
+       editArgs.put("postId", post.getPostId());
+       editArgs.put("likesCount", post.getLikesCount());
+       arangoWallHandler.editPost(editArgs);
        Post newPost = getPosts(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database", newPost.getLikesCount(), 13);
 
@@ -252,13 +255,15 @@ public class ArangoHandlerTest {
      * @throws ParseException
      */
     @Test
-    public void testEditReplies() throws ParseException {
-        ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
-        mentionsImagesUrls.add("Test");
+    public void testEditReply() throws ParseException {
+
         String replyID = insertedReply.getReplyId();
         Reply reply = insertedReply;
         reply.setText("Some edited text");
-        arangoWallHandler.editReply(reply);
+        HashMap<String, Object> editArgs = new HashMap<String, Object>();
+        editArgs.put("replyId", replyID);
+        editArgs.put("text",reply.getText());
+        arangoWallHandler.editReply(editArgs);
         Reply testReply = arangoWallHandler.getReply(replyID);
         assertEquals("Texts should be the same", testReply.getText(), "Some edited text");
     }
@@ -444,7 +449,10 @@ public class ArangoHandlerTest {
     public void testEditComment(){
         Comment updatedComment  = insertedComment;
         updatedComment.setParentPostId(dbSeed.getInsertedPosts().get(1).getPostId());
-        arangoWallHandler.editComment(updatedComment);
+        HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
+        editCommentArgs.put("commentId", updatedComment.getCommentId());
+        editCommentArgs.put("parentPostId", updatedComment.getParentPostId());
+        arangoWallHandler.editComment(editCommentArgs);
         Comment newComment = getComment(insertedComment.getCommentId());
         assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), dbSeed.getInsertedPosts().get(1).getPostId());
     }
