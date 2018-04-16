@@ -28,31 +28,7 @@ public class EditReplyCommand extends Command{
 
         // validate that all required arguments that are passed
         validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId"});
-
-        // call dbHandler to get error or success message from dbHandler
-        Reply reply;
-        String replyId = args.get("replyId").toString();
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        String parentCommentId = args.get("parentCommentId").toString();
-
-        reply = dbHandler.getReply(replyId);
-        reply.setAuthorId(authorId);
-        reply.setParentPostId(parentPostId);
-        reply.setParentCommentId(parentCommentId);
-        reply.setTimestamp(reply.getTimestamp());
-
-        if(args.containsKey("likesCount")){
-            int likesCount = (int) args.get("likesCount");
-            reply.setLikesCount(likesCount);
-        }
-        if(args.containsKey("text")){
-            String text = (String) args.get("text");
-            reply.setText(text);
-        }
-
-
-        String response = dbHandler.editReply(reply);
+        String response = dbHandler.editReply(args);
         return response;
     }
 }
