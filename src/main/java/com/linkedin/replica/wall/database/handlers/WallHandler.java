@@ -1,10 +1,10 @@
 package com.linkedin.replica.wall.database.handlers;
 
 import com.linkedin.replica.wall.models.*;
-import javafx.geometry.Pos;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public interface WallHandler extends DatabaseHandler {
@@ -21,7 +21,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean addPost(Post post);
 
-    public boolean editPost(Post post);
+    public boolean editPost(HashMap<String, Object> args);
 
     public boolean deletePost(Post post);
 
@@ -29,7 +29,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean addComment(Comment comment);
 
-    public boolean editComment(Comment comment);
+    public boolean editComment(HashMap<String, Object> args);
 
     public boolean deleteComment(Comment comment);
 
@@ -39,7 +39,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean addReply(Reply reply);
 
-    public boolean editReply(Reply reply);
+    public boolean editReply(HashMap<String, Object> args);
 
     public boolean deleteReply(Reply reply);
 

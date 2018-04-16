@@ -78,7 +78,7 @@ public class WallTest {
         shares = new JsonArray();
         mentions.add("yara");
         hashtags.add("#msa");
-        images.add("bla bla ");
+        images.add("OH LALA");
         urls.add("hania");
         videos.add("videos");
         shares.add("shares");
@@ -137,23 +137,21 @@ public class WallTest {
         request.put("authorId","1");
         request.put("parentPostId",insertedPost.getPostId());
         request.put("parentCommentId",insertedComment.getCommentId());
-        request.put("mentions", mentions);
-        request.put("likesCount",45);
-        request.put("text","Testing service edit");
-        request.put("images", images);
-        request.put("urls", urls);
-        boolean response = (boolean) wallService.serve("editReply",request);
+
+        request.put("text","Edit working");
+        request.put("likesCount",811);
+        String response = (String) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
-            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
+            if(replies.get(i).getText().equals("Edit working") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
                 found = true;
                 break;
             }
         }
         assertEquals("response should be Reply updated",response,true);
         assertEquals("reply should be updated", found, true);
-    }
+  }
 
     @Test
     public void testDeleteReply() throws Exception {
@@ -176,28 +174,19 @@ public class WallTest {
         request.put("commentId", insertedComment.getCommentId());
         request.put("authorId", "1");
         request.put("parentPostId", insertedPost.getPostId());
-        request.put("likesCount", 45);
-        request.put("repliesCount", 45);
-        request.put("images", images);
-        request.put("urls", urls);
-        request.put("mentions", mentions);
-        request.put("text", "Edited Text");
-
-        boolean response = (boolean) wallService.serve("editComment", request);
-
-
+        request.put("text", "Edited Text in comment");
+        String response = (String) wallService.serve("editComment", request);
         List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
         Boolean found = false;
         for(int i = 0;i < comments.size(); i++){
-            if(comments.get(i).getText().equals("Edited Text") && comments.get(i).getCommentId().equals(insertedComment.getCommentId())){
+            if(comments.get(i).getText().equals("Edited Text in comment") && comments.get(i).getCommentId().equals(insertedComment.getCommentId())){
                 found = true;
                 break;
             }
         }
-        System.out.println(insertedComment.getCommentId());
-
         assertEquals("The comment should have a new Text", found,true);
         assertEquals("Response should be Comment Updated", response, true);
+
 
 
     }
@@ -402,24 +391,12 @@ public class WallTest {
     public void testEditPostCommand() throws Exception {
         HashMap<String, Object> request = new HashMap<String, Object>();
         request.put("postId", insertedPost.getPostId());
-        request.put("authorId",insertedPost.getAuthorId());
-        request.put("type",insertedPost.getType());
-        request.put("companyId", insertedPost.getCompanyId());
-        request.put("privacy", insertedPost.getPrivacy());
+        request.put("authorId", insertedPost.getAuthorId());
         request.put("text", "Testing edit post command");
-        request.put("hashtags", hashtags);
-        request.put("mentions", mentions);
-        request.put("likesCount",insertedPost.getLikesCount());
-        request.put("images", images);
-        request.put("videos", videos);
-        request.put("urls", urls);
-        request.put("commentsCount", insertedPost.getCommentsCount());
-        request.put("shares", shares);
-        request.put("isCompanyPost", insertedPost.isCompanyPost());
-        request.put("isPrior", insertedPost.isPrior());
-        request.put("headLine", insertedPost.getHeadLine());
-        request.put("isArticle", insertedPost.isArticle());
-
+        request.put("commentsCount",2);
+        JsonArray img = new JsonArray();
+        img.add("<3");
+        request.put("images",img);
         boolean response = (boolean) wallService.serve("editPost",request);
 
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);

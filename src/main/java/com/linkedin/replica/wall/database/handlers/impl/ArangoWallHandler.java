@@ -4,12 +4,10 @@ import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.DocumentCreateEntity;
-import com.arangodb.entity.DocumentUpdateEntity;
 import com.arangodb.util.MapBuilder;
 
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
-import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.exceptions.WallException;
 import com.linkedin.replica.wall.models.Bookmark;
@@ -18,10 +16,8 @@ import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
 import com.linkedin.replica.wall.models.UserProfile;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
-
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -192,14 +188,42 @@ public class ArangoWallHandler implements WallHandler {
     }
 
     /**
-     * function to edit specific post in the database.
-     * @param post
+     *
+     * @param args
      * @return
      */
-    public boolean editPost(Post post) throws ArangoDBException{
+    public boolean editPost(HashMap<String, Object> args) throws ArangoDBException{
+
         boolean response = false;
-        arangoDB.db(dbName).collection(postsCollection).updateDocument(post.getPostId() , post);
-        response = true;
+        boolean isString = false;
+        Class postClass = Post.class;
+        Field[] postFields = postClass.getDeclaredFields();
+
+            String query = "FOR p IN " + postsCollection + " FILTER p._key == @key UPDATE p with {";
+            for (String key : args.keySet()) {
+                if(!key.equals("postId")){
+                    query += key + ":";
+                    for (int i = 0; i<postFields.length; i++) {
+                        if (key.equals(postFields[i].getName()) && String.class.isAssignableFrom(postFields[i].getType())){
+                            query += "\"" + args.get(key) + "\" ";
+                            isString = true;
+                            break;
+                        }
+                    }
+                    if(!isString){
+                        query += args.get(key);
+                        isString = false;
+                    }
+                    query+=",";
+                }
+            }
+            query = query.substring(0,query.length()-1);
+            query += "} IN " + postsCollection;
+            Map<String, Object> bindVars = new MapBuilder().put("key",args.get("postId").toString()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+            response = true;
+
+
         return response;
     }
 
@@ -260,9 +284,10 @@ public class ArangoWallHandler implements WallHandler {
             DocumentCreateEntity commentDoc = arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
             Post post = getPost(comment.getParentPostId());
             post.setCommentsCount(post.getCommentsCount() + 1);
-            editPost(post);
-            response = true;
-
+            HashMap<String, Object> editArgs = new HashMap<String, Object>();
+            editArgs.put("postId", post.getPostId());
+            editArgs.put("commentsCount", post.getCommentsCount());
+            editPost(editArgs);
 
         }else {
             throw new WallException("Failed to add a comment missing post found.");
@@ -272,15 +297,41 @@ public class ArangoWallHandler implements WallHandler {
     }
 
     /**
-     * function to edit specific coment in the database.
-     * @param comment
+     *
+     * @param args
      * @return
      */
-    public boolean editComment(Comment comment) throws ArangoDBException {
-         boolean response = false;
-         arangoDB.db(dbName).collection(commentsCollection).updateDocument(comment.getCommentId(),comment);
-         response = true;
-         return response;
+    public boolean editComment(HashMap<String, Object> args) throws ArangoDBException {
+        boolean response = false;
+        boolean isString = false;
+        Class commentClass = Comment.class;
+        Field[] commentFields = commentClass.getDeclaredFields();
+
+            String query = "FOR c IN " + commentsCollection + " FILTER c._key == @key UPDATE c with {";
+            for (String key : args.keySet()) {
+                if(!key.equals("commentId")){
+                    query += key + ":";
+                    for (int i = 0; i<commentFields.length; i++) {
+                        if (key.equals(commentFields[i].getName()) && String.class.isAssignableFrom(commentFields[i].getType())){
+                            query += "\"" + args.get(key) + "\" ";
+                            isString = true;
+                            break;
+                        }
+                    }
+                    if(!isString){
+                        query += args.get(key);
+                        isString = false;
+                    }
+                    query+=",";
+                }
+            }
+            query = query.substring(0,query.length()-1);
+            query += "} IN " + commentsCollection;
+            Map<String, Object> bindVars = new MapBuilder().put("key",args.get("commentId").toString()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+            response = true;
+
+        return response;
     }
 
     /**
@@ -298,7 +349,10 @@ public class ArangoWallHandler implements WallHandler {
             Post post = getPost(comment.getParentPostId());
             if(post !=null){
                 post.setCommentsCount(post.getCommentsCount() - 1);
-                editPost(post);
+                HashMap<String, Object> editArgs = new HashMap<String, Object>();
+                editArgs.put("postId", post.getPostId());
+                editArgs.put("commentsCount", post.getCommentsCount());
+                editPost(editArgs);
             }
             else {
                 throw new WallException("Failed to update post's comments count.");
@@ -340,28 +394,62 @@ public class ArangoWallHandler implements WallHandler {
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             Comment comment = getComment(reply.getParentCommentId());
             comment.setRepliesCount(comment.getRepliesCount() + 1);
-            editComment(comment);
+            HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
+            editCommentArgs.put("commentId", comment.getCommentId());
+            editCommentArgs.put("repliesCount", comment.getRepliesCount());
+            editComment(editCommentArgs);
+
             Post post = getPost(reply.getParentPostId());
             post.setCommentsCount(post.getCommentsCount() + 1);
-            editPost(post);
+            HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
+            editPostArgs.put("postId", post.getPostId());
+            editPostArgs.put("commentsCount", post.getCommentsCount());
+            editPost(editPostArgs);
             response = true;
 
         }else {
             throw new WallException("missing information");
+
         }
         return response;
 
     }
 
     /**
-     * function to edit specific reply.
-     * @param reply
+     *
+     * @param args
      * @return
      */
-    public boolean editReply(Reply reply) throws ArangoDBException {
+    public boolean editReply(HashMap<String, Object> args) throws ArangoDBException{
+
         boolean response = false;
-        arangoDB.db(dbName).collection(repliesCollection).updateDocument(reply.getReplyId() ,reply);
+        boolean isString = false;
+        Class replyClass = Reply.class;
+        Field[] replyFields = replyClass.getDeclaredFields();
+        String query = "FOR r IN " + repliesCollection + " FILTER r._key == @key UPDATE r with {";
+        for (String key : args.keySet()) {
+            if(!key.equals("replyId")){
+                query += key + ":";
+                for (int i = 0; i<replyFields.length; i++) {
+                    if (key.equals(replyFields[i].getName()) && String.class.isAssignableFrom(replyFields[i].getType())){
+                        query += "\"" + args.get(key) + "\" ";
+                        isString = true;
+                        break;
+                    }
+                }
+                if(!isString){
+                    query += args.get(key);
+                    isString = false;
+                }
+                query+=",";
+            }
+        }
+        query = query.substring(0,query.length()-1);
+        query += "} IN " + repliesCollection;
+        Map<String, Object> bindVars = new MapBuilder().put("key",args.get("replyId").toString()).get();
+        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
         response = true;
+
         return response;
     }
 
@@ -377,14 +465,20 @@ public class ArangoWallHandler implements WallHandler {
         Comment comment = getComment(reply.getParentCommentId());
         if (comment != null) {
             comment.setRepliesCount(comment.getRepliesCount() - 1);
-            editComment(comment);
+            HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
+            editCommentArgs.put("commentId", comment.getCommentId());
+            editCommentArgs.put("repliesCount", comment.getRepliesCount());
+            editComment(editCommentArgs);
         } else {
             throw new WallException("Failed to update comment's reply count. ");
         }
         Post post = getPost(reply.getParentPostId());
         if(post != null){
             post.setCommentsCount(post.getCommentsCount() + 1);
-            editPost(post);
+            HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
+            editPostArgs.put("postId", post.getPostId());
+            editPostArgs.put("commentsCount", post.getCommentsCount());
+            editPost(editPostArgs);
         }else
         {
             throw  new WallException("Failed to update post's comment count");
@@ -483,7 +577,10 @@ public class ArangoWallHandler implements WallHandler {
                 Post post = getPost(like.getLikedPostId());
                 if (post != null) {
                     post.setLikesCount(post.getLikesCount() + 1);
-                    editPost(post);
+                    HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
+                    editPostArgs.put("postId", post.getPostId());
+                    editPostArgs.put("likesCount", post.getLikesCount());
+                    editPost(editPostArgs);
                 } else {
                     throw new WallException("Failed to update post's like count. ");
                 }
@@ -491,7 +588,10 @@ public class ArangoWallHandler implements WallHandler {
                 Comment comment = getComment(like.getLikedCommentId());
                 if (comment != null) {
                     comment.setLikesCount(comment.getLikesCount() + 1);
-                    editComment(comment);
+                    HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
+                    editCommentArgs.put("commentId", comment.getCommentId());
+                    editCommentArgs.put("likesCount", comment.getLikesCount());
+                    editComment(editCommentArgs);
                 } else {
                     throw new WallException("Failed to update comment's like count. ");
                 }
@@ -500,7 +600,11 @@ public class ArangoWallHandler implements WallHandler {
                 Reply reply = getReply(like.getLikedReplyId());
                 if (reply != null) {
                     reply.setLikesCount(reply.getLikesCount() + 1);
-                    editReply(reply);
+                    HashMap<String, Object> editReplyArgs = new HashMap<String, Object>();
+                    editReplyArgs.put("replyId", reply.getReplyId());
+                    editReplyArgs.put("likesCount", reply.getLikesCount());
+                    editReply(editReplyArgs);
+
                 } else {
                     throw new WallException("Failed to update reply's like count. ");
                 }
@@ -527,7 +631,10 @@ public class ArangoWallHandler implements WallHandler {
             Post post = getPost(like.getLikedPostId());
             if(post !=null){
                 post.setLikesCount(post.getLikesCount() - 1);
-                editPost(post);
+                HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
+                editPostArgs.put("postId", post.getPostId());
+                editPostArgs.put("likesCount", post.getLikesCount());
+                editPost(editPostArgs);
             }
             else {
                 throw new WallException("Failed to update post's like count. ");
@@ -536,7 +643,10 @@ public class ArangoWallHandler implements WallHandler {
             Comment comment = getComment(like.getLikedCommentId());
             if (comment != null) {
                 comment.setLikesCount(comment.getLikesCount() - 1);
-                editComment(comment);
+                HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
+                editCommentArgs.put("commentId", comment.getCommentId());
+                editCommentArgs.put("likesCount", comment.getLikesCount());
+                editComment(editCommentArgs);
             } else {
                 throw new WallException("Failed to update comment's like count. ");
             }
@@ -545,7 +655,10 @@ public class ArangoWallHandler implements WallHandler {
             Reply reply = getReply(like.getLikedReplyId());
             if (reply != null) {
                 reply.setLikesCount(reply.getLikesCount() - 1);
-                editReply(reply);
+                HashMap<String, Object> editReplyArgs = new HashMap<String, Object>();
+                editReplyArgs.put("replyId", reply.getReplyId());
+                editReplyArgs.put("likesCount", reply.getLikesCount());
+                editReply(editReplyArgs);
             } else {
                 throw new WallException("Failed to update reply's like count. ");
             }
