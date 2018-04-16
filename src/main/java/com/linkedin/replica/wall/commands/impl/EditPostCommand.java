@@ -72,7 +72,7 @@ public class EditPostCommand extends Command{
         post.setShares(shares);
         post.setArticle(isArticle);
 
-        String response = dbHandler.editPost(post);
+        boolean response = dbHandler.editPost(post);
         return response;
     }
 }

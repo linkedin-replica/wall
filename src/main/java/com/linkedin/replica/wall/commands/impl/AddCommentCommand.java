@@ -46,7 +46,7 @@ public class AddCommentCommand extends Command{
         String text = args.get("text").toString();
         Date timestamp = format.parse(args.get("timestamp").toString());
         comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
-        String response =  dbHandler.addComment(comment);
+        boolean response =  dbHandler.addComment(comment);
         return response;
     }
 }

@@ -34,7 +34,7 @@ public class DeleteCommentCommand extends Command{
         String commentId = args.get("commentId").toString();
 
         comment = dbHandler.getComment(commentId);
-        String response =  dbHandler.deleteComment(comment);
+        boolean response =  dbHandler.deleteComment(comment);
         return response;
     }
 }

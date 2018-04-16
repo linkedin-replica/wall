@@ -30,7 +30,7 @@ public class AddBookmarkCommand extends Command {
         String userId = args.get("userId").toString();
         String postId = args.get("postId").toString();
         Bookmark bookmark = new Bookmark(userId, postId);
-        String response  = dbHandler.addBookmark(bookmark);
+        boolean response  = dbHandler.addBookmark(bookmark);
         return response;
     }
 }

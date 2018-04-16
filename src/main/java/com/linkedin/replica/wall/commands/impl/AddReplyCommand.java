@@ -45,7 +45,7 @@ public class AddReplyCommand extends Command{
 
 
         reply = new Reply(authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
-        String response = dbHandler.addReply(reply);
+        boolean response = dbHandler.addReply(reply);
         return response;
     }
 }

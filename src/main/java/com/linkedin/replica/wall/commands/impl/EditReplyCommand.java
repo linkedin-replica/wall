@@ -54,7 +54,7 @@ public class EditReplyCommand extends Command{
         reply.setUrls(urls);
         reply.setTimestamp(reply.getTimestamp());
         reply.setText(text);
-        String response = dbHandler.editReply(reply);
+        boolean response = dbHandler.editReply(reply);
         return response;
     }
 }

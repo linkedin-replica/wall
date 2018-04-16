@@ -35,7 +35,7 @@ public class AddLikeCommand extends Command{
         String likedCommentId = (String) args.get("likedCommentId");
         String likedReplyId = (String) args.get("likedReplyId");
         like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
-        String response = dbHandler.addLike(like);
+        boolean response = dbHandler.addLike(like);
         return response;
     }
 }

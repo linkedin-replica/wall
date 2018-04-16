@@ -55,7 +55,7 @@ public class AddPostCommand extends Command{
 
         post = new Post(authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior, shares, headLine,isArticle);
 
-        String response = dbHandler.addPost(post);
+        boolean response = dbHandler.addPost(post);
         return response;
     }
 }

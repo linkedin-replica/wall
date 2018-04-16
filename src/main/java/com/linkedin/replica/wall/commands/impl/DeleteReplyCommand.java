@@ -36,7 +36,7 @@ public class DeleteReplyCommand extends Command{
         String replyId = args.get("replyId").toString();
 
         reply = dbHandler.getReply(replyId);
-        String response = dbHandler.deleteReply(reply);
+        boolean response = dbHandler.deleteReply(reply);
         return response;
     }
 }

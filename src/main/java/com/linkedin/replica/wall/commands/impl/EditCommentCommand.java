@@ -52,7 +52,7 @@ public class EditCommentCommand extends Command{
         comment.setMentions(mentions);
         comment.setText(text);
         comment.setTimestamp(comment.getTimestamp());
-        String response =  dbHandler.editComment(comment);
+        boolean response =  dbHandler.editComment(comment);
         return response;
     }
 }

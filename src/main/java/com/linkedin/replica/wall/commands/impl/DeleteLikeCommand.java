@@ -28,7 +28,7 @@ public class DeleteLikeCommand extends Command{
         Like like;
         String likeId = args.get("likeId").toString();
         like = dbHandler.getLike(likeId);
-        String response = dbHandler.deleteLike(like);
+        boolean response = dbHandler.deleteLike(like);
         return response;
     }
 }
