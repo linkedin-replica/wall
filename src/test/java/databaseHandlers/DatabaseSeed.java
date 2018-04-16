@@ -111,7 +111,8 @@ public class DatabaseSeed {
             post.setAuthorId("2");
             post.setCommentsCount(12);
             post.setLikesCount(22);
-            post.setMedia(new Media(images,videos));
+            post.setImages(images);
+            post.setVideos(videos);
             post.setType("type");
             post.setText(text);
             post.setTimestamp(System.currentTimeMillis());

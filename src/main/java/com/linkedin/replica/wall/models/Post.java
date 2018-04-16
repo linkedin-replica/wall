@@ -15,7 +15,8 @@ public class Post implements Comparable<Post>{
     private String text;
     private String headLine;
     private int likesCount;
-    private Media media;
+    private ArrayList<String> images;
+    private ArrayList<String> videos;
     private int commentsCount;
     private boolean isArticle;
     private long timestamp;
@@ -93,9 +94,21 @@ public class Post implements Comparable<Post>{
         this.commentsCount = commentsCount;
     }
 
-    public Media getMedia() { return media; }
+    public ArrayList<String> getImages() {
+        return images;
+    }
 
-    public void setMedia(Media media) { this.media = media; }
+    public void setImages(ArrayList<String> images) {
+        this.images = images;
+    }
+
+    public ArrayList<String> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(ArrayList<String> videos) {
+        this.videos = videos;
+    }
 
     public long getTimestamp() { return timestamp; }
 
@@ -110,19 +123,12 @@ public class Post implements Comparable<Post>{
                 ", text='" + text + '\'' +
                 ", headLine='" + headLine + '\'' +
                 ", likesCount=" + likesCount +
-                ", media=" + media +
+                ", images=" + images +
+                ", videos=" + videos +
                 ", commentsCount=" + commentsCount +
-                ", timestamp=" + timestamp +
                 ", isArticle=" + isArticle +
+                ", timestamp=" + timestamp +
                 '}';
     }
 
-    public static void main(String[] args) {
-        ArangoDB arangoDB =  new ArangoDB.Builder()
-                .user("root")
-                .password("")
-                .build();
-        Post post = arangoDB.db("WallDb").collection("Posts").getDocument("1627170", Post.class);
-        System.out.println(post);
-    }
 }

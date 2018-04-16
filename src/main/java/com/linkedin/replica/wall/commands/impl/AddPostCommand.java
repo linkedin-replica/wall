@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Media;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.commands.Command;
 
@@ -37,14 +36,14 @@ public class AddPostCommand extends Command{
         Long timestamp = System.currentTimeMillis();
         ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
         ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
-        Media media = new Media(images,videos);
         boolean isArticle = request.get("isArticle").getAsBoolean();
 
         Post post = new Post();
         post.setArticle(isArticle);
         post.setHeadLine(headLine);
         post.setAuthorId(authorId);
-        post.setMedia(media);
+        post.setImages(images);
+        post.setVideos(videos);
         post.setType(type);
         post.setText(text);
         post.setTimestamp(timestamp);

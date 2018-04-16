@@ -70,7 +70,7 @@ public class WallTest {
         insertedUser = dbSeed.getInsertedUsers().get(0);
         images = new JsonArray();
         videos = new JsonArray();
-        images.add("bla bla ");
+        images.add("OH LALA");
         videos.add("videos");
 
 
@@ -135,22 +135,21 @@ public class WallTest {
         object.addProperty("authorId","1");
         object.addProperty("parentPostId",insertedPost.getPostId());
         object.addProperty("parentCommentId",insertedComment.getCommentId());
-        object.addProperty("likesCount",45);
-        object.addProperty("text","Testing service edit");
+        object.addProperty("likesCount",811);
+        object.addProperty("text","Edit working");
         request.put("request", object);
-
         String response = (String) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
-            if(replies.get(i).getText().equals("Testing service edit") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
+            if(replies.get(i).getText().equals("Edit working") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
                 found = true;
                 break;
             }
         }
         assertEquals("response should be Reply updated",response,"Reply updated");
         assertEquals("reply should be updated", found, true);
-    }
+  }
 
     @Test
     public void testDeleteReply() throws Exception {
@@ -170,32 +169,27 @@ public class WallTest {
     }
 
     @Test
-    public void testEditComments() throws Exception {
+    public void testEditComment() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
         JsonObject object = new JsonObject();
         object.addProperty("commentId", insertedComment.getCommentId());
         object.addProperty("authorId", "1");
         object.addProperty("parentPostId", insertedPost.getPostId());
-        object.addProperty("likesCount", 45);
-        object.addProperty("repliesCount", 45);
-        object.addProperty("text", "Edited Text");
+        object.addProperty("text", "Edited Text in comment");
         request.put("request", object);
 
         String response = (String) wallService.serve("editComment", request);
-
-
         List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
         Boolean found = false;
         for(int i = 0;i < comments.size(); i++){
-            if(comments.get(i).getText().equals("Edited Text") && comments.get(i).getCommentId().equals(insertedComment.getCommentId())){
+            if(comments.get(i).getText().equals("Edited Text in comment") && comments.get(i).getCommentId().equals(insertedComment.getCommentId())){
                 found = true;
                 break;
             }
         }
-        System.out.println(insertedComment.getCommentId());
-
-        assertEquals("The comment should have a new Text", found,true);
         assertEquals("Response should be Comment Updated", response, "Comment Updated");
+        assertEquals("The comment should have a new Text", found,true);
+
 
 
     }
@@ -409,18 +403,15 @@ public class WallTest {
         JsonObject object = new JsonObject();
         object.addProperty("postId", insertedPost.getPostId());
         object.addProperty("authorId",insertedPost.getAuthorId());
-        object.addProperty("type",insertedPost.getType());
+        object.addProperty("type","post");
+        object.addProperty("headLine","headLine");
+        object.addProperty("isArticle",false);
         object.addProperty("text", "Testing edit post command");
-        object.addProperty("likesCount",insertedPost.getLikesCount());
         object.add("images", images);
-        object.add("videos", videos);
-        object.addProperty("commentsCount", insertedPost.getCommentsCount());
-        object.addProperty("headLine", insertedPost.getHeadLine());
-        object.addProperty("isArticle", insertedPost.isArticle());
+        object.addProperty("commentsCount", 2);
         request.put("request", object);
 
         String response = (String) wallService.serve("editPost",request);
-
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);
         Boolean found = false;
         for(int i = 0;i < posts.size(); i++){

@@ -21,26 +21,25 @@ public class EditCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"commentId", "authorId", "parentPostId", "text"});
-
+        validateArgs(new String[]{"commentId", "authorId", "parentPostId"});
 
         // call dbHandler to get error or success message from dbHandler
-        JsonObject request = (JsonObject) args.get("request");
-        String commentId = request.get("commentId").getAsString();
-        String authorId = request.get("authorId").getAsString();
-        String parentPostId = request.get("parentPostId").getAsString();
-        int likesCount = request.get("likesCount").getAsInt();
-        int repliesCount = request.get("repliesCount").getAsInt();
-         String text = request.get("text").getAsString();
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject requestArgs = (JsonObject) args.get("request");
+        for(String key: requestArgs.keySet()) {
+            switch (key) {
+                case "likesCount":
+                case "repliesCount": request.put(key, requestArgs.get(key).getAsInt());break;
+                case "text":
+                case "commentId":
+                case "authorId":
+                case "parentPostId": request.put(key, requestArgs.get(key).getAsString());break;
+                case "commandName": break;
+                default: break;
+            }
+        }
 
-        Comment comment = dbHandler.getComment(commentId);
-        comment.setAuthorId(authorId);
-        comment.setParentPostId(parentPostId);
-        comment.setLikesCount(likesCount);
-        comment.setRepliesCount(repliesCount);
-        comment.setText(text);
-        comment.setTimestamp(comment.getTimestamp());
-        String response =  dbHandler.editComment(comment);
+        String response =  dbHandler.editComment(request);
         return response;
     }
 }

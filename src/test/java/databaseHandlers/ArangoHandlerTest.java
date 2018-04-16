@@ -147,7 +147,8 @@ public class ArangoHandlerTest {
        post.setAuthorId(insertedUser.getUserId());
        post.setCommentsCount(12);
        post.setLikesCount(22);
-       post.setMedia(new Media(images,videos));
+       post.setImages(images);
+       post.setVideos(videos);
        post.setType("type");
        post.setText("Text");
        post.setTimestamp(System.currentTimeMillis());
@@ -175,7 +176,10 @@ public class ArangoHandlerTest {
 
        Post post = insertedPost;
        post.setLikesCount(13);
-       arangoWallHandler.editPost(post);
+       HashMap<String, Object> editArgs = new HashMap<String, Object>();
+       editArgs.put("postId", post.getPostId());
+       editArgs.put("likesCount", post.getLikesCount());
+       arangoWallHandler.editPost(editArgs);
        Post newPost = getPosts(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database", 13, newPost.getLikesCount());
 
@@ -218,7 +222,8 @@ public class ArangoHandlerTest {
         post.setAuthorId(insertedUser.getUserId());
         post.setCommentsCount(12);
         post.setLikesCount(22);
-        post.setMedia(new Media(images,videos));
+        post.setImages(images);
+        post.setVideos(videos);
         post.setType("type");
         post.setText("Text");
 
@@ -272,13 +277,15 @@ public class ArangoHandlerTest {
      * @throws ParseException
      */
     @Test
-    public void testEditReplies() throws ParseException {
-        ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
-        mentionsImagesUrls.add("Test");
+    public void testEditReply() throws ParseException {
+
         String replyID = insertedReply.getReplyId();
         Reply reply = insertedReply;
         reply.setText("Some edited text");
-        arangoWallHandler.editReply(reply);
+        HashMap<String, Object> editArgs = new HashMap<String, Object>();
+        editArgs.put("replyId", replyID);
+        editArgs.put("text",reply.getText());
+        arangoWallHandler.editReply(editArgs);
         Reply testReply = arangoWallHandler.getReply(replyID);
         assertEquals("Texts should be the same", "Some edited text", testReply.getText());
     }
@@ -476,7 +483,10 @@ public class ArangoHandlerTest {
     public void testEditComment(){
         Comment updatedComment  = insertedComment;
         updatedComment.setParentPostId(dbSeed.getInsertedPosts().get(1).getPostId());
-        arangoWallHandler.editComment(updatedComment);
+        HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
+        editCommentArgs.put("commentId", updatedComment.getCommentId());
+        editCommentArgs.put("parentPostId", updatedComment.getParentPostId());
+        arangoWallHandler.editComment(editCommentArgs);
         Comment newComment = getComment(insertedComment.getCommentId());
         assertEquals("Expected to edit a certain comment in database",dbSeed.getInsertedPosts().get(1).getPostId(), newComment.getParentPostId());
     }
@@ -523,7 +533,8 @@ public class ArangoHandlerTest {
         post1.setAuthorId(dbSeed.getInsertedUsers().get(0).getUserId());
         post1.setCommentsCount(12);
         post1.setLikesCount(22);
-        post1.setMedia(new Media(images,videos));
+        post1.setImages(images);
+        post1.setVideos(videos);
         post1.setType("type");
         post1.setText("post 1");
 
@@ -533,7 +544,8 @@ public class ArangoHandlerTest {
         post2.setAuthorId(dbSeed.getInsertedUsers().get(0).getUserId());
         post2.setCommentsCount(12);
         post2.setLikesCount(22);
-        post2.setMedia(new Media(images,videos));
+        post2.setImages(images);
+        post2.setVideos(videos);
         post2.setType("type");
         post2.setText("post 2");
 
@@ -543,7 +555,8 @@ public class ArangoHandlerTest {
         post3.setAuthorId(dbSeed.getInsertedUsers().get(1).getUserId());
         post3.setCommentsCount(12);
         post3.setLikesCount(22);
-        post3.setMedia(new Media(images,videos));
+        post3.setImages(images);
+        post3.setVideos(videos);
         post3.setType("type");
         post3.setText("post 3");
 
@@ -553,8 +566,8 @@ public class ArangoHandlerTest {
         post4.setAuthorId(dbSeed.getInsertedUsers().get(1).getUserId());
         post4.setCommentsCount(12);
         post4.setLikesCount(22);
-        post4.setMedia(new Media(images,videos));
-        post4.setType("type");
+        post4.setImages(images);
+        post4.setVideos(videos);        post4.setType("type");
         post4.setText("post 4");
 
         addPost(post1);

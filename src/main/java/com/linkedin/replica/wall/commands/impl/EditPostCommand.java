@@ -7,8 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Media;
-import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.commands.Command;
 
 public class EditPostCommand extends Command{
@@ -25,35 +23,29 @@ public class EditPostCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"postId", "authorId", "type", "text", "headLine", "isArticle"});
+        validateArgs(new String[]{"postId", "authorId", "type", "headLine", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
-        JsonObject request = (JsonObject) args.get("request");
-        Gson gson = new Gson();
-        String postId = request.get("postId").getAsString();
-        String authorId = request.get("authorId").getAsString();
-        String type = request.get("type").getAsString();
-        String text = request.get("text").getAsString();
-        String headLine = request.get("headLine").getAsString();
-        int likesCount = request.get("likesCount").getAsInt();
-        int commentsCount = request.get("commentsCount").getAsInt();
-        boolean isArticle = request.get("isArticle").getAsBoolean();
-        ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
-        ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
-        Media media = new Media(images,videos);
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject requestArgs = (JsonObject) args.get("request");
 
-        Post post = dbHandler.getPost(postId);
-        post.setAuthorId(authorId);
-        post.setType(type);
-        post.setText(text);
-        post.setMedia(media);
-        post.setTimestamp(post.getTimestamp());
-        post.setLikesCount(likesCount);
-        post.setCommentsCount(commentsCount);
-        post.setHeadLine(headLine);
-        post.setArticle(isArticle);
+        for(String key: requestArgs.keySet()) {
+            switch (key) {
+                case "isArticle": request.put(key, requestArgs.get(key).getAsBoolean());break;
+                case "likesCount":
+                case "commentsCount": request.put(key, requestArgs.get(key).getAsInt());break;
+                case "images":
+                case "videos": request.put(key, requestArgs.get(key).getAsJsonArray());break;
+                case "postId":
+                case "authorId":
+                case "type":
+                case "text":
+                case "headLine": request.put(key, requestArgs.get(key).getAsString());break;
+                default: break;
+            }
+        }
 
-        String response = dbHandler.editPost(post);
+        String response = dbHandler.editPost(request);
         return response;
     }
 }
