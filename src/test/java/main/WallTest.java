@@ -78,7 +78,7 @@ public class WallTest {
         shares = new JsonArray();
         mentions.add("yara");
         hashtags.add("#msa");
-        images.add("bla bla ");
+        images.add("OH LALA");
         urls.add("hania");
         videos.add("videos");
         shares.add("shares");
@@ -137,19 +137,20 @@ public class WallTest {
         request.put("authorId","1");
         request.put("parentPostId",insertedPost.getPostId());
         request.put("parentCommentId",insertedComment.getCommentId());
-        request.put("text","Edit test");
+        request.put("text","Edit working");
+        request.put("likesCount",811);
         String response = (String) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
-            if(replies.get(i).getText().equals("Edit test") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
+            if(replies.get(i).getText().equals("Edit working") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
                 found = true;
                 break;
             }
         }
         assertEquals("response should be Reply updated",response,"Reply updated");
         assertEquals("reply should be updated", found, true);
-    }
+  }
 
     @Test
     public void testDeleteReply() throws Exception {
@@ -170,7 +171,6 @@ public class WallTest {
     public void testEditComments() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
         request.put("commentId", insertedComment.getCommentId());
-        System.out.println("edited post id " +insertedComment.getCommentId());
         request.put("authorId", "1");
         request.put("parentPostId", insertedPost.getPostId());
         request.put("text", "Edited Text in comment");
@@ -183,10 +183,9 @@ public class WallTest {
                 break;
             }
         }
-        System.out.println(insertedComment.getCommentId());
-
-        assertEquals("The comment should have a new Text", found,true);
         assertEquals("Response should be Comment Updated", response, "Comment Updated");
+        assertEquals("The comment should have a new Text", found,true);
+
 
 
     }
@@ -393,6 +392,10 @@ public class WallTest {
         request.put("postId", insertedPost.getPostId());
         request.put("authorId", insertedPost.getAuthorId());
         request.put("text", "Testing edit post command");
+        request.put("commentsCount",2);
+        JsonArray img = new JsonArray();
+        img.add("<3");
+        request.put("images",img);
         String response = (String) wallService.serve("editPost",request);
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);
         Boolean found = false;
