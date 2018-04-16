@@ -31,48 +31,7 @@ public class EditPostCommand extends Command{
         validateArgs(new String[]{"postId", "authorId"});
 
         // call dbHandler to get error or success message from dbHandler
-        Post post;
-        Gson googleJson = new Gson();
-
-        String postId = args.get("postId").toString();
-        String authorId = args.get("authorId").toString();
-        post = dbHandler.getPost(postId);
-        post.setAuthorId(authorId);
-        post.setTimestamp(post.getTimestamp());
-
-        if(args.containsKey("type")){
-            String type = args.get("type").toString();
-            post.setType(type);
-        }
-        if(args.containsKey("text")){
-            String text = args.get("text").toString();
-            post.setText(text);
-        }
-        if(args.containsKey("headLine")){
-            String headLine = args.get("headLine").toString();
-            post.setHeadLine(headLine);
-        }
-        if(args.containsKey("likesCount")){
-            int likesCount = (int) args.get("likesCount");
-            post.setLikesCount(likesCount);
-        }
-        if(args.containsKey("images")){
-            ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-            post.setImages(images);
-        }
-        if(args.containsKey("videos")){
-            ArrayList<String> videos = googleJson.fromJson((JsonArray) args.get("videos"), ArrayList.class);
-            post.setVideos(videos);
-        }
-        if(args.containsKey("commentsCount")){
-            int commentsCount = (int) args.get("commentsCount");
-            post.setCommentsCount(commentsCount);
-        }
-        if(args.containsKey("isArticle")){
-            boolean isArticle = (boolean) args.get("isArticle");
-            post.setArticle(isArticle);
-        }
-        String response = dbHandler.editPost(post);
+        String response = dbHandler.editPost(args);
         return response;
     }
 }

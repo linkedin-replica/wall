@@ -28,6 +28,7 @@ public class EditReplyCommand extends Command{
 
         // validate that all required arguments that are passed
         validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId"});
+
         String response = dbHandler.editReply(args);
         return response;
     }
