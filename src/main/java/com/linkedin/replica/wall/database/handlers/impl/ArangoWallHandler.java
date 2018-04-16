@@ -224,7 +224,7 @@ public class ArangoWallHandler implements WallHandler {
         try {
             String query = "FOR p IN " + postsCollection + " FILTER p._key == @key UPDATE p with {";
             for (String key : args.keySet()) {
-                if(!key.equals("postId")){
+                if(!key.equals("postId") && !key.equals("authorId")){
                     query += key + ":";
                     for (int i = 0; i<postFields.length; i++) {
                         if (key.equals(postFields[i].getName()) && String.class.isAssignableFrom(postFields[i].getType())){
