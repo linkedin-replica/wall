@@ -13,18 +13,12 @@ import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.database.handlers.impl.ArangoWallHandler;
-import com.linkedin.replica.wall.models.Like;
-import com.linkedin.replica.wall.models.Bookmark;
-import com.linkedin.replica.wall.models.UserProfile;
-import com.linkedin.replica.wall.models.Comment;
-import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.models.*;
 
 import java.util.List;
 
 
 import com.arangodb.entity.DocumentCreateEntity;
-
-import com.linkedin.replica.wall.models.Post;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -69,8 +63,13 @@ public class ArangoHandlerTest {
         postsCollection = Configuration.getInstance().getArangoConfig("collections.posts.name");
 
         dbSeed = new DatabaseSeed();
+        System.out.println("Posts");
         dbSeed.insertPosts();
+        System.out.println("Comments");
+
         dbSeed.insertComments();
+        System.out.println("Replies");
+
         dbSeed.insertReplies();
         dbSeed.insertLikes();
         dbSeed.insertUsers();
@@ -106,15 +105,17 @@ public class ArangoHandlerTest {
      * @return
      */
    public Post getPosts(String postId){
-
-        Post post = null;
+       System.out.println("In getPosts " + postId);
+       Post post = insertedPost;
        try {
-
+           System.out.println("Arango ");
            post = arangoDB.db(dbName).collection(postsCollection).getDocument(postId, Post.class);
+           System.out.println("Posssst " + post.toString());
 
-       } catch (ArangoDBException e) {
-
-           System.err.println("Failed to get post: postId; " + e.getMessage());
+       } catch (Exception e) {
+           System.out.println("In catch");
+           System.err.println("Failed to get post: postId; ");
+           e.printStackTrace();
        }
 
         return post;
@@ -126,10 +127,6 @@ public class ArangoHandlerTest {
      */
    @Test
    public void testAddPost() throws ParseException {
-
-       DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-       Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-
        ArrayList<String> images = new ArrayList<String>();
        images.add("images");
        ArrayList<String> videos = new ArrayList<String>();
@@ -143,11 +140,30 @@ public class ArangoHandlerTest {
        ArrayList<String> shares = new ArrayList<String>();
        mentions.add("shares");
 
-        Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
-                hashtags,mentions, 12, images, videos, urls, 30, timestamp, true, false, shares, "headLine", false);
-        arangoWallHandler.addPost(post);
-        Post newPost = getPosts(post.getPostId());
-        assertEquals("Expected to have a certain post in database", newPost.getCompanyId(), "companyId");
+       Post post = new Post();
+       System.out.println("Pooooooost1" + post.toString());
+       post.setArticle(false);
+       post.setHeadLine("headLine");
+       post.setAuthorId(insertedUser.getUserId());
+       post.setCommentsCount(12);
+       post.setLikesCount(22);
+       post.setImages(images);
+       post.setVideos(videos);
+       post.setType("type");
+       post.setText("Text");
+       post.setTimestamp(System.currentTimeMillis());
+
+       System.out.println("Poooooooooooooost " + post.toString());
+
+       arangoWallHandler.addPost(post);
+       System.out.println("Poooooooooooooost2 " + post.toString());
+       System.out.println("Poooooooooooooost4 " +  post.getPostId());
+
+
+       Post newPost = getPosts(post.getPostId());
+       System.out.println("Poooooooooooooost3 " + newPost.toString());
+
+       assertEquals("Expected to have a certain post in database", "headLine", newPost.getHeadLine());
 
    }
 
@@ -165,7 +181,7 @@ public class ArangoHandlerTest {
        editArgs.put("likesCount", post.getLikesCount());
        arangoWallHandler.editPost(editArgs);
        Post newPost = getPosts(insertedPost.getPostId());
-       assertEquals("Expected to have a certain post in database", newPost.getLikesCount(), 13);
+       assertEquals("Expected to have a certain post in database", 13, newPost.getLikesCount());
 
    }
 
@@ -176,11 +192,9 @@ public class ArangoHandlerTest {
    @Test
    public void testDeletePost() throws ParseException {
 
-       DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-       Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
        arangoWallHandler.deletePost(insertedPost);
        Post newPost = getPosts(insertedPost.getPostId());
-       assertEquals("Expected to have a certain post in database", newPost, null);
+       assertEquals("Expected to have a certain post in database" , null, newPost);
    }
 
     /**
@@ -189,9 +203,6 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testGetPosts() throws ParseException {
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-
         ArrayList<String> images = new ArrayList<String>();
         images.add("images");
         ArrayList<String> videos = new ArrayList<String>();
@@ -205,12 +216,20 @@ public class ArangoHandlerTest {
         ArrayList<String> shares = new ArrayList<String>();
         mentions.add("shares");
 
-        Post post = new Post(insertedUser.getUserId(), null, "companyId", null, null,
-                hashtags,mentions, 13, images, videos, urls, 30, timestamp, true, false, shares,"headLine", false);
+        Post post = new Post();
+        post.setArticle(false);
+        post.setHeadLine("headLine");
+        post.setAuthorId(insertedUser.getUserId());
+        post.setCommentsCount(12);
+        post.setLikesCount(22);
+        post.setImages(images);
+        post.setVideos(videos);
+        post.setType("type");
+        post.setText("Text");
 
         addPost(post);
         List<Post> newPost = arangoWallHandler.getPosts(insertedUser.getUserId());
-        assertEquals("Expected to have 1 post with that post ID", newPost.size(), 1);
+        assertEquals("Expected to have 1 post with that post ID", 1, newPost.size());
     }
 
     /**
@@ -235,19 +254,22 @@ public class ArangoHandlerTest {
     public void testAddReply() throws ParseException{
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Date timestamp = format.parse("Thu Jan 19 2012 01:00 PM");
-        Reply reply = new Reply(insertedUser.getUserId(),insertedPost.getPostId(),insertedComment.getCommentId(),mentionsImagesUrls,2000,"You are so cute",timestamp,mentionsImagesUrls,mentionsImagesUrls);
+        Reply reply = new Reply();
+        reply.setAuthorId(insertedUser.getUserId());
+        reply.setParentPostId(insertedPost.getPostId());
+        reply.setParentCommentId(insertedComment.getCommentId());
+        reply.setLikesCount(2000);
+        reply.setText("You are so cute");
         arangoWallHandler.addReply(reply);
         Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(),Reply.class);
-        assertEquals("Reply text should be", replyDocument.getText() , "You are so cute");
+        assertEquals("Reply text should be", "You are so cute", replyDocument.getText());
     }
 
     @Test
     public void testDeleteReply() throws ParseException {
         arangoWallHandler.deleteReply(insertedReply);
         Reply newReply = getReply(insertedReply.getReplyId());
-        assertEquals("Expected to not have that comment", newReply, null);
+        assertEquals("Expected to not have that comment",null, newReply);
     }
 
     /**
@@ -265,7 +287,7 @@ public class ArangoHandlerTest {
         editArgs.put("text",reply.getText());
         arangoWallHandler.editReply(editArgs);
         Reply testReply = arangoWallHandler.getReply(replyID);
-        assertEquals("Texts should be the same", testReply.getText(), "Some edited text");
+        assertEquals("Texts should be the same", "Some edited text", testReply.getText());
     }
 
     /**
@@ -322,7 +344,14 @@ public class ArangoHandlerTest {
     @Test
     public void testAddLikes() {
         Long likesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
-        Like like = new Like(insertedUser.getUserId(), insertedPost.getPostId(), null, null, insertedUser.getFirstName(), "headLine", "urlX");
+        Like like = new Like();
+        like.setFirstName(insertedUser.getFirstName());
+        like.setImageUrl("urlX");
+        like.setLastName(insertedUser.getLastName());
+        like.setLikedCommentId(null);
+        like.setLikedPostId(insertedPost.getPostId());
+        like.setLikedReplyId(null);
+        like.setLikerId(insertedUser.getUserId());
         arangoWallHandler.addLike(like);
         Long newLikesCollectionSize = arangoDB.db(dbName).collection(likesCollection).count().getCount();
         Long expectedCollectionSize = likesCollectionSize + 1;
@@ -332,8 +361,8 @@ public class ArangoHandlerTest {
         assertEquals("The likedPostId should match the one in the like inserted", insertedPost.getPostId(), retrievedLike.getLikedPostId());
         assertEquals("The likedCommentId should match the one in the like inserted", null, retrievedLike.getLikedCommentId());
         assertEquals("The likedReplyId should match the one in the like inserted", null, retrievedLike.getLikedReplyId());
-        assertEquals("The userName should match the one in the like inserted", insertedUser.getFirstName(), retrievedLike.getUserName());
-        assertEquals("The headLine should match the one in the like inserted", "headLine", retrievedLike.getHeadLine());
+        assertEquals("The firstName should match the one in the like inserted", insertedUser.getFirstName(), retrievedLike.getFirstName());
+        assertEquals("The lastName should match the one in the like inserted", insertedUser.getLastName(), retrievedLike.getLastName());
         assertEquals("The imageUrl should match the one in the like inserted", "urlX", retrievedLike.getImageUrl());
 
     }
@@ -373,8 +402,8 @@ public class ArangoHandlerTest {
         ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
         Bookmark retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
         assertEquals("size of bookmarks should increased by one", updatedBookmarks.size() , bookmarkNo);
-        assertEquals("userID should be the same in the inserted bookmark", retrievedBookmark.getUserId(), bookmark.getUserId());
-        assertEquals("postID should be the same in the inserted bookmark", retrievedBookmark.getPostId(), bookmark.getPostId());
+        assertEquals("userID should be the same in the inserted bookmark", bookmark.getUserId(), retrievedBookmark.getUserId());
+        assertEquals("postID should be the same in the inserted bookmark", bookmark.getPostId(), retrievedBookmark.getPostId());
     }
 
     /**
@@ -389,7 +418,7 @@ public class ArangoHandlerTest {
         arangoWallHandler.deleteBookmark(bookmark);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
         ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
-        assertEquals("size of bookmarks should decreased by one", updatedBookmarks.size() , bookmarkNo - 1);
+        assertEquals("size of bookmarks should decreased by one", bookmarkNo - 1, updatedBookmarks.size());
     }
 
     /**
@@ -409,7 +438,7 @@ public class ArangoHandlerTest {
             }
         }
 
-        assertEquals("bookmarks arrays should be identical", check , true);
+        assertEquals("bookmarks arrays should be identical", true , check);
 
 
     }
@@ -435,10 +464,15 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testAddComment(){
-        Comment comment  = new Comment(insertedUser.getUserId(),insertedPost.getPostId(),12,22,null,null,null,"comment Text",null);
+        Comment comment = new Comment();
+        comment.setAuthorId(insertedUser.getUserId());
+        comment.setParentPostId(insertedPost.getPostId());
+        comment.setLikesCount(12);
+        comment.setRepliesCount(22);
+        comment.setText("comment Text");
         arangoWallHandler.addComment(comment);
         Comment newComment = getComment(comment.getCommentId());
-        assertEquals("Expected to have a certain comment in database", newComment.getParentPostId(), insertedPost.getPostId());
+        assertEquals("Expected to have a certain comment in database",insertedPost.getPostId(), newComment.getParentPostId());
 
     }
 
@@ -454,7 +488,7 @@ public class ArangoHandlerTest {
         editCommentArgs.put("parentPostId", updatedComment.getParentPostId());
         arangoWallHandler.editComment(editCommentArgs);
         Comment newComment = getComment(insertedComment.getCommentId());
-        assertEquals("Expected to edit a certain comment in database", newComment.getParentPostId(), dbSeed.getInsertedPosts().get(1).getPostId());
+        assertEquals("Expected to edit a certain comment in database",dbSeed.getInsertedPosts().get(1).getPostId(), newComment.getParentPostId());
     }
 
     /**
@@ -464,7 +498,7 @@ public class ArangoHandlerTest {
     public void testDeleteComment(){
         arangoWallHandler.deleteComment(insertedComment);
         Comment newComment = getComment(insertedComment.getCommentId());
-        assertEquals("Expected to not have that comment", newComment, null);
+        assertEquals("Expected to not have that comment", null, newComment);
 
     }
 
@@ -474,7 +508,7 @@ public class ArangoHandlerTest {
     @Test
     public void testGetComments(){
         List<Comment> newComments = arangoWallHandler.getComments(insertedComment.getParentPostId());
-        assertEquals("Expected to have 1 comment with that post ID", newComments.size(), 10);
+        assertEquals("Expected to have 1 comment with that post ID", 10, newComments.size());
 
     }
 
@@ -484,15 +518,58 @@ public class ArangoHandlerTest {
     @Test
     public void testGetComment() {
         Comment newComment = getComment(insertedComment.getCommentId());
-        assertEquals("Expected to get a certain comment", newComment.getAuthorId(), insertedComment.getAuthorId());
+        assertEquals("Expected to get a certain comment", insertedComment.getAuthorId(), newComment.getAuthorId());
 
     }
       @Test
     public void testNewsfeed(){
-        Post post1 = new Post(dbSeed.getInsertedUsers().get(0).getUserId(),null,null,null,"post 1",null,null,3,null,null,null,5,new Date(2010,6,24,23,15,30),false,false,null,null,false);
-        Post post2 = new Post(dbSeed.getInsertedUsers().get(0).getUserId(),null,null,null,"post 2",null,null,8,null,null,null,20,new Date(2010,6,24,4,15,50),false,false,null,null,false);
-        Post post3 = new Post(dbSeed.getInsertedUsers().get(1).getUserId(),null,null,null,"post 3",null,null,9,null,null,null,6,new Date(2010,6,24,23,16,30),false,false,null,null,false);
-        Post post4 = new Post(dbSeed.getInsertedUsers().get(1).getUserId(),null,null,null,"post 4",null,null,10,null,null,null,18,new Date(2010,6,24,16,40,30),false,false,null,null,false);
+        ArrayList<String> images = new ArrayList<String>();
+        images.add("images");
+        ArrayList<String> videos = new ArrayList<String>();
+        videos.add("videos");
+        Post post1 = new Post();
+        post1.setArticle(false);
+        post1.setHeadLine("headLine");
+        post1.setAuthorId(dbSeed.getInsertedUsers().get(0).getUserId());
+        post1.setCommentsCount(12);
+        post1.setLikesCount(22);
+        post1.setImages(images);
+        post1.setVideos(videos);
+        post1.setType("type");
+        post1.setText("post 1");
+
+        Post post2 = new Post();
+        post2.setArticle(false);
+        post2.setHeadLine("headLine");
+        post2.setAuthorId(dbSeed.getInsertedUsers().get(0).getUserId());
+        post2.setCommentsCount(12);
+        post2.setLikesCount(22);
+        post2.setImages(images);
+        post2.setVideos(videos);
+        post2.setType("type");
+        post2.setText("post 2");
+
+        Post post3 = new Post();
+        post3.setArticle(false);
+        post3.setHeadLine("headLine");
+        post3.setAuthorId(dbSeed.getInsertedUsers().get(1).getUserId());
+        post3.setCommentsCount(12);
+        post3.setLikesCount(22);
+        post3.setImages(images);
+        post3.setVideos(videos);
+        post3.setType("type");
+        post3.setText("post 3");
+
+        Post post4 = new Post();
+        post4.setArticle(false);
+        post4.setHeadLine("headLine");
+        post4.setAuthorId(dbSeed.getInsertedUsers().get(1).getUserId());
+        post4.setCommentsCount(12);
+        post4.setLikesCount(22);
+        post4.setImages(images);
+        post4.setVideos(videos);        post4.setType("type");
+        post4.setText("post 4");
+
         addPost(post1);
         addPost(post2);
         addPost(post3);

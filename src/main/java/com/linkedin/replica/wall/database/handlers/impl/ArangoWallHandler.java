@@ -11,12 +11,7 @@ import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Bookmark;
-import com.linkedin.replica.wall.models.Like;
-import com.linkedin.replica.wall.models.Comment;
-import com.linkedin.replica.wall.models.Post;
-import com.linkedin.replica.wall.models.Reply;
-import com.linkedin.replica.wall.models.UserProfile;
+import com.linkedin.replica.wall.models.*;
 import javafx.geometry.Pos;
 
 
@@ -229,7 +224,7 @@ public class ArangoWallHandler implements WallHandler {
         try {
             String query = "FOR p IN " + postsCollection + " FILTER p._key == @key UPDATE p with {";
             for (String key : args.keySet()) {
-                if(!key.equals("postId")){
+                if(!key.equals("postId") && !key.equals("authorId")){
                     query += key + ":";
                     for (int i = 0; i<postFields.length; i++) {
                         if (key.equals(postFields[i].getName()) && String.class.isAssignableFrom(postFields[i].getType())){
@@ -248,7 +243,7 @@ public class ArangoWallHandler implements WallHandler {
             query = query.substring(0,query.length()-1);
             query += "} IN " + postsCollection;
             Map<String, Object> bindVars = new MapBuilder().put("key",args.get("postId").toString()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
             response = "Post Updated";
         } catch (ArangoDBException e){
             response = "Failed to Update Post " + e.getMessage();

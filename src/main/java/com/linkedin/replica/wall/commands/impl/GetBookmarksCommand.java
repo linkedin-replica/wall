@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -27,7 +28,8 @@ public class GetBookmarksCommand extends Command{
         validateArgs(new String[]{"userId"});
 
         // call dbHandler to list of bookmarks from db
-        String userId = args.get("userId").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String userId = request.get("userId").getAsString();
 
         List<Bookmark> bookmarks = dbHandler.getBookmarks(userId);
         return bookmarks;

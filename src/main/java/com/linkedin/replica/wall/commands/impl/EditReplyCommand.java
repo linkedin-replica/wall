@@ -1,13 +1,9 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.util.LinkedHashMap;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -29,7 +25,22 @@ public class EditReplyCommand extends Command{
         // validate that all required arguments that are passed
         validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId"});
 
-        String response = dbHandler.editReply(args);
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject requestArgs = (JsonObject) args.get("request");
+        for(String key: requestArgs.keySet()) {
+            switch (key) {
+                case "likesCount": request.put(key, requestArgs.get(key).getAsInt());break;
+                case "text":
+                case "replyId":
+                case "authorId":
+                case "parentCommentId":
+                case "parentPostId": request.put(key, requestArgs.get(key).getAsString());break;
+                case "commandName": break;
+                default: break;
+            }
+        }
+
+        String response = dbHandler.editReply(request);
         return response;
     }
 }

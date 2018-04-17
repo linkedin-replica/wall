@@ -1,14 +1,10 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.*;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
@@ -22,38 +18,35 @@ public class AddPostCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior", "timestamp", "shares", "headLine", "isArticle"});
+        validateArgs(new String[]{"authorId", "type", "text", "headLine", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Post post;
-        Gson googleJson = new Gson();
-        String authorId = args.get("authorId").toString();
-        String type = args.get("type").toString();
-        String companyId = args.get("companyId").toString();
-        String privacy = args.get("privacy").toString();
-        String text = args.get("text").toString();
-        String headLine = args.get("headLine").toString();
-        Date timestamp = format.parse(args.get("timestamp").toString());
-        ArrayList<String> hashtags = googleJson.fromJson((JsonArray) args.get("hashtags"), ArrayList.class);
-        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
-        int likesCount = (int) args.get("likesCount");
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> videos = googleJson.fromJson((JsonArray) args.get("videos"), ArrayList.class);
-        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
-        ArrayList<String> shares = googleJson.fromJson((JsonArray) args.get("shares"), ArrayList.class);
-        int commentsCount = (int) args.get("commentsCount");
-        boolean isCompanyPost = (boolean) args.get("isCompanyPost");
-        boolean isPrior = (boolean) args.get("isPrior");
-        boolean isArticle = (boolean) args.get("isArticle");
+        Gson gson = new Gson();
+        JsonObject request = (JsonObject) args.get("request");
+        String authorId = request.get("authorId").getAsString();
+        String type = request.get("type").getAsString();
+        String text = request.get("text").getAsString();
+        String headLine = request.get("headLine").getAsString();
+        Long timestamp = System.currentTimeMillis();
+        ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
+        ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
+        boolean isArticle = request.get("isArticle").getAsBoolean();
 
-        post = new Post(authorId, type, companyId, privacy, text, hashtags, mentions, likesCount, images, videos, urls, commentsCount, timestamp, isCompanyPost, isPrior, shares, headLine,isArticle);
+        Post post = new Post();
+        post.setArticle(isArticle);
+        post.setHeadLine(headLine);
+        post.setAuthorId(authorId);
+        post.setImages(images);
+        post.setVideos(videos);
+        post.setType(type);
+        post.setText(text);
+        post.setTimestamp(timestamp);
 
         String response = dbHandler.addPost(post);
         return response;

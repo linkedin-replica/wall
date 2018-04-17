@@ -2,6 +2,7 @@ package com.linkedin.replica.wall.commands.impl;
 
 import java.util.*;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -26,7 +27,8 @@ public class GetCommentsCommand extends Command{
 
 
         // call dbHandler to list of comments from db
-        String parentPostId = args.get("parentPostId").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String parentPostId = request.get("parentPostId").getAsString();
 
         List<Comment> comments = dbHandler.getComments(parentPostId);
         return comments;

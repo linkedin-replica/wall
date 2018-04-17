@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -27,7 +28,8 @@ public class GetCommentLikesCommand extends Command{
 
 
         // call dbHandler to list of likes from db
-        String likedCommentId = args.get("likedCommentId").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String likedCommentId = request.get("likedCommentId").getAsString();
 
         List<Like> likes = dbHandler.getCommentLikes(likedCommentId);
         return likes;

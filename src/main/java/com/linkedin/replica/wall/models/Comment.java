@@ -11,28 +11,11 @@ public class Comment {
         private String commentId;
         private String authorId,parentPostId;
         private int likesCount,repliesCount;
-        private ArrayList<String> images;
-        private ArrayList<String> urls;
-        private ArrayList<String> mentions;
         private String text;
-        private Date timestamp;
+        private Long timestamp;
 
         public Comment(){
             super();
-        }
-
-        public Comment(String authorId,String parentPostId, int likesCount,int repliesCount, ArrayList<String> images,ArrayList<String> urls,ArrayList<String> mentions, String text,Date timeStamp){
-
-            this.authorId = authorId;
-            this.parentPostId = parentPostId;
-            this.likesCount = likesCount;
-            this.repliesCount = repliesCount;
-            this.images = images;
-            this.urls = urls;
-            this.mentions = mentions;
-            this.text = text;
-            this.timestamp = timestamp;
-
         }
 
         public String getCommentId() {
@@ -75,56 +58,27 @@ public class Comment {
             this.repliesCount = repliesCount;
         }
 
-        public ArrayList<String> getImages() {
-            return this.images;
-        }
+        public Long getTimestamp() { return timestamp; }
 
-        public void setImages(ArrayList<String> images) {
-            this.images = images;
-        }
+        public void setTimestamp(Long timestamp) { this.timestamp = timestamp; }
 
-        public ArrayList<String> getUrls() {
-            return this.urls;
-        }
-
-        public void setUrls(ArrayList<String> urls) {
-            this.urls = urls;
-        }
-
-        public ArrayList<String> getMentions() {
-            return this.mentions;
-        }
-
-        public void setMentions(ArrayList<String> mentions) {
-            this.mentions = mentions;
-        }
-
-        public String getText() {
-            return this.text;
-        }
+        public String getText() { return this.text; }
 
         public void setText(String text) {
             this.text = text;
         }
 
-        public Date getTimestamp() {
-            return this.timestamp;
-        }
-
-        public void setTimestamp(Date timestamp) {
-            this.timestamp = timestamp;
-        }
-
+    @Override
     public String toString() {
         return "Comment{" +
                 "commentId='" + commentId + '\'' +
-                ", parentPostId='" + parentPostId + '\'' +
                 ", authorId='" + authorId + '\'' +
-                ", likesCount='" + likesCount + '\'' +
-                ", repliesCount='" + repliesCount + '\'' +
+                ", parentPostId='" + parentPostId + '\'' +
+                ", likesCount=" + likesCount +
+                ", repliesCount=" + repliesCount +
                 ", text='" + text + '\'' +
-                ", timestamp='" + timestamp + '\'' +
+                ", timestamp=" + timestamp +
                 '}';
     }
-    }
+}
 

@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.commands.impl;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -25,9 +26,9 @@ public class DeleteLikeCommand extends Command{
         validateArgs(new String[]{"likeId"});
 
         // call dbHandler to get error or success message from dbHandler
-        Like like;
-        String likeId = args.get("likeId").toString();
-        like = dbHandler.getLike(likeId);
+        JsonObject request = (JsonObject) args.get("request");
+        String likeId = request.get("likeId").getAsString();
+        Like like = dbHandler.getLike(likeId);
         String response = dbHandler.deleteLike(like);
         return response;
     }
