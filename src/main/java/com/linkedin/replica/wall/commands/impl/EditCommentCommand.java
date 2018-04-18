@@ -1,13 +1,8 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -28,7 +23,23 @@ public class EditCommentCommand extends Command{
         // validate that all required arguments that are passed
         validateArgs(new String[]{"commentId", "authorId", "parentPostId"});
 
-        boolean response =  dbHandler.editComment(args);
+        // call dbHandler to get error or success message from dbHandler
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject requestArgs = (JsonObject) args.get("request");
+        for(String key: requestArgs.keySet()) {
+            switch (key) {
+                case "likesCount":
+                case "repliesCount": request.put(key, requestArgs.get(key).getAsInt());break;
+                case "text":
+                case "commentId":
+                case "authorId":
+                case "parentPostId": request.put(key, requestArgs.get(key).getAsString());break;
+                case "commandName": break;
+                default: break;
+            }
+        }
+
+        boolean response =  dbHandler.editComment(request);
         return response;
     }
 }

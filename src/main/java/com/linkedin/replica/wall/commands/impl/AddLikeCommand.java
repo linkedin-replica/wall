@@ -4,6 +4,8 @@ package com.linkedin.replica.wall.commands.impl;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -23,18 +25,33 @@ public class AddLikeCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likerId", "userName", "headLine", "imageUrl", "likedPostId", "likedCommentId", "likedReplyId"});
+        validateArgs(new String[]{"likerId", "firstName", "lastName", "imageUrl", "likedPostId", "likedCommentId", "likedReplyId"});
 
         // call dbHandler to get error or success message from dbHandler
-        Like like;
-        String likerId = args.get("likerId").toString();
-        String userName = args.get("userName").toString();
-        String headLine = args.get("headLine").toString();
-        String imageUrl = args.get("imageUrl").toString();
-        String likedPostId = (String) args.get("likedPostId");
-        String likedCommentId = (String) args.get("likedCommentId");
-        String likedReplyId = (String) args.get("likedReplyId");
-        like = new Like(likerId, likedPostId, likedCommentId, likedReplyId, userName, headLine,imageUrl);
+        JsonObject request = (JsonObject) args.get("request");
+        String likedPostId = null;
+        String likedCommentId = null ;
+        String likedReplyId = null;
+        if(request.get("likedPostId") != null)
+            likedPostId = request.get("likedPostId").getAsString();
+        else if(request.get("likedCommentId") != null)
+            likedCommentId = request.get("likedCommentId").getAsString();
+        else if(request.get("likedReplyId").getAsString() != null)
+            likedReplyId = request.get("likedReplyId").getAsString();
+        String likerId = request.get("likerId").getAsString();
+        String firstName = request.get("firstName").getAsString();
+        String lastName = request.get("lastName").getAsString();
+        String imageUrl = request.get("imageUrl").getAsString();
+
+        Like like = new Like();
+        like.setFirstName(firstName);
+        like.setImageUrl(imageUrl);
+        like.setLastName(lastName);
+        like.setLikedCommentId(likedCommentId);
+        like.setLikedPostId(likedPostId);
+        like.setLikedReplyId(likedReplyId);
+        like.setLikerId(likerId);
+
         boolean response = dbHandler.addLike(like);
         return response;
     }

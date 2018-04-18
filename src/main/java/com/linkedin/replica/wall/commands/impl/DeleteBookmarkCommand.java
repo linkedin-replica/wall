@@ -3,6 +3,7 @@ package com.linkedin.replica.wall.commands.impl;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -23,8 +24,9 @@ public class DeleteBookmarkCommand extends Command{
 
 
         // call dbHandler to get error or success message from dbHandler
-        String userId = args.get("userId").toString();
-        String postId = args.get("postId").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String userId = request.get("userId").getAsString();
+        String postId = request.get("postId").getAsString();
         Bookmark bookmark = new Bookmark(userId, postId);
 
         boolean response = dbHandler.deleteBookmark(bookmark);

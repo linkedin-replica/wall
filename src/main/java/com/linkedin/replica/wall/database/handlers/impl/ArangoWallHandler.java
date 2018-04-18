@@ -5,24 +5,18 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.DocumentCreateEntity;
 import com.arangodb.util.MapBuilder;
-
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.exceptions.WallException;
-import com.linkedin.replica.wall.models.Bookmark;
-import com.linkedin.replica.wall.models.Like;
-import com.linkedin.replica.wall.models.Comment;
-import com.linkedin.replica.wall.models.Post;
-import com.linkedin.replica.wall.models.Reply;
-import com.linkedin.replica.wall.models.UserProfile;
+import com.linkedin.replica.wall.models.*;
+import javafx.geometry.Pos;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 public class ArangoWallHandler implements WallHandler {
     private ArangoDB arangoDB;
     private String dbName;
@@ -201,7 +195,7 @@ public class ArangoWallHandler implements WallHandler {
 
             String query = "FOR p IN " + postsCollection + " FILTER p._key == @key UPDATE p with {";
             for (String key : args.keySet()) {
-                if(!key.equals("postId")){
+                if(!key.equals("postId") && !key.equals("authorId")){
                     query += key + ":";
                     for (int i = 0; i<postFields.length; i++) {
                         if (key.equals(postFields[i].getName()) && String.class.isAssignableFrom(postFields[i].getType())){
@@ -220,9 +214,8 @@ public class ArangoWallHandler implements WallHandler {
             query = query.substring(0,query.length()-1);
             query += "} IN " + postsCollection;
             Map<String, Object> bindVars = new MapBuilder().put("key",args.get("postId").toString()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
             response = true;
-
 
         return response;
     }

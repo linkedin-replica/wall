@@ -10,24 +10,29 @@ public class Like {
     private String likedPostId;
     private String likedCommentId;
     private String likedReplyId;
-    private String userName;
-    private String headLine;
+    private String firstName;
+    private String lastName;
     private String imageUrl;
 
     public Like(){
         super();
     }
 
-    public Like(String likerId, String likedPostId, String likedCommentId, String likedReplyId, String userName, String headLine, String imageUrl) {
-        this.likerId = likerId;
-        this.likedPostId = likedPostId;
-        this.likedCommentId = likedCommentId;
-        this.likedReplyId = likedReplyId;
-        this.userName = userName;
-        this.headLine = headLine;
-        this.imageUrl = imageUrl;
+    public String getFirstName() {
+        return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
     public void setLikeId(String likeId) {
         this.likeId = likeId;
@@ -47,14 +52,6 @@ public class Like {
 
     public void setLikedReplyId(String likedReplyId) {
         this.likedReplyId = likedReplyId;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setHeadLine(String headLine) {
-        this.headLine = headLine;
     }
 
     public void setImageUrl(String imageUrl) {
@@ -81,14 +78,6 @@ public class Like {
         return likedReplyId;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getHeadLine() {
-        return headLine;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
@@ -101,11 +90,9 @@ public class Like {
                 ", likedPostId='" + likedPostId + '\'' +
                 ", likedCommentId='" + likedCommentId + '\'' +
                 ", likedReplyId='" + likedReplyId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", headLine='" + headLine + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
-
-
 }

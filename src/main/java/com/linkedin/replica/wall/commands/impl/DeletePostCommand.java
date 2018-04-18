@@ -9,6 +9,7 @@ import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
@@ -31,9 +32,9 @@ public class DeletePostCommand extends Command{
         validateArgs(new String[]{"postId"});
 
         // call dbHandler to get error or success message from dbHandler
-        Post post;
-        String postId = args.get("postId").toString();
-        post = dbHandler.getPost(postId);
+        JsonObject request = (JsonObject) args.get("request");
+        String postId = request.get("postId").getAsString();
+        Post post = dbHandler.getPost(postId);
 
         boolean response = dbHandler.deletePost(post);
         return response;

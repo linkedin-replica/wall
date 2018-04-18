@@ -12,25 +12,14 @@ public class Reply {
     private String authorId;
     private String parentPostId;
     private String parentCommentId;
-    private ArrayList<String> mentions;
     private int likesCount;
     private String text;
-    private Date timestamp;
-    private ArrayList<String> images;
-    private ArrayList <String> urls;
+    private Long timestamp;
 
-    public Reply(String authorId, String parentPostId, String parentCommentId, ArrayList<String> mentions, int likesCount, String text, Date timestamp, ArrayList<String> images,  ArrayList<String> urls ) {
-
-        this.authorId = authorId;
-        this.parentPostId = parentPostId;
-        this.parentCommentId = parentCommentId;
-        this.mentions = mentions;
-        this.likesCount = likesCount;
-        this.text = text;
-        this.timestamp = timestamp;
-        this.images = images;
-        this.urls = urls;
+    public Reply(){
+        super();
     }
+
 
     public void setReplyId(String replyId) {
         this.replyId = replyId;
@@ -48,28 +37,12 @@ public class Reply {
         this.parentCommentId = parentCommentId;
     }
 
-    public void setMentions(ArrayList<String> mentions) {
-        this.mentions = mentions;
-    }
-
     public void setText(String text) {
         this.text = text;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public void setImages(ArrayList<String> images) {
-        this.images = images;
-    }
-
-    public void setUrls(ArrayList<String> urls) {
-        this.urls = urls;
-    }
-
-    public Reply(){
-        super();
     }
 
     public String getReplyId() {
@@ -88,10 +61,6 @@ public class Reply {
         return parentCommentId;
     }
 
-    public ArrayList<String> getMentions() {
-        return mentions;
-    }
-
     public int getLikesCount() {
         return likesCount;
     }
@@ -104,15 +73,21 @@ public class Reply {
         return text;
     }
 
-    public Date getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public ArrayList<String> getImages() {
-        return images;
+    @Override
+    public String toString() {
+        return "Reply{" +
+                "replyId='" + replyId + '\'' +
+                ", authorId='" + authorId + '\'' +
+                ", parentPostId='" + parentPostId + '\'' +
+                ", parentCommentId='" + parentCommentId + '\'' +
+                ", likesCount=" + likesCount +
+                ", text='" + text + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
     }
 
-    public ArrayList<String> getUrls() {
-        return urls;
-    }
 }

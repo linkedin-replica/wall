@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -26,7 +27,8 @@ public class GetPostLikesCommand extends Command{
 
 
         // call dbHandler to list of likes from db
-        String likedPostId = args.get("likedPostId").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String likedPostId = request.get("likedPostId").getAsString();
 
         List<Like> likes = dbHandler.getPostLikes(likedPostId);
         return likes;

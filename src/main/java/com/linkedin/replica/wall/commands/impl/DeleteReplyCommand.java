@@ -1,14 +1,8 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.util.LinkedHashMap;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.arangodb.velocypack.VPackParser;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -22,7 +16,7 @@ public class DeleteReplyCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
@@ -31,11 +25,9 @@ public class DeleteReplyCommand extends Command{
         validateArgs(new String[]{"replyId"});
 
         // call dbHandler to get error or success message from dbHandler
-        Reply reply;
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        String replyId = args.get("replyId").toString();
-
-        reply = dbHandler.getReply(replyId);
+        JsonObject request = (JsonObject) args.get("request");
+        String replyId = request.get("replyId").getAsString();
+        Reply reply = dbHandler.getReply(replyId);
         boolean response = dbHandler.deleteReply(reply);
         return response;
     }

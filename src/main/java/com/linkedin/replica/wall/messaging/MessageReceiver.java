@@ -28,6 +28,9 @@ public class MessageReceiver {
     public MessageReceiver() throws IOException, TimeoutException{
         factory = new ConnectionFactory();
         factory.setHost(RABBIT_MQ_IP);
+        factory.setUsername(configuration.getAppConfigProp("rabbitmq.username"));
+        factory.setPassword(configuration.getAppConfigProp("rabbitmq.password"));
+
         connection = factory.newConnection();
         channel = connection.createChannel();
 
@@ -58,29 +61,7 @@ public class MessageReceiver {
                         JsonObject object = new JsonParser().parse(new String(body)).getAsJsonObject();
                         String commandName = object.get("commandName").getAsString();
                         HashMap<String, Object> args = new HashMap<>();
-                        for(String key: object.keySet()) {
-                            switch(key){
-                                case "mentions":
-                                case "images":
-                                case "videos":
-                                case "urls":
-                                case "hashtags":
-                                case "shares":
-                                case "friendsList":args.put(key,object.get(key).getAsJsonArray());break;
-                                case "likesCount":
-                                case "repliesCount":
-                                case "commentsCount": args.put(key,object.get(key).getAsInt());break;
-                                case "isCompanyPost":
-                                case "isPrior":
-                                case "isArticle":args.put(key,object.get(key).getAsBoolean());break;
-                                case "commandName": break;
-                                default: args.put(key, object.get(key).getAsString());break;
-                            }
-
-                        }
-
-
-
+                        args.put("request",object);
 
                         // Call the service and form the response
                         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
