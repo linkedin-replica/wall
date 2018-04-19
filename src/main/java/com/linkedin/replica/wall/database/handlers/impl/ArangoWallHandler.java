@@ -384,6 +384,18 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public String deleteComment(Comment comment) {
+        // remove query
+        String query = "FOR comment IN " + commentsCollection
+                + "REMOVE {_key: comment._key } IN " + commentsCollection;
+        arangoDB.db(dbName).query(query, null, null, Comment.class);
+        // update query
+        query = "FOR post in " + postsCollection
+                + "FILTER post._key = @parentPostId"
+                + "UPDATE post WITH { post.commentsCount = post.commentsCount - 1 }";
+
+        Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+
         String response = "";
         try {
             arangoDB.db(dbName).collection(commentsCollection).deleteDocument(comment.getCommentId());
@@ -524,6 +536,23 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public String deleteReply(Reply reply) {
+        // remove query
+        String query = "FOR reply IN " + repliesCollection
+                + "REMOVE {_key: reply._key } IN " + repliesCollection;
+        arangoDB.db(dbName).query(query, null, null, Comment.class);
+        // update comment query
+        query = "FOR comment in " + commentsCollection
+                + "FILTER comment._key = @parentCommentId"
+                + "UPDATE comment WITH { comment.repliesCount = comment.repliesCount - 1 }";
+        Map<String, Object> bindVars = new MapBuilder().put("parentCommentId",reply.getParentCommentId()).get();
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+
+        query = "FOR post in " + postsCollection
+                + "FILTER post._key = @parentPostId"
+                + "UPDATE comment WITH { post.commentsCount = comment.repliesCount - 1 }";
+        bindVars = new MapBuilder().put("parentCommentId",reply.getParentCommentId()).get();
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+        
         String response = "";
         try {
             arangoDB.db(dbName).collection(repliesCollection).deleteDocument(reply.getReplyId());
