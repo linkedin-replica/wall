@@ -7,9 +7,9 @@ import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 
-public class DeleteLikeCommand extends Command{
+public class DeleteLikeFromCommentCommand extends Command{
 
-    public DeleteLikeCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
+    public DeleteLikeFromCommentCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
         super(args,dbHandler);
     }
 
@@ -21,13 +21,18 @@ public class DeleteLikeCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likeId"});
+        validateArgs(new String[]{"likerId", "commentId"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
-        String likeId = request.get("likeId").getAsString();
-        Like like = dbHandler.getLike(likeId);
-        String response = dbHandler.deleteLike(like);
+        String commentId = null;
+        String likerId = null ;
+        if(request.get("likerId") != null)
+            likerId = request.get("likerId").getAsString();
+        else if(request.get("commentId") != null)
+            commentId = request.get("commentId").getAsString();
+
+        String response = dbHandler.deleteLikeFromComment(likerId,commentId);
         return response;
     }
 }
