@@ -77,7 +77,6 @@ public class Configuration {
         String handlerPackageName = CacheHandler.class.getPackage().getName() + ".impl";
         String handlerName = "JedisCacheHandler";
         String handlerClassPath = handlerPackageName + "." + handlerName;
-        System.out.println("class path is " + handlerClassPath);
         return Class.forName(handlerClassPath);
     }
     public String getControllerConfigProp(String key){
