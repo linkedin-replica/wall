@@ -1,5 +1,8 @@
 package com.linkedin.replica.wall.models;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class ReturnedComment {
     private String commentId;
     private String authorId,parentPostId;
@@ -8,6 +11,8 @@ public class ReturnedComment {
     private Long timestamp;
     private String authorName;
     private String authorProfilePictureUrl;
+    private boolean liked;
+    private ArrayList<HashMap<String,String>> likers;
 
     public ReturnedComment(){
 
@@ -83,5 +88,13 @@ public class ReturnedComment {
 
     public void setAuthorProfilePictureUrl(String authorProfilePictureUrl) {
         this.authorProfilePictureUrl = authorProfilePictureUrl;
+    }
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
     }
 }

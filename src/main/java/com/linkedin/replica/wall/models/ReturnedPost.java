@@ -1,6 +1,7 @@
 package com.linkedin.replica.wall.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ReturnedPost {
     private String postId;
@@ -18,10 +19,19 @@ public class ReturnedPost {
     private String headLine;
     private boolean liked;
     private ArrayList<Like> postLikes;
+    private ArrayList<HashMap<String,String>> likers;
 
 
     public ReturnedPost(){
 
+    }
+
+    public ArrayList<HashMap<String, String>> getLikers() {
+        return likers;
+    }
+
+    public void setLikers(ArrayList<HashMap<String, String>> likers) {
+        this.likers = likers;
     }
 
     public boolean isLiked() {

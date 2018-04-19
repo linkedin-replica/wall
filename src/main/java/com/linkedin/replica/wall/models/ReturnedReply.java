@@ -1,5 +1,8 @@
 package com.linkedin.replica.wall.models;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class ReturnedReply {
     private String replyId;
     private String authorId;
@@ -10,9 +13,35 @@ public class ReturnedReply {
     private Long timestamp;
     private String authorName;
     private String authorProfilePictureUrl;
+    private boolean liked;
+    private ArrayList<HashMap<String,String>> likers;
 
     public ReturnedReply(){
 
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
+
+    public ArrayList<HashMap<String, String>> getLikers() {
+        return likers;
+    }
+
+    public void setLikers(ArrayList<HashMap<String, String>> likers) {
+        this.likers = likers;
     }
 
     public String getReplyId() {
