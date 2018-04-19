@@ -215,9 +215,9 @@ public class ArangoWallHandler implements WallHandler {
             query += "} IN " + postsCollection;
             Map<String, Object> bindVars = new MapBuilder().put("key",args.get("postId").toString()).get();
             arangoDB.db(dbName).query(query, bindVars, null, Post.class);
-        response = true;
+            response = true;
 
-        return response;
+            return response;
     }
 
     /**

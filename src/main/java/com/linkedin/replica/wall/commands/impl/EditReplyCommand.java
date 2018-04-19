@@ -24,7 +24,6 @@ public class EditReplyCommand extends Command{
 
         // validate that all required arguments that are passed
         validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId"});
-        validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId"});
         HashMap<String, Object> request = new HashMap<>();
         JsonObject requestArgs = (JsonObject) args.get("request");
         for(String key: requestArgs.keySet()) {
