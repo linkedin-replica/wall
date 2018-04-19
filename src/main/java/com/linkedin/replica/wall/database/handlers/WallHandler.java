@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface WallHandler extends DatabaseHandler {
 
-    public List<Post> getFriendsPosts(UserProfile user,int limit, int offset);
+    public List<Post> getNewsFeed(String userId,int limit);
 
     public ArrayList<Bookmark> getBookmarks(String userId);
 

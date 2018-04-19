@@ -44,15 +44,26 @@ public class ArangoWallHandler implements WallHandler {
 
     }
 
-    public List<Post> getFriendsPosts(UserProfile user,int limit, int offset){
-        ArrayList<Post> returnedPosts = new ArrayList<Post>();
-        for(int i=0; i<user.getFriendsList().size(); i++){
-            returnedPosts.addAll(getPostsWithLimit(user.getFriendsList().get(i),limit,offset));
-        }
-
-
-        Collections.sort(returnedPosts);
-        return returnedPosts;
+    public List<Post> getNewsFeed(String userId,int limit){
+    	StringBuilder builder = new StringBuilder();
+    	builder.append("FOR user in " + usersCollection);
+    	builder.append("	FILTER user.userId == @userId");
+    	builder.append("	LET friendPosts = (");
+    	builder.append("		FOR post in posts");
+    	builder.append("			FILTER post.authorId in user.friendsList");
+    	builder.append("			SORT post.timestamp DESC");
+    	builder.append(" 			Limit 0, @limit");
+    	builder.append("			RETURN post");
+    	builder.append("	)");
+    	builder.append("	LET companiesPosts = (");
+    	builder.append("		FOR post in posts");
+    	builder.append("		FILTER post.authorId in user.followedCompanies");
+    	builder.append("		SORT post.weight, post.timestamp DESC");
+    	builder.append("		Limit 0, @limit");
+    	builder.append("		return post");
+    	builder.append("	)");
+    	builder.append("return { [ \"results\" ]: APPEND(friendPosts, companiesPosts)}");
+    	return null;
     }
 
     public List<Post> getPostsWithLimit(String userID,int limit, int offset) {
