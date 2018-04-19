@@ -7,6 +7,7 @@ import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.models.Post;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisException;
 
@@ -41,15 +42,16 @@ public class JedisCacheHandler implements PostsCacheHandler{
                 postFields[i].setAccessible(true);
                 String fieldName = postFields[i].getName();
                 Object value =  postFields[i].get(post);
+                System.out.println("field name " + fieldName);
+                System.out.println("value  " + value);
                 jedisPipeline.hset(postId,fieldName,gson.toJson(value));
 
             }
             jedisPipeline.sync();
             jedisPipeline.close();
-            cacheResource.close();
         }
         catch (JedisException e){
-            System.out.println(e.getMessage());
+          e.printStackTrace();
         }
 
     }
@@ -59,7 +61,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
 
         Object post = postClass.newInstance();
         try(Jedis cacheResource = jedisPool.getResource()){
-            cacheResource.select(postDBIndex);
+           cacheResource.select(postDBIndex);
             if(!cacheResource.exists(postId)){
                 return null;
             }
@@ -86,7 +88,6 @@ public class JedisCacheHandler implements PostsCacheHandler{
             }
             jedisPipeline.sync();
             jedisPipeline.close();
-            cacheResource.close();
         }
         catch (JedisException e){
             System.out.println(e.getMessage());
@@ -99,7 +100,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
     public void deletePost(String postId) {
 
         try(Jedis cacheResource = jedisPool.getResource()){
-            cacheResource.select(postDBIndex);
+           cacheResource.select(postDBIndex);
             if(!cacheResource.exists(postId)){
                 return;
             }
@@ -129,7 +130,6 @@ public class JedisCacheHandler implements PostsCacheHandler{
             }
             jedisPipeline.sync();
             jedisPipeline.close();
-            cacheResource.close();
         }
         catch (JedisException e){
             System.out.println(e.getMessage());
