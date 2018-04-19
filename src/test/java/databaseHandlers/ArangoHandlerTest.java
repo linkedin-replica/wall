@@ -63,13 +63,8 @@ public class ArangoHandlerTest {
         postsCollection = Configuration.getInstance().getArangoConfig("collections.posts.name");
 
         dbSeed = new DatabaseSeed();
-        System.out.println("Posts");
         dbSeed.insertPosts();
-        System.out.println("Comments");
-
         dbSeed.insertComments();
-        System.out.println("Replies");
-
         dbSeed.insertReplies();
         dbSeed.insertLikes();
         dbSeed.insertUsers();
@@ -105,16 +100,11 @@ public class ArangoHandlerTest {
      * @return
      */
    public Post getPosts(String postId){
-       System.out.println("In getPosts " + postId);
        Post post = insertedPost;
        try {
-           System.out.println("Arango ");
            post = arangoDB.db(dbName).collection(postsCollection).getDocument(postId, Post.class);
-           System.out.println("Posssst " + post.toString());
 
        } catch (Exception e) {
-           System.out.println("In catch");
-           System.err.println("Failed to get post: postId; ");
            e.printStackTrace();
        }
 
@@ -141,7 +131,6 @@ public class ArangoHandlerTest {
        mentions.add("shares");
 
        Post post = new Post();
-       System.out.println("Pooooooost1" + post.toString());
        post.setArticle(false);
        post.setHeadLine("headLine");
        post.setAuthorId(insertedUser.getUserId());
@@ -153,16 +142,8 @@ public class ArangoHandlerTest {
        post.setText("Text");
        post.setTimestamp(System.currentTimeMillis());
 
-       System.out.println("Poooooooooooooost " + post.toString());
-
        arangoWallHandler.addPost(post);
-       System.out.println("Poooooooooooooost2 " + post.toString());
-       System.out.println("Poooooooooooooost4 " +  post.getPostId());
-
-
        Post newPost = getPosts(post.getPostId());
-       System.out.println("Poooooooooooooost3 " + newPost.toString());
-
        assertEquals("Expected to have a certain post in database", "headLine", newPost.getHeadLine());
 
    }
