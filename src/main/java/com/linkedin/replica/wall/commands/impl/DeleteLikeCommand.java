@@ -29,7 +29,7 @@ public class DeleteLikeCommand extends Command{
         JsonObject request = (JsonObject) args.get("request");
         String likeId = request.get("likeId").getAsString();
         Like like = dbHandler.getLike(likeId);
-        String response = dbHandler.deleteLike(like);
+        boolean response = dbHandler.deleteLike(like);
         return response;
     }
 }

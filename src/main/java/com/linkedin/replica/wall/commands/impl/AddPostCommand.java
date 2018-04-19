@@ -51,7 +51,7 @@ public class AddPostCommand extends Command{
         post.setText(text);
         post.setTimestamp(timestamp);
 
-        String response = dbHandler.addPost(post);
+        boolean response = dbHandler.addPost(post);
         cacheHandler.cachePost(post.getPostId(),post);
         return response;
     }

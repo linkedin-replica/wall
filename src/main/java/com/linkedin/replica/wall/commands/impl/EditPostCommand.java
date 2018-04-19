@@ -26,7 +26,6 @@ public class EditPostCommand extends Command{
         // validate that all required arguments that are passed
         validateArgs(new String[]{"postId", "authorId", "type", "headLine", "isArticle"});
 
-        // call dbHandler to get error or success message from dbHandler
         HashMap<String, Object> request = new HashMap<>();
         JsonObject requestArgs = (JsonObject) args.get("request");
         String postId = requestArgs.get("postId").getAsString();
@@ -47,7 +46,7 @@ public class EditPostCommand extends Command{
             }
         }
 
-        String response = dbHandler.editPost(request);
+        boolean response = dbHandler.editPost(request);
         cacheHandler.editPost(postId,request);
         return response;
     }
