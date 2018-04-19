@@ -2,14 +2,11 @@ package com.linkedin.replica.wall.commands.impl;
 
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Like;
 
 public class AddLikeCommand extends Command{
 

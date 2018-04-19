@@ -44,15 +44,17 @@ public interface WallHandler extends DatabaseHandler {
 
     public String deleteReply(Reply reply);
 
-    public List<Like> getPostLikes(String postId);
+    public String addLikeToPost(String likerId, String postId);
 
-    public List<Like> getCommentLikes(String commentId);
+    public String addLikeToComment(String likerId, String commentId);
 
-    public List<Like> getReplyLikes(String replyId);
+    public String addLikeToReply(String likerId, String replyId);
 
-    public String addLike(Like like);
+    public String deleteLikeFromPost(String likerId, String postId);
 
-    public String deleteLike(Like like);
+    public String deleteLikeFromComment(String likerId, String commentId);
+
+    public String deleteLikeFromReply(String likerId, String replyId);
 
     public void getTopPosts() throws ParseException;
 
@@ -60,7 +62,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public Post getPost(String postId);
 
-    public Like getLike(String likeId);
+
 
     public UserProfile getUser(String userId);
 
