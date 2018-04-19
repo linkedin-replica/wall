@@ -1,3 +1,4 @@
+
 package main;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.linkedin.replica.wall.cache.Cache;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.database.DatabaseConnection;
@@ -47,10 +49,11 @@ public class WallTest {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config");
+                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+ "cache.config");
         config = Configuration.getInstance();
         wallService = new WallService();
         DatabaseConnection.init();
+        Cache.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb().db(
                 Configuration.getInstance().getArangoConfig("db.name")
         );
@@ -381,7 +384,6 @@ public class WallTest {
         object.addProperty("headLine", "test");
         object.addProperty("isArticle", false);
         request.put("request", object);
-
         String response = (String) wallService.serve("addPost",request);
         List<Post> posts = (List<Post>)  wallService.serve("getPosts", request);
         Boolean found = false;
@@ -393,8 +395,6 @@ public class WallTest {
         }
         assertEquals("added post correctly", found, true);
         assertEquals("response should be equal Post created",response,"Post Created");
-
-
     }
 
     @Test

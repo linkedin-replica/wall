@@ -1,9 +1,11 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.*;
 
 import com.google.gson.Gson;
+import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
 import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -16,12 +18,13 @@ public class AddPostCommand extends Command{
         super(args,dbHandler);
     }
 
-
     @Override
-    public Object execute() {
+    public Object execute() throws IllegalAccessException, IOException, InstantiationException {
+
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
+        PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
         validateArgs(new String[]{"authorId", "type", "text", "headLine", "isArticle"});
@@ -49,6 +52,7 @@ public class AddPostCommand extends Command{
         post.setTimestamp(timestamp);
 
         String response = dbHandler.addPost(post);
+        cacheHandler.cachePost(post.getPostId(),post);
         return response;
     }
 }

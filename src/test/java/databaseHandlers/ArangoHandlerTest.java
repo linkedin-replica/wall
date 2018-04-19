@@ -50,7 +50,7 @@ public class ArangoHandlerTest {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config");
+                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+"cache.config");
         config = Configuration.getInstance();
         DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -573,6 +573,5 @@ public class ArangoHandlerTest {
         dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
       }
-
 
 }
