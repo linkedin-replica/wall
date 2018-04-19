@@ -42,8 +42,6 @@ public class JedisCacheHandler implements PostsCacheHandler{
                 postFields[i].setAccessible(true);
                 String fieldName = postFields[i].getName();
                 Object value =  postFields[i].get(post);
-                System.out.println("field name " + fieldName);
-                System.out.println("value  " + value);
                 jedisPipeline.hset(postId,fieldName,gson.toJson(value));
 
             }
@@ -116,12 +114,12 @@ public class JedisCacheHandler implements PostsCacheHandler{
     }
 
     @Override
-    public void editPost(String postId, HashMap<String, Object> hm) throws IOException {
+    public void editPost(String postId, HashMap<String, Object> hm) throws IOException { ;
         try(Jedis cacheResource = jedisPool.getResource()){
+            cacheResource.select(postDBIndex);
             if(!cacheResource.exists(postId)){
                 return;
             }
-            cacheResource.select(postDBIndex);
             Pipeline jedisPipeline = cacheResource.pipelined();
             for (String key : hm.keySet())
             {

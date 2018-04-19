@@ -4,6 +4,7 @@ import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.cache.Cache;
 import com.linkedin.replica.wall.cache.handlers.impl.JedisCacheHandler;
 import com.linkedin.replica.wall.config.Configuration;
@@ -63,7 +64,7 @@ public class CachePostTest {
         images = new JsonArray();
         videos = new JsonArray();
         shares = new JsonArray();
-        mentions.add("safa");
+        mentions.add("test");
         hashtags.add("#scalable");
         images.add("ahla image");
         urls.add("scalable");
@@ -74,25 +75,12 @@ public class CachePostTest {
     @Test
     public void testDeleteCachedPost() throws Exception {
 
-        HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("postId", insertedPost.getPostId());
-        request.put("authorId",insertedPost.getAuthorId());
-        request.put("type",insertedPost.getType());
-        request.put("companyId", insertedPost.getCompanyId());
-        request.put("privacy", insertedPost.getPrivacy());
-        request.put("text", "Testing edit post in cache");
-        request.put("hashtags", hashtags);
-        request.put("mentions", mentions);
-        request.put("likesCount",insertedPost.getLikesCount());
-        request.put("images", images);
-        request.put("videos", videos);
-        request.put("urls", urls);
-        request.put("commentsCount", insertedPost.getCommentsCount());
-        request.put("shares", shares);
-        request.put("isCompanyPost", insertedPost.isCompanyPost());
-        request.put("isPrior", insertedPost.isPrior());
-        request.put("headLine", insertedPost.getHeadLine());
-        request.put("isArticle", insertedPost.isArticle());
+        HashMap<String,Object> request = new HashMap<String, Object>();
+        JsonObject object = new JsonObject();
+        object.addProperty("postId",insertedPost.getPostId());
+        object.addProperty("authorId", insertedPost.getAuthorId());
+        request.put("request", object);
+
         postsCacheHandler.cachePost(insertedPost.getPostId(),insertedPost);
         wallService.serve("deletePost",request);
         Post postCached = (Post) postsCacheHandler.getPost(insertedPost.getPostId(),Post.class);
@@ -102,24 +90,14 @@ public class CachePostTest {
     public void testEditCachedPost() throws Exception {
 
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("postId", insertedPost.getPostId());
-        request.put("authorId",insertedPost.getAuthorId());
-        request.put("type",insertedPost.getType());
-        request.put("companyId", insertedPost.getCompanyId());
-        request.put("privacy", insertedPost.getPrivacy());
-        request.put("text", "Testing edit post in cache");
-        request.put("hashtags", hashtags);
-        request.put("mentions", mentions);
-        request.put("likesCount",insertedPost.getLikesCount());
-        request.put("images", images);
-        request.put("videos", videos);
-        request.put("urls", urls);
-        request.put("commentsCount", insertedPost.getCommentsCount());
-        request.put("shares", shares);
-        request.put("isCompanyPost", insertedPost.isCompanyPost());
-        request.put("isPrior", insertedPost.isPrior());
-        request.put("headLine", insertedPost.getHeadLine());
-        request.put("isArticle", insertedPost.isArticle());
+        JsonObject object = new JsonObject();
+        object.addProperty("postId", insertedPost.getPostId());
+        object.addProperty("authorId",insertedPost.getAuthorId());
+        object.addProperty("type","post");
+        object.addProperty("headLine","headLine");
+        object.addProperty("isArticle",false);
+        object.addProperty("text", "Testing edit post command");
+        request.put("request", object);
         postsCacheHandler.cachePost(insertedPost.getPostId(),insertedPost);
         wallService.serve("editPost",request);
         Post postCached = (Post) postsCacheHandler.getPost(insertedPost.getPostId(),Post.class);
@@ -130,24 +108,15 @@ public class CachePostTest {
     public void testAddPostToCache() throws Exception {
 
         HashMap<String, Object> request = new HashMap<String, Object>();
-        request.put("authorId","1");
-        request.put("type","post");
-        request.put("companyId", "3");
-        request.put("privacy", "friends");
-        request.put("text", "Testing add post command");
-        request.put("hashtags", hashtags);
-        request.put("mentions", mentions);
-        request.put("likesCount",67);
-        request.put("images", images);
-        request.put("videos", videos);
-        request.put("urls", urls);
-        request.put("commentsCount", 50);
-        request.put("shares", shares);
-        request.put("isCompanyPost", false);
-        request.put("isPrior", false);
-        request.put("headLine", "test");
-        request.put("isArticle", false);
-        request.put("timestamp", "Mon Mar 19 2012 01:00 PM");
+        JsonObject object = new JsonObject();
+        object.addProperty("authorId","1");
+        object.addProperty("type","post");
+        object.addProperty("text", "Testing add post command");
+        object.add("images", images);
+        object.add("videos", videos);
+        object.addProperty("headLine", "test");
+        object.addProperty("isArticle", false);
+        request.put("request", object);
         wallService.serve("addPost",request);
         List<Post> posts = (List<Post>)  wallService.serve("getPosts", request);
         Boolean found = false;
