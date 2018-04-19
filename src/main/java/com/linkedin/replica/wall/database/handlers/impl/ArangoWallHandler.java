@@ -7,12 +7,16 @@ import com.arangodb.entity.DocumentCreateEntity;
 import com.arangodb.entity.DocumentUpdateEntity;
 import com.arangodb.util.MapBuilder;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.*;
 import javafx.geometry.Pos;
+import org.json.simple.JSONArray;
 
 
 import java.io.IOException;
@@ -216,38 +220,33 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public String editPost(HashMap<String, Object> args) {
-
         String response = "";
-        boolean isString = false;
-        Class postClass = Post.class;
-        Field[] postFields = postClass.getDeclaredFields();
+        Gson gson = new Gson();
+        Map<String, Object> bindVars = new HashMap<>();
+        int counter = 0;
         try {
             String query = "FOR p IN " + postsCollection + " FILTER p._key == @key UPDATE p with {";
+            bindVars.put("key",args.get("postId").toString());
             for (String key : args.keySet()) {
-                if(!key.equals("postId") && !key.equals("authorId")){
+                if(!key.equals("postId")){
                     query += key + ":";
-                    for (int i = 0; i<postFields.length; i++) {
-                        if (key.equals(postFields[i].getName()) && String.class.isAssignableFrom(postFields[i].getType())){
-                            query += "\"" + args.get(key) + "\" ";
-                            isString = true;
-                            break;
-                        }
-                    }
-                    if(!isString){
-                        query += args.get(key);
-                        isString = false;
-                    }
-                    query+=",";
+                    query+="@field"+counter+ " ,";
+                    Object arg = args.get(key);
+                    if (arg instanceof JsonArray)
+                        bindVars.put("field"+counter, gson.fromJson((JsonElement) arg, List.class));
+                    else
+                        bindVars.put("field"+counter,args.get(key));
+                    counter ++;
                 }
             }
             query = query.substring(0,query.length()-1);
             query += "} IN " + postsCollection;
-            Map<String, Object> bindVars = new MapBuilder().put("key",args.get("postId").toString()).get();
             arangoDB.db(dbName).query(query, bindVars, null, Post.class);
             response = "Post Updated";
         } catch (ArangoDBException e){
             response = "Failed to Update Post " + e.getMessage();
         }
+
         return response;
     }
 
@@ -345,31 +344,21 @@ public class ArangoWallHandler implements WallHandler {
      */
     public String editComment(HashMap<String, Object> args) {
         String response = "";
-        boolean isString = false;
-        Class commentClass = Comment.class;
-        Field[] commentFields = commentClass.getDeclaredFields();
+        Map<String, Object> bindVars = new HashMap<>();
+        int counter = 0;
         try {
             String query = "FOR c IN " + commentsCollection + " FILTER c._key == @key UPDATE c with {";
+            bindVars.put("key",args.get("commentId").toString());
             for (String key : args.keySet()) {
                 if(!key.equals("commentId")){
                     query += key + ":";
-                    for (int i = 0; i<commentFields.length; i++) {
-                        if (key.equals(commentFields[i].getName()) && String.class.isAssignableFrom(commentFields[i].getType())){
-                            query += "\"" + args.get(key) + "\" ";
-                            isString = true;
-                            break;
-                        }
-                    }
-                    if(!isString){
-                        query += args.get(key);
-                        isString = false;
-                    }
-                    query+=",";
+                    query+="@field"+counter+ " ,";
+                    bindVars.put("field"+counter,args.get(key));
+                    counter ++;
                 }
             }
             query = query.substring(0,query.length()-1);
             query += "} IN " + commentsCollection;
-            Map<String, Object> bindVars = new MapBuilder().put("key",args.get("commentId").toString()).get();
             arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
             response = "Comment Updated";
         } catch (ArangoDBException e){
@@ -482,33 +471,22 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public String editReply(HashMap<String, Object> args) {
-
         String response = "";
-        boolean isString = false;
-        Class replyClass = Reply.class;
-        Field[] replyFields = replyClass.getDeclaredFields();
+        Map<String, Object> bindVars = new HashMap<>();
+        int counter = 0;
         try {
             String query = "FOR r IN " + repliesCollection + " FILTER r._key == @key UPDATE r with {";
+            bindVars.put("key",args.get("replyId").toString());
             for (String key : args.keySet()) {
                 if(!key.equals("replyId")){
                     query += key + ":";
-                    for (int i = 0; i<replyFields.length; i++) {
-                        if (key.equals(replyFields[i].getName()) && String.class.isAssignableFrom(replyFields[i].getType())){
-                            query += "\"" + args.get(key) + "\" ";
-                            isString = true;
-                            break;
-                        }
-                    }
-                    if(!isString){
-                        query += args.get(key);
-                        isString = false;
-                    }
-                    query+=",";
+                    query+="@field"+counter+ " ,";
+                    bindVars.put("field"+counter,args.get(key));
+                    counter ++;
                 }
             }
             query = query.substring(0,query.length()-1);
             query += "} IN " + repliesCollection;
-            Map<String, Object> bindVars = new MapBuilder().put("key",args.get("replyId").toString()).get();
             arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
             response = "Reply updated";
         } catch (ArangoDBException e){
