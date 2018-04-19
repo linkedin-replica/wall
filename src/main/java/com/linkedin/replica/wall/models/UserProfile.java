@@ -13,7 +13,9 @@ public class UserProfile {
     private String email;
     private String firstName;
     private String lastName;
+    private String headline;
     private ArrayList<String> friendsList;
+    private ArrayList<String> followedCompaniesList;
     public UserProfile() {
         super();
     }
@@ -25,8 +27,17 @@ public class UserProfile {
         this.lastName = lastName;
         this.bookmarks = new ArrayList<>();
         this.friendsList = new ArrayList<>();
+        this.followedCompaniesList = new ArrayList<>();
     }
 
+
+    public String getHeadline() {
+        return headline;
+    }
+
+    public void setHeadline(String headline) {
+        this.headline = headline;
+    }
 
     public ArrayList<String> getFriendsList() {
         return this.friendsList;
@@ -34,6 +45,14 @@ public class UserProfile {
 
     public void setFriendsList(ArrayList<String> friendsList) {
         this.friendsList = friendsList;
+    }
+
+    public ArrayList<String> getFollowedCompaniesList() {
+        return this.followedCompaniesList;
+    }
+
+    public void setFollowedCompaniesList(ArrayList<String> followedCompaniesList) {
+        this.followedCompaniesList = followedCompaniesList;
     }
 
     public ArrayList<Bookmark> getBookmarks(){return this.bookmarks;}

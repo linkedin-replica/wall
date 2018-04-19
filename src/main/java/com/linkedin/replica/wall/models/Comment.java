@@ -13,6 +13,8 @@ public class Comment {
         private int likesCount,repliesCount;
         private String text;
         private Long timestamp;
+        private ArrayList<String> likers;
+
 
         public Comment(){
             super();
@@ -67,6 +69,14 @@ public class Comment {
         public void setText(String text) {
             this.text = text;
         }
+
+    public ArrayList<String> getLikers() {
+        return likers;
+    }
+
+    public void setLikers(ArrayList<String> likers) {
+        this.likers = likers;
+    }
 
     @Override
     public String toString() {

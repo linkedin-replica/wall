@@ -13,10 +13,9 @@ public class Post implements Comparable<Post>{
     private String authorId;
     private String type;
     private String text;
-    private String headLine;
-    private int likesCount;
     private ArrayList<String> images;
     private ArrayList<String> videos;
+    private ArrayList<String> likers;
     private int commentsCount;
     private boolean isArticle;
     private long timestamp;
@@ -24,14 +23,13 @@ public class Post implements Comparable<Post>{
     public Post(){
     }
 
-    public String getHeadLine() {
-        return headLine;
+    public ArrayList<String> getLikers() {
+        return likers;
     }
 
-    public void setHeadLine(String headLine) {
-        this.headLine = headLine;
+    public void setLikers(ArrayList<String> likers) {
+        this.likers = likers;
     }
-
 
     public boolean isArticle() {
         return isArticle;
@@ -62,10 +60,6 @@ public class Post implements Comparable<Post>{
         return text;
     }
 
-    public int getLikesCount() {
-        return likesCount;
-    }
-
     public int getCommentsCount() {
         return commentsCount;
     }
@@ -84,10 +78,6 @@ public class Post implements Comparable<Post>{
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
     }
 
     public void setCommentsCount(int commentsCount) {
@@ -121,8 +111,6 @@ public class Post implements Comparable<Post>{
                 ", authorId='" + authorId + '\'' +
                 ", type='" + type + '\'' +
                 ", text='" + text + '\'' +
-                ", headLine='" + headLine + '\'' +
-                ", likesCount=" + likesCount +
                 ", images=" + images +
                 ", videos=" + videos +
                 ", commentsCount=" + commentsCount +

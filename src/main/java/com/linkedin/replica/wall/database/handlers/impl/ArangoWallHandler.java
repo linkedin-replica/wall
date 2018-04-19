@@ -12,7 +12,6 @@ import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.*;
-import javafx.geometry.Pos;
 
 
 import java.io.IOException;
@@ -668,10 +667,10 @@ public class ArangoWallHandler implements WallHandler {
             if (like.getLikedPostId() != null) {
                 Post post = getPost(like.getLikedPostId());
                 if (post != null) {
-                    post.setLikesCount(post.getLikesCount() + 1);
+                   // post.setLikesCount(post.getLikesCount() + 1);
                     HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
                     editPostArgs.put("postId", post.getPostId());
-                    editPostArgs.put("likesCount", post.getLikesCount());
+                   // editPostArgs.put("likesCount", post.getLikesCount());
                     editPost(editPostArgs);
                 } else {
                     response = "Failed to update post's like count. ";
@@ -724,10 +723,10 @@ public class ArangoWallHandler implements WallHandler {
         if(like.getLikedPostId() != null){
             Post post = getPost(like.getLikedPostId());
             if(post !=null){
-                post.setLikesCount(post.getLikesCount() - 1);
+               // post.setLikesCount(post.getLikesCount() - 1);
                 HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
                 editPostArgs.put("postId", post.getPostId());
-                editPostArgs.put("likesCount", post.getLikesCount());
+                //editPostArgs.put("likesCount", post.getLikesCount());
                 editPost(editPostArgs);
             }
             else {
