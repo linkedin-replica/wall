@@ -1,13 +1,8 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -26,33 +21,25 @@ public class EditCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"commentId", "authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text"});
-
+        validateArgs(new String[]{"commentId", "authorId", "parentPostId"});
 
         // call dbHandler to get error or success message from dbHandler
-        Comment comment;
-        Gson googleJson = new Gson();
-        String commentId = args.get("commentId").toString();
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        int likesCount = (int) args.get("likesCount");
-        int repliesCount = (int) args.get("repliesCount");
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
-        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
-        String text = args.get("text").toString();
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject requestArgs = (JsonObject) args.get("request");
+        for(String key: requestArgs.keySet()) {
+            switch (key) {
+                case "likesCount":
+                case "repliesCount": request.put(key, requestArgs.get(key).getAsInt());break;
+                case "text":
+                case "commentId":
+                case "authorId":
+                case "parentPostId": request.put(key, requestArgs.get(key).getAsString());break;
+                case "commandName": break;
+                default: break;
+            }
+        }
 
-        comment = dbHandler.getComment(commentId);
-        comment.setAuthorId(authorId);
-        comment.setParentPostId(parentPostId);
-        comment.setLikesCount(likesCount);
-        comment.setRepliesCount(repliesCount);
-        comment.setImages(images);
-        comment.setUrls(urls);
-        comment.setMentions(mentions);
-        comment.setText(text);
-        comment.setTimestamp(comment.getTimestamp());
-        String response =  dbHandler.editComment(comment);
+        String response =  dbHandler.editComment(request);
         return response;
     }
 }

@@ -1,6 +1,7 @@
 package com.linkedin.replica.wall.commands;
 
 import com.linkedin.replica.wall.cache.handlers.CacheHandler;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.exceptions.WallException;
 
@@ -42,8 +43,9 @@ public abstract class Command {
     }
 
     protected void validateArgs(String[] requiredArgs) {
+        JsonObject object = (JsonObject) args.get("request");
         for(String arg: requiredArgs)
-            if(!args.containsKey(arg)) {
+            if(!object.keySet().contains(arg)) {
                 String exceptionMsg = String.format("Cannot execute command. %s argument is missing", arg);
                 throw new WallException(exceptionMsg);
             }

@@ -5,6 +5,7 @@ import com.linkedin.replica.wall.models.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public interface WallHandler extends DatabaseHandler {
@@ -21,7 +22,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public String addPost(Post post);
 
-    public String editPost(Post post);
+    public String editPost(HashMap<String, Object> args);
 
     public String deletePost(Post post);
 
@@ -29,7 +30,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public String addComment(Comment comment);
 
-    public String editComment(Comment comment);
+    public String editComment(HashMap<String, Object> args);
 
     public String deleteComment(Comment comment);
 
@@ -39,7 +40,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public String addReply(Reply reply);
 
-    public String editReply(Reply reply);
+    public String editReply(HashMap<String, Object> args);
 
     public String deleteReply(Reply reply);
 

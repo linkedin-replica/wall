@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -29,11 +30,10 @@ public class DeleteCommentCommand extends Command{
 
 
         // call dbHandler to get error or success message from dbHandler
-        Comment comment;
+        JsonObject request = (JsonObject) args.get("request");
+        String commentId = request.get("commentId").getAsString();
 
-        String commentId = args.get("commentId").toString();
-
-        comment = dbHandler.getComment(commentId);
+        Comment comment = dbHandler.getComment(commentId);
         String response =  dbHandler.deleteComment(comment);
         return response;
     }
