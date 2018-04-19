@@ -1,9 +1,9 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.*;
 
-import com.google.gson.Gson;
+import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
 import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -17,17 +17,18 @@ public class EditPostCommand extends Command{
 
 
     @Override
-    public Object execute() {
+    public Object execute() throws IOException {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
+        PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
         validateArgs(new String[]{"postId", "authorId", "type", "headLine", "isArticle"});
 
-        // call dbHandler to get error or success message from dbHandler
         HashMap<String, Object> request = new HashMap<>();
         JsonObject requestArgs = (JsonObject) args.get("request");
+        String postId = requestArgs.get("postId").getAsString();
 
         for(String key: requestArgs.keySet()) {
             switch (key) {
@@ -45,7 +46,8 @@ public class EditPostCommand extends Command{
             }
         }
 
-        String response = dbHandler.editPost(request);
+        boolean response = dbHandler.editPost(request);
+        cacheHandler.editPost(postId,request);
         return response;
     }
 }

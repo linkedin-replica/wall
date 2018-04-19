@@ -1,3 +1,4 @@
+
 package main;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.linkedin.replica.wall.cache.Cache;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.models.*;
 import com.linkedin.replica.wall.database.DatabaseConnection;
@@ -47,10 +49,11 @@ public class WallTest {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config");
+                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+ "cache.config");
         config = Configuration.getInstance();
         wallService = new WallService();
         DatabaseConnection.init();
+        Cache.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb().db(
                 Configuration.getInstance().getArangoConfig("db.name")
         );
@@ -111,8 +114,7 @@ public class WallTest {
         object.addProperty("parentCommentId",insertedComment.getCommentId());
         object.addProperty("text","TestTestTest");
         request.put("request", object);
-
-        String response = (String) wallService.serve("addReply",request);
+        boolean response = (boolean) wallService.serve("addReply",request);
         List<Reply> replies = (List<Reply>)  wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
@@ -122,7 +124,7 @@ public class WallTest {
                 }
         }
         assertEquals("added reply correctly", found, true);
-        assertEquals("response should be equal Reply created",response,"Reply created");
+        assertEquals("response should be equal Reply created",response,true);
 
 
     }
@@ -138,7 +140,7 @@ public class WallTest {
         object.addProperty("likesCount",811);
         object.addProperty("text","Edit working");
         request.put("request", object);
-        String response = (String) wallService.serve("editReply",request);
+        boolean response = (boolean) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
@@ -147,7 +149,7 @@ public class WallTest {
                 break;
             }
         }
-        assertEquals("response should be Reply updated",response,"Reply updated");
+        assertEquals("response should be Reply updated",response,true);
         assertEquals("reply should be updated", found, true);
   }
 
@@ -161,11 +163,11 @@ public class WallTest {
         request.put("request", object);
 
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
-        String response =  (String) wallService.serve("deleteReply",request);
+        boolean response =  (boolean) wallService.serve("deleteReply",request);
         List<Reply> testReplies = (List<Reply>) wallService.serve("getReplies", request);
 
         assertEquals("Size should decrement by one",replies.size() - 1,testReplies.size());
-        assertEquals("response should be Reply deleted",response,"Reply deleted");
+        assertEquals("response should be Reply deleted",response,true);
     }
 
     @Test
@@ -187,8 +189,8 @@ public class WallTest {
                 break;
             }
         }
-        assertEquals("Response should be Comment Updated", response, "Comment Updated");
         assertEquals("The comment should have a new Text", found,true);
+        assertEquals("Response should be Comment Updated", response, true);
 
 
 
@@ -205,14 +207,14 @@ public class WallTest {
         // LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
         List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
 
-        String response =  (String) wallService.serve("deleteComment",request);
+        boolean response =  (boolean) wallService.serve("deleteComment",request);
 
         // LinkedHashMap<String, Object> testResult = (LinkedHashMap<String, Object>) wallService.serve("getReplies", request);
         List<Comment> testComment = (List<Comment>) wallService.serve("getComments", request);
 
         assertEquals("Size should decrement by one",comments.size() - 1,testComment.size());
 
-        assertEquals("response should be comment deleted",response,"Comment deleted");
+        assertEquals("response should be comment deleted",response,true);
 
 
     }
@@ -248,7 +250,7 @@ public class WallTest {
         object.addProperty("userId", userId);
         object.addProperty("postId", postId);
         request.put("request", object);
-        String response = (String) wallService.serve("addBookmark", request);
+        boolean response = (boolean) wallService.serve("addBookmark", request);
         assertEquals("response should be Success to add bookmark", response, "Success to add bookmark");
     }
 
@@ -261,7 +263,7 @@ public class WallTest {
         object.addProperty("userId", userId);
         object.addProperty("postId", postId);
         request.put("request", object);
-        String response = (String) wallService.serve("deleteBookmark", request);
+        boolean response = (boolean) wallService.serve("deleteBookmark", request);
         assertEquals("response should be Success to delete bookmark", response, "Success to delete bookmark");
     }
 
@@ -292,10 +294,10 @@ public class WallTest {
         request.put("request", object);
 
         List<Like> likes = (List<Like>) wallService.serve("getPostLikes", request);
-        String response = (String)wallService.serve("addLike",request);
+        boolean response = (boolean)wallService.serve("addLike",request);
         List<Like> testLikes = (List<Like>)  wallService.serve("getPostLikes", request);
 
-        assertEquals("response should be equal Reply created",response,"Like added");
+        assertEquals("response should be equal Reply created",response,true);
         assertEquals("collection size should incremented by one",likes.size() + 1,testLikes.size());
 
     }
@@ -309,10 +311,10 @@ public class WallTest {
         request.put("request", object);
 
         List<Like> likes = (List<Like>) wallService.serve("getPostLikes", request);
-        String response = (String) wallService.serve("deleteLike",request);
+        boolean response = (boolean) wallService.serve("deleteLike",request);
         List<Like> testLikes = (List<Like>) wallService.serve("getPostLikes", request);
 
-        assertEquals("response should be equal Reply created",response,"Like deleted");
+        assertEquals("response should be equal Reply created",response,true);
         assertEquals("collection size should decrement by one",likes.size() - 1,testLikes.size());
 
     }
@@ -381,8 +383,7 @@ public class WallTest {
         object.addProperty("headLine", "test");
         object.addProperty("isArticle", false);
         request.put("request", object);
-
-        String response = (String) wallService.serve("addPost",request);
+        boolean response = (boolean) wallService.serve("addPost",request);
         List<Post> posts = (List<Post>)  wallService.serve("getPosts", request);
         Boolean found = false;
         for(int i = 0;i < posts.size(); i++){
@@ -392,8 +393,7 @@ public class WallTest {
             }
         }
         assertEquals("added post correctly", found, true);
-        assertEquals("response should be equal Post created",response,"Post Created");
-
+        assertEquals("response should be equal Post created",response,true);
 
     }
 
@@ -410,8 +410,7 @@ public class WallTest {
         object.add("images", images);
         object.addProperty("commentsCount", 2);
         request.put("request", object);
-
-        String response = (String) wallService.serve("editPost",request);
+        boolean response = (boolean) wallService.serve("editPost",request);
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);
         Boolean found = false;
         for(int i = 0;i < posts.size(); i++){
@@ -420,7 +419,7 @@ public class WallTest {
                 break;
             }
         }
-        assertEquals("response should be Post updated",response,"Post Updated");
+        assertEquals("response should be Post updated",response,true);
         assertEquals("post should be updated", found, true);
     }
 
@@ -433,7 +432,7 @@ public class WallTest {
         object.addProperty("authorId", insertedPost.getAuthorId());
         request.put("request", object);
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);
-        String response =  (String) wallService.serve("deletePost",request);
+        boolean response =  (boolean) wallService.serve("deletePost",request);
         List<Post> testPosts = (List<Post>) wallService.serve("getPosts", request);
 
         assertEquals("response should be Post deleted",response,"Post Deleted");
