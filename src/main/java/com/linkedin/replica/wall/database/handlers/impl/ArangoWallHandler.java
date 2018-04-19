@@ -12,7 +12,6 @@ import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.*;
-import javafx.geometry.Pos;
 
 
 import java.io.IOException;

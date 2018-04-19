@@ -13,7 +13,6 @@ public class Post implements Comparable<Post>{
     private String authorId;
     private String type;
     private String text;
-    private String headLine;
     private int likesCount;
     private ArrayList<String> images;
     private ArrayList<String> videos;
@@ -23,15 +22,6 @@ public class Post implements Comparable<Post>{
 
     public Post(){
     }
-
-    public String getHeadLine() {
-        return headLine;
-    }
-
-    public void setHeadLine(String headLine) {
-        this.headLine = headLine;
-    }
-
 
     public boolean isArticle() {
         return isArticle;
@@ -121,7 +111,6 @@ public class Post implements Comparable<Post>{
                 ", authorId='" + authorId + '\'' +
                 ", type='" + type + '\'' +
                 ", text='" + text + '\'' +
-                ", headLine='" + headLine + '\'' +
                 ", likesCount=" + likesCount +
                 ", images=" + images +
                 ", videos=" + videos +

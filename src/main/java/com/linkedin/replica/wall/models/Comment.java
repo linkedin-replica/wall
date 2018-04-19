@@ -14,6 +14,7 @@ public class Comment {
         private String text;
         private Long timestamp;
 
+
         public Comment(){
             super();
         }

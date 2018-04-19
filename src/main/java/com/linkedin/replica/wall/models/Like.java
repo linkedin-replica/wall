@@ -10,28 +10,9 @@ public class Like {
     private String likedPostId;
     private String likedCommentId;
     private String likedReplyId;
-    private String firstName;
-    private String lastName;
-    private String imageUrl;
 
     public Like(){
         super();
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public void setLikeId(String likeId) {
@@ -54,10 +35,6 @@ public class Like {
         this.likedReplyId = likedReplyId;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public String getLikeId() {
         return likeId;
     }
@@ -78,10 +55,6 @@ public class Like {
         return likedReplyId;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
     @Override
     public String toString() {
         return "Like{" +
@@ -90,9 +63,6 @@ public class Like {
                 ", likedPostId='" + likedPostId + '\'' +
                 ", likedCommentId='" + likedCommentId + '\'' +
                 ", likedReplyId='" + likedReplyId + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
 }
