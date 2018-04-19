@@ -13,6 +13,7 @@ public class UserProfile {
     private String email;
     private String firstName;
     private String lastName;
+    private String headline;
     private ArrayList<String> friendsList;
     private ArrayList<String> followedCompaniesList;
     public UserProfile() {
@@ -29,6 +30,14 @@ public class UserProfile {
         this.followedCompaniesList = new ArrayList<>();
     }
 
+
+    public String getHeadline() {
+        return headline;
+    }
+
+    public void setHeadline(String headline) {
+        this.headline = headline;
+    }
 
     public ArrayList<String> getFriendsList() {
         return this.friendsList;

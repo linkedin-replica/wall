@@ -6,8 +6,7 @@ public class ReturnedComment {
     private int likesCount,repliesCount;
     private String text;
     private Long timestamp;
-    private String authorFirstName;
-    private String authorLastName;
+    private String authorName;
     private String authorProfilePictureUrl;
 
     public ReturnedComment(){
@@ -70,20 +69,12 @@ public class ReturnedComment {
         this.timestamp = timestamp;
     }
 
-    public String getAuthorFirstName() {
-        return authorFirstName;
+    public String getAuthorName() {
+        return authorName;
     }
 
-    public void setAuthorFirstName(String authorFirstName) {
-        this.authorFirstName = authorFirstName;
-    }
-
-    public String getAuthorLastName() {
-        return authorLastName;
-    }
-
-    public void setAuthorLastName(String authorLastName) {
-        this.authorLastName = authorLastName;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public String getAuthorProfilePictureUrl() {

@@ -6,8 +6,7 @@ public class ReturnedLike {
     private String likedPostId;
     private String likedCommentId;
     private String likedReplyId;
-    private String likerFirstName;
-    private String likerLastName;
+    private String likerName;
     private String likerProfilePictureUrl;
 
     public ReturnedLike(){
@@ -55,19 +54,11 @@ public class ReturnedLike {
     }
 
     public String getAuthorFirstName() {
-        return likerFirstName;
+        return likerName;
     }
 
     public void setAuthorFirstName(String authorFirstName) {
-        this.likerFirstName = authorFirstName;
-    }
-
-    public String getAuthorLastName() {
-        return likerLastName;
-    }
-
-    public void setAuthorLastName(String authorLastName) {
-        this.likerLastName = authorLastName;
+        this.likerName = authorFirstName;
     }
 
     public String getLikerProfilePictureUrl() {

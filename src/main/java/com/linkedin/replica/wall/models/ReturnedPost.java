@@ -13,8 +13,7 @@ public class ReturnedPost {
     private int commentsCount;
     private boolean isArticle;
     private long timestamp;
-    private String authorFirstName;
-    private String authorLastName;
+    private String authorName;
     private String authorProfilePictureUrl;
     private String headLine;
     private boolean liked;
@@ -129,20 +128,12 @@ public class ReturnedPost {
         this.timestamp = timestamp;
     }
 
-    public String getAuthorFirstName() {
-        return authorFirstName;
+    public String getAuthorName() {
+        return authorName;
     }
 
-    public void setAuthorFirstName(String authorFirstName) {
-        this.authorFirstName = authorFirstName;
-    }
-
-    public String getAuthorLastName() {
-        return authorLastName;
-    }
-
-    public void setAuthorLastName(String authorLastName) {
-        this.authorLastName = authorLastName;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public String getAuthorProfilePictureUrl() {

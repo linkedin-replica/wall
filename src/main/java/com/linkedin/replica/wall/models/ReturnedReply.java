@@ -8,8 +8,7 @@ public class ReturnedReply {
     private int likesCount;
     private String text;
     private Long timestamp;
-    private String authorFirstName;
-    private String authorLastName;
+    private String authorName;
     private String authorProfilePictureUrl;
 
     public ReturnedReply(){
@@ -73,19 +72,11 @@ public class ReturnedReply {
     }
 
     public String getAuthorFirstName() {
-        return authorFirstName;
+        return authorName;
     }
 
     public void setAuthorFirstName(String authorFirstName) {
-        this.authorFirstName = authorFirstName;
-    }
-
-    public String getAuthorLastName() {
-        return authorLastName;
-    }
-
-    public void setAuthorLastName(String authorLastName) {
-        this.authorLastName = authorLastName;
+        this.authorName = authorFirstName;
     }
 
     public String getAuthorProfilePictureUrl() {
