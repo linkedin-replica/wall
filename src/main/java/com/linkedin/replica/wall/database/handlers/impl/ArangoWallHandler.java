@@ -452,48 +452,24 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean deleteReply(Reply reply) throws ArangoDBException{
+        String query = "FOR reply IN " + repliesCollection + " FILTER reply._key == @replyId\t"
+                    + "REMOVE reply IN " + repliesCollection;
 
-        String query = "FOR reply IN " + repliesCollection
-                    + "REMOVE {_key: reply._key } IN " + repliesCollection;
-
-        arangoDB.db(dbName).query(query, null, null, Reply.class);
+        Map<String, Object> bindVars = new MapBuilder().put("replyId",reply.getReplyId()).get();
+        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
             // update comment query
         query = "FOR comment in " + commentsCollection
-                + "FILTER comment._key = @parentCommentId"
-                + "UPDATE comment WITH { comment.repliesCount = comment.repliesCount - 1 }";
-        Map<String, Object> bindVars = new MapBuilder().put("parentCommentId",reply.getParentCommentId()).get();
+                + " FILTER comment._key == @parentCommentId\t"
+                + "UPDATE comment WITH { repliesCount : comment.repliesCount - 1 } IN " + commentsCollection;
+        bindVars = new MapBuilder().put("parentCommentId",reply.getParentCommentId()).get();
         arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
 
         query = "FOR post in " + postsCollection
-                + "FILTER post._key = @parentPostId"
-                + "UPDATE comment WITH { post.commentsCount = post.commentsCount - 1 }";
-        bindVars = new MapBuilder().put("parentCommentId",reply.getParentCommentId()).get();
+                + " FILTER post._key == @parentPostId\t"
+                + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
+        bindVars = new MapBuilder().put("parentPostId",reply.getParentPostId()).get();
         arangoDB.db(dbName).query(query, bindVars, null, Post.class);
-
-
-        arangoDB.db(dbName).collection(repliesCollection).deleteDocument(reply.getReplyId());
         return  true;
-//        Comment comment = getComment(reply.getParentCommentId());
-//        if (comment != null) {
-//            comment.setRepliesCount(comment.getRepliesCount() - 1);
-//            HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
-//            editCommentArgs.put("commentId", comment.getCommentId());
-//            editCommentArgs.put("repliesCount", comment.getRepliesCount());
-//            editComment(editCommentArgs);
-//        } else {
-//            throw new WallException("Failed to update comment's reply count. ");
-//        }
-//        Post post = getPost(reply.getParentPostId());
-//        if(post != null){
-//            post.setCommentsCount(post.getCommentsCount() - 1);
-//            HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
-//            editPostArgs.put("postId", post.getPostId());
-//            editPostArgs.put("commentsCount", post.getCommentsCount());
-//            editPost(editPostArgs);
-//        }else
-//        {
-//            throw  new WallException("Failed to update post's comment count");
-//        }
     }
 
     /**
