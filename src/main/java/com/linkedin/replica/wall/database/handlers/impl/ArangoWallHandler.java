@@ -101,6 +101,7 @@ public class ArangoWallHandler implements WallHandler {
      * @return message tells whether the process is successful or failed.
      */
     public boolean deleteBookmark(Bookmark bookmark) throws ArangoDBException {
+
         String userId = bookmark.getUserId();
         boolean message = false;
 
@@ -226,11 +227,12 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean deletePost(Post post) throws ArangoDBException{
-        boolean response = false;
-        arangoDB.db(dbName).collection(postsCollection).deleteDocument(post.getPostId());
-        response = true;
-
-        return response;
+        String query = "FOR post IN " + postsCollection + " FILTER post._key == @postId\t"
+                + "REMOVE post IN " + postsCollection;
+        Map<String, Object> bindVars = new MapBuilder().put("postId", post.getPostId()).get();
+        arangoDB.db(dbName).query(query, bindVars, null,
+                Post.class);
+        return true;
     }
 
 
@@ -334,25 +336,18 @@ public class ArangoWallHandler implements WallHandler {
      */
 
     public boolean deleteComment(Comment comment) throws ArangoDBException {
-        boolean response = false;
-        arangoDB.db(dbName).collection(commentsCollection).deleteDocument(comment.getCommentId());
-        response = true;
+        String query = "FOR comment IN " + commentsCollection + " FILTER comment._key == @commentId\t"
+                + "REMOVE comment IN " + commentsCollection;
 
-        if(comment.getParentPostId() != null){
-            Post post = getPost(comment.getParentPostId());
-            if(post !=null){
-                post.setCommentsCount(post.getCommentsCount() - 1);
-                HashMap<String, Object> editArgs = new HashMap<String, Object>();
-                editArgs.put("postId", post.getPostId());
-                editArgs.put("commentsCount", post.getCommentsCount());
-                editPost(editArgs);
-            }
-            else {
-                throw new WallException("Failed to update post's comments count.");
-            }
+        Map<String, Object> bindVars = new MapBuilder().put("commentId",comment.getCommentId()).get();
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
 
-        }
-        return response;
+        query = "FOR post in " + postsCollection
+                + " FILTER post._key == @parentPostId\t"
+                + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
+        bindVars = new MapBuilder().put("parentPostId",comment.getParentPostId()).get();
+        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+        return  true;
     }
 
     public List<Reply> getReplies(String commentId) throws ArangoDBException {
