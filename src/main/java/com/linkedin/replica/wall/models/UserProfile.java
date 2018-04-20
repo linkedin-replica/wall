@@ -18,16 +18,6 @@ public class UserProfile {
 
     }
 
-    public UserProfile(String email, String firstName, String lastName) {
-        this();
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.bookmarks = new ArrayList<>();
-        this.friendsList = new ArrayList<>();
-    }
-
-
     public ArrayList<String> getFriendsList() {
         return this.friendsList;
     }

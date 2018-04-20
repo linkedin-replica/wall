@@ -251,7 +251,11 @@ public class DatabaseSeed {
             String email = firstName + "@gmail.com";
             String lastName = arr[1];
 
-            UserProfile user = new UserProfile(email, firstName, lastName);
+            UserProfile user = new UserProfile();
+            user.setEmail(email);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setFriendsList(new ArrayList<String>());
             arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
 
             Bookmark bookmark = new Bookmark(user.getUserId(), insertedPosts.get(0).getPostId());
