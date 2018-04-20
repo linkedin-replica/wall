@@ -15,7 +15,7 @@ public class UserProfile {
     private String lastName;
     private ArrayList<String> friendsList;
     public UserProfile() {
-        super();
+
     }
 
     public UserProfile(String email, String firstName, String lastName) {

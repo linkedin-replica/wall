@@ -559,7 +559,7 @@ public class ArangoHandlerTest {
         user.getFriendsList().add(dbSeed.getInsertedUsers().get(0).getUserId());
         user.getFriendsList().add(dbSeed.getInsertedUsers().get(1).getUserId());
         List<Post> newsfeed = arangoWallHandler.getFriendsPosts(user,10,0);
-        assertEquals("Expected to have the list ordered", newsfeed.get(0).getText(), "post 2");
+        assertEquals("Expected to have the list ordered", newsfeed.get(0).getText(), "post 1");
         assertEquals("Expected to have a 4 posts returned", newsfeed.size(), 4);
     }
 
