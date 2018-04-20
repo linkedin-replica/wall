@@ -86,7 +86,6 @@ public class ArangoWallHandler implements WallHandler {
                 ArrayList<Bookmark> bookmarkList = user.getBookmarks();
 
                 bookmarkList.add(bookmark);
-                user.setBookmarks(bookmarkList);
                 arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
 
                 message = true;
@@ -109,7 +108,6 @@ public class ArangoWallHandler implements WallHandler {
         UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
         ArrayList<Bookmark> bookmarkList = user.getBookmarks();
         bookmarkList.remove(bookmark);
-        user.setBookmarks(bookmarkList);
         arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
         message = true ;
 
