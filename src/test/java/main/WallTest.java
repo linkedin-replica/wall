@@ -225,7 +225,7 @@ public class WallTest {
             comment = arangoDB.collection(commentsCollection).getDocument(commentId,
                     Comment.class);
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get comment: commentId; " + e.getMessage());
+            e.printStackTrace();
         }
         return comment;
     }
