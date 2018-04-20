@@ -267,13 +267,18 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean addComment(Comment comment) throws ArangoDBException{
-        arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
-        String query = "FOR post in " + postsCollection
-                + " FILTER post._key == @parentPostId\t"
-                + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
-        Map<String, Object> bindVars = new MapBuilder().put("parentPostId",comment.getParentPostId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
-        return  true;
+        String postId = comment.getParentPostId();
+        if(postId != null && getPost(postId) != null) {
+            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
+            String query = "FOR post in " + postsCollection
+                    + " FILTER post._key == @parentPostId\t"
+                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
+            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+            return true;
+        } else {
+            throw new WallException("Failed to add a comment missing post found.");
+        }
     }
 
     /**
@@ -310,17 +315,22 @@ public class ArangoWallHandler implements WallHandler {
      */
 
     public boolean deleteComment(Comment comment) throws ArangoDBException {
-        String query = "FOR comment IN " + commentsCollection + " FILTER comment._key == @commentId\t"
-                + "REMOVE comment IN " + commentsCollection;
+        String postId = comment.getParentPostId();
+        if(postId != null && getPost(postId) != null) {
+            String query = "FOR comment IN " + commentsCollection + " FILTER comment._key == @commentId\t"
+                    + "REMOVE comment IN " + commentsCollection;
 
-        Map<String, Object> bindVars = new MapBuilder().put("commentId",comment.getCommentId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+            Map<String, Object> bindVars = new MapBuilder().put("commentId", comment.getCommentId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
 
-        query = "FOR post in " + postsCollection
-                + " FILTER post._key == @parentPostId\t"
-                + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
-        bindVars = new MapBuilder().put("parentPostId",comment.getParentPostId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+            query = "FOR post in " + postsCollection
+                    + " FILTER post._key == @parentPostId\t"
+                    + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
+            bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+        } else {
+            throw new WallException("Failed to add a comment missing post found.");
+        }
         return  true;
     }
 
@@ -349,18 +359,24 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean addReply(Reply reply) throws ArangoDBException {
-        arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
-        String query = "FOR comment in " + commentsCollection
-                + " FILTER comment._key == @parentCommentId\t"
-                + "UPDATE comment WITH { repliesCount : comment.repliesCount + 1 } IN " + commentsCollection;
-        Map<String, Object> bindVars = new MapBuilder().put("parentCommentId",reply.getParentCommentId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+        String commentId = reply.getParentCommentId();
+        String postId = reply.getParentPostId();
+        if((postId != null && getPost(postId) != null) && (commentId != null && getComment(commentId ) != null)) {
+            arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
+            String query = "FOR comment in " + commentsCollection
+                    + " FILTER comment._key == @parentCommentId\t"
+                    + "UPDATE comment WITH { repliesCount : comment.repliesCount + 1 } IN " + commentsCollection;
+            Map<String, Object> bindVars = new MapBuilder().put("parentCommentId", reply.getParentCommentId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
 
-        query = "FOR post in " + postsCollection
-                + " FILTER post._key == @parentPostId\t"
-                + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
-        bindVars = new MapBuilder().put("parentPostId",reply.getParentPostId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+            query = "FOR post in " + postsCollection
+                    + " FILTER post._key == @parentPostId\t"
+                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
+            bindVars = new MapBuilder().put("parentPostId", reply.getParentPostId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+        } else {
+            throw new WallException("missing information");
+        }
         return  true;
 
     }
@@ -399,23 +415,29 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean deleteReply(Reply reply) throws ArangoDBException{
-        String query = "FOR reply IN " + repliesCollection + " FILTER reply._key == @replyId\t"
+        String commentId = reply.getParentCommentId();
+        String postId = reply.getParentPostId();
+        if((postId != null && getPost(postId) != null) && (commentId != null && getComment(commentId ) != null)) {
+            String query = "FOR reply IN " + repliesCollection + " FILTER reply._key == @replyId\t"
                     + "REMOVE reply IN " + repliesCollection;
 
-        Map<String, Object> bindVars = new MapBuilder().put("replyId",reply.getReplyId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+            Map<String, Object> bindVars = new MapBuilder().put("replyId", reply.getReplyId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
             // update comment query
-        query = "FOR comment in " + commentsCollection
-                + " FILTER comment._key == @parentCommentId\t"
-                + "UPDATE comment WITH { repliesCount : comment.repliesCount - 1 } IN " + commentsCollection;
-        bindVars = new MapBuilder().put("parentCommentId",reply.getParentCommentId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+            query = "FOR comment in " + commentsCollection
+                    + " FILTER comment._key == @parentCommentId\t"
+                    + "UPDATE comment WITH { repliesCount : comment.repliesCount - 1 } IN " + commentsCollection;
+            bindVars = new MapBuilder().put("parentCommentId", reply.getParentCommentId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
 
-        query = "FOR post in " + postsCollection
-                + " FILTER post._key == @parentPostId\t"
-                + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
-        bindVars = new MapBuilder().put("parentPostId",reply.getParentPostId()).get();
-        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+            query = "FOR post in " + postsCollection
+                    + " FILTER post._key == @parentPostId\t"
+                    + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
+            bindVars = new MapBuilder().put("parentPostId", reply.getParentPostId()).get();
+            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+        } else {
+            throw new WallException("missing information");
+        }
         return  true;
     }
 
