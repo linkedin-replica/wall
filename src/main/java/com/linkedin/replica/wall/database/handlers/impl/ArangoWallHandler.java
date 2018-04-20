@@ -412,7 +412,7 @@ public class ArangoWallHandler implements WallHandler {
         }
         query = query.substring(0,query.length()-1);
         query += "} IN " + repliesCollection;
-        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
         response = true;
         return response;
     }
