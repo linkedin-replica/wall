@@ -39,7 +39,7 @@ public class EditCommentCommand extends Command{
             }
         }
 
-        String response =  dbHandler.editComment(request);
+        boolean response =  dbHandler.editComment(request);
         return response;
     }
 }

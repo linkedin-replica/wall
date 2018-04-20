@@ -29,7 +29,7 @@ public class DeleteBookmarkCommand extends Command{
         String postId = request.get("postId").getAsString();
         Bookmark bookmark = new Bookmark(userId, postId);
 
-        String response = dbHandler.deleteBookmark(bookmark);
+        boolean response = dbHandler.deleteBookmark(bookmark);
         return response;
     }
 }

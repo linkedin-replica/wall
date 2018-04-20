@@ -52,7 +52,7 @@ public class AddLikeCommand extends Command{
         like.setLikedReplyId(likedReplyId);
         like.setLikerId(likerId);
 
-        String response = dbHandler.addLike(like);
+        boolean response = dbHandler.addLike(like);
         return response;
     }
 }
