@@ -15,8 +15,18 @@ public class UserProfile {
     private String lastName;
     private ArrayList<String> friendsList;
     public UserProfile() {
-
+        super();
     }
+
+    public UserProfile(String email, String firstName, String lastName) {
+        this();
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.bookmarks = new ArrayList<>();
+        this.friendsList = new ArrayList<>();
+    }
+
 
     public ArrayList<String> getFriendsList() {
         return this.friendsList;

@@ -23,14 +23,18 @@ public class EditReplyCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"replyId"});
+        validateArgs(new String[]{"replyId", "authorId", "parentPostId", "parentCommentId"});
         HashMap<String, Object> request = new HashMap<>();
         JsonObject requestArgs = (JsonObject) args.get("request");
         for(String key: requestArgs.keySet()) {
             switch (key) {
                 case "likesCount": request.put(key, requestArgs.get(key).getAsInt());break;
                 case "text":
-                case "replyId": request.put(key, requestArgs.get(key).getAsString());break;
+                case "replyId":
+                case "authorId":
+                case "parentCommentId":
+                case "parentPostId": request.put(key, requestArgs.get(key).getAsString());break;
+                case "commandName": break;
                 default: break;
             }
         }
