@@ -11,7 +11,6 @@ public class Bookmark {
      */
 
     public  Bookmark(){
-        super();
     }
     public Bookmark(String userId, String postId){
         this.postId = postId;

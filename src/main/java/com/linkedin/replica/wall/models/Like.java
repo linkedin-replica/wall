@@ -15,7 +15,7 @@ public class Like {
     private String imageUrl;
 
     public Like(){
-        super();
+
     }
 
     public String getFirstName() {
