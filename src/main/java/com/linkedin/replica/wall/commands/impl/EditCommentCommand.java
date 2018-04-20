@@ -21,7 +21,7 @@ public class EditCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"commentId", "authorId", "parentPostId"});
+        validateArgs(new String[]{"commentId"});
 
         // call dbHandler to get error or success message from dbHandler
         HashMap<String, Object> request = new HashMap<>();
@@ -31,9 +31,7 @@ public class EditCommentCommand extends Command{
                 case "likesCount":
                 case "repliesCount": request.put(key, requestArgs.get(key).getAsInt());break;
                 case "text":
-                case "commentId":
-                case "authorId":
-                case "parentPostId": request.put(key, requestArgs.get(key).getAsString());break;
+                case "commentId": request.put(key, requestArgs.get(key).getAsString());break;
                 default: break;
             }
         }
