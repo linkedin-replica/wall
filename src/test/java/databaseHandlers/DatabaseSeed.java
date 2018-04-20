@@ -119,9 +119,7 @@ public class DatabaseSeed {
 
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             insertedPosts.add(post);
-            System.out.println("DBSEED   " + post.toString());
             Post retrievedDoc = arangoDB.db(dbName).collection(postsCollection).getDocument(post.getPostId(), Post.class);
-            System.out.println(retrievedDoc);
         }
     }
    public void insertComments() throws IOException, ClassNotFoundException {
@@ -223,7 +221,6 @@ public class DatabaseSeed {
             like.setLikerId(likerId);
             DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
             insertedLikes.add(like);
-            System.out.println("New like document insert with key = "  + likeDoc.getKey());
         }
     }
 
@@ -264,9 +261,7 @@ public class DatabaseSeed {
             user.setBookmarks(b);
             arangoDB.db(dbName).collection(usersCollection).updateDocument(user.getUserId(), user);
             insertedUsers.add(user);
-            System.out.println("New user document insert with key = " + user.getUserId());
             UserProfile retrievedUser= arangoDB.db(dbName).collection(usersCollection).getDocument(user.getUserId(), UserProfile.class);
-            System.out.println("user: " + retrievedUser.toString());
         }
     }
 
@@ -312,28 +307,23 @@ public class DatabaseSeed {
 
     public void deleteAllPosts() throws ArangoDBException, FileNotFoundException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(postsCollection).drop();
-        System.out.println("Post collection is dropped");
     }
 
     public void deleteAllComments() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(commentsCollection).drop();
-        System.out.println("Comments collection is dropped");
     }
 
 
     public void deleteAllReplies() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(repliesCollection).drop();
-        System.out.println("Replies collection is dropped");
     }
 
     public void deleteAllLikes() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(likesCollection).drop();
-        System.out.println("Likes collection is dropped");
     }
 
     public void deleteAllUsers() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(usersCollection).drop();
-        System.out.println("Users collection is dropped");
     }
 
     public void closeDBConnection() throws ArangoDBException, ClassNotFoundException, IOException {

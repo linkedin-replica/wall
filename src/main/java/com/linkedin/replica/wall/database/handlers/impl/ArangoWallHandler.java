@@ -61,10 +61,9 @@ public class ArangoWallHandler implements WallHandler {
                     Post.class);
             cursor.forEachRemaining(postDocument -> {
                 posts.add(postDocument);
-                System.out.println("Key: " + postDocument.getPostId());
             });
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get posts." + e.getMessage());
+            e.printStackTrace();
         }
         return posts;
     }

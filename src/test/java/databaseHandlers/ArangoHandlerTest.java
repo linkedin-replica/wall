@@ -224,7 +224,7 @@ public class ArangoHandlerTest {
             reply = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
                     Reply.class);
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get reply: replyId; " + e.getMessage());
+            e.printStackTrace();
         }
         return reply;
     }
@@ -435,7 +435,7 @@ public class ArangoHandlerTest {
             comment = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentId,
                     Comment.class);
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get comment: commentId; " + e.getMessage());
+            e.printStackTrace();
         }
         return comment;
     }
@@ -559,8 +559,8 @@ public class ArangoHandlerTest {
         user.getFriendsList().add(dbSeed.getInsertedUsers().get(0).getUserId());
         user.getFriendsList().add(dbSeed.getInsertedUsers().get(1).getUserId());
         List<Post> newsfeed = arangoWallHandler.getFriendsPosts(user,10,0);
-        assertEquals("Expected to have the list ordered", newsfeed.get(0).getText(), "post 1");
-        assertEquals("Expected to have a 4 posts returned", newsfeed.size(), 4);
+        assertEquals("Expected to have the list ordered",  "post 2", newsfeed.get(0).getText());
+        assertEquals("Expected to have a 4 posts returned", 4, newsfeed.size());
     }
 
 
