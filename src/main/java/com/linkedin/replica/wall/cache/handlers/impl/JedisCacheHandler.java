@@ -88,7 +88,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
             jedisPipeline.close();
         }
         catch (JedisException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
         return post;
@@ -107,7 +107,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
             cacheResource.hdel(postId, fieldNames);
         }
         catch (JedisException e){
-           e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
 
@@ -130,7 +130,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
             jedisPipeline.close();
         }
         catch (JedisException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
     }

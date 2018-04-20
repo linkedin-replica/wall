@@ -15,7 +15,7 @@ public class Comment {
         private Long timestamp;
 
         public Comment(){
-
+            super();
         }
 
         public String getCommentId() {

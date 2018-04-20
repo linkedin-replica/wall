@@ -17,6 +17,7 @@ public class Reply {
     private Long timestamp;
 
     public Reply(){
+        super();
     }
 
 
