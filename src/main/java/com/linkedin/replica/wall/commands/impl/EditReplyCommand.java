@@ -39,7 +39,7 @@ public class EditReplyCommand extends Command{
             }
         }
 
-        boolean response = dbHandler.editReply(args);
+        boolean response = dbHandler.editReply(request);
         return response;
     }
 }
