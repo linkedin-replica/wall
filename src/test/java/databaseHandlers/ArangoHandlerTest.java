@@ -8,6 +8,7 @@ import java.util.*;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
+import com.arangodb.entity.BaseDocument;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
@@ -240,10 +241,11 @@ public class ArangoHandlerTest {
         reply.setParentPostId(insertedPost.getPostId());
         reply.setParentCommentId(insertedComment.getCommentId());
         reply.setLikesCount(2000);
-        reply.setText("You are so cute");
+        reply.setText("Test Add Reply");
+        reply.setTimestamp(System.currentTimeMillis());
         arangoWallHandler.addReply(reply);
         Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(),Reply.class);
-        assertEquals("Reply text should be", "You are so cute", replyDocument.getText());
+        assertEquals("Reply text should be", "Test Add Reply", replyDocument.getText());
     }
 
     @Test
