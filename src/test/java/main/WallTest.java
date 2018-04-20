@@ -252,7 +252,7 @@ public class WallTest {
         object.addProperty("postId", postId);
         request.put("request", object);
         boolean response = (boolean) wallService.serve("addBookmark", request);
-        assertEquals("response should be Success to add bookmark", response, "Success to add bookmark");
+        assertEquals("response should be Success to add bookmark", response, true);
     }
 
     @Test
@@ -265,7 +265,7 @@ public class WallTest {
         object.addProperty("postId", postId);
         request.put("request", object);
         boolean response = (boolean) wallService.serve("deleteBookmark", request);
-        assertEquals("response should be Success to delete bookmark", response, "Success to delete bookmark");
+        assertEquals("response should be Success to delete bookmark", response, true);
     }
 
     @Test
@@ -436,7 +436,7 @@ public class WallTest {
         boolean response =  (boolean) wallService.serve("deletePost",request);
         List<Post> testPosts = (List<Post>) wallService.serve("getPosts", request);
 
-        assertEquals("response should be Post deleted",response,"Post Deleted");
+        assertEquals("response should be Post deleted",response,true);
         assertEquals("collection size should decrement by one",posts.size() - 1,testPosts.size());
 
     }
