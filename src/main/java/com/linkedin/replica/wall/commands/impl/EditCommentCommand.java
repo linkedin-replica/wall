@@ -34,7 +34,6 @@ public class EditCommentCommand extends Command{
                 case "commentId":
                 case "authorId":
                 case "parentPostId": request.put(key, requestArgs.get(key).getAsString());break;
-                case "commandName": break;
                 default: break;
             }
         }
