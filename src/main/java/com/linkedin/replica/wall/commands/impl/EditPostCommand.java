@@ -24,7 +24,7 @@ public class EditPostCommand extends Command{
         PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"postId", "type", "isArticle"});
+        validateArgs(new String[]{"postId"});
 
         HashMap<String, Object> request = new HashMap<>();
         JsonObject requestArgs = (JsonObject) args.get("request");
