@@ -131,26 +131,28 @@ public class WallTest {
 
     @Test
     public void testEditReply() throws Exception {
+
         HashMap<String, Object> request = new HashMap<String, Object>();
         JsonObject object = new JsonObject();
         object.addProperty("replyId", insertedReply.getReplyId());
-        object.addProperty("authorId","1");
-        object.addProperty("parentPostId",insertedPost.getPostId());
-        object.addProperty("parentCommentId",insertedComment.getCommentId());
-        object.addProperty("likesCount",811);
-        object.addProperty("text","Edit working");
+        object.addProperty("authorId",insertedReply.getAuthorId());
+        object.addProperty("parentPostId",insertedReply.getParentPostId());
+        object.addProperty("parentCommentId",insertedReply.getParentCommentId());
+        object.addProperty("text", "Edit Working");
         request.put("request", object);
         boolean response = (boolean) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
-            if(replies.get(i).getText().equals("Edit working") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
+            if(replies.get(i).getText().equals("Edit Working") && replies.get(i).getReplyId().equals(insertedReply.getReplyId())){
                 found = true;
                 break;
             }
         }
-        assertEquals("response should be Reply updated",response,true);
+        assertEquals("response should true",response,true);
         assertEquals("reply should be updated", found, true);
+
+
   }
 
     @Test
@@ -167,7 +169,7 @@ public class WallTest {
         List<Reply> testReplies = (List<Reply>) wallService.serve("getReplies", request);
 
         assertEquals("Size should decrement by one",replies.size() - 1,testReplies.size());
-        assertEquals("response should be Reply deleted",response,true);
+        assertEquals("response should be true",response,true);
     }
 
     @Test
@@ -179,8 +181,7 @@ public class WallTest {
         object.addProperty("parentPostId", insertedPost.getPostId());
         object.addProperty("text", "Edited Text in comment");
         request.put("request", object);
-
-        String response = (String) wallService.serve("editComment", request);
+        Boolean response = (boolean) wallService.serve("editComment", request);
         List<Comment> comments = (List<Comment>) wallService.serve("getComments", request);
         Boolean found = false;
         for(int i = 0;i < comments.size(); i++){
@@ -190,7 +191,7 @@ public class WallTest {
             }
         }
         assertEquals("The comment should have a new Text", found,true);
-        assertEquals("Response should be Comment Updated", response, true);
+        assertEquals("Response should true", response, true);
 
 
 
@@ -214,7 +215,7 @@ public class WallTest {
 
         assertEquals("Size should decrement by one",comments.size() - 1,testComment.size());
 
-        assertEquals("response should be comment deleted",response,true);
+        assertEquals("response should be true",response,true);
 
 
     }
@@ -461,11 +462,11 @@ public class WallTest {
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
-        dbSeed.deleteAllUsers();
-        dbSeed.deleteAllPosts();
-        dbSeed.deleteAllReplies();
-        dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
+//        dbSeed.deleteAllUsers();
+//        dbSeed.deleteAllPosts();
+//        dbSeed.deleteAllReplies();
+//        dbSeed.deleteAllComments();
+//        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
     }
 
