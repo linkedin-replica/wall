@@ -153,6 +153,31 @@ public class WallTest {
     }
 
     @Test
+    public void testAddCommentService() throws Exception {
+
+        HashMap<String, Object> request = new HashMap<String, Object>();
+        JsonObject object = new JsonObject();
+        object.addProperty("authorId","1");
+        object.addProperty("parentPostId", insertedPost.getPostId());
+        object.addProperty("text","TestTestTest");
+        request.put("request", object);
+        boolean response = (boolean) wallService.serve("addComment",request);
+        List<Comment> comments = (List<Comment>)  wallService.serve("getComments", request);
+        Boolean found = false;
+        for(int i = 0;i < comments.size(); i++){
+            if(comments.get(i).getText().equals("TestTestTest")){
+                found = true;
+                break;
+            }
+        }
+        assertEquals("added comment correctly", found, true);
+        assertEquals("response should be equal true",response,true);
+
+
+    }
+
+
+    @Test
     public void testEditComment() throws Exception {
         HashMap<String,Object> request = new HashMap<String,Object>();
         JsonObject object = new JsonObject();

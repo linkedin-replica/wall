@@ -311,6 +311,7 @@ public class ArangoHandlerTest {
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
         Reply reply = new Reply();
+        reply.setReplyId(UUID.randomUUID().toString());
         reply.setAuthorId(insertedUser.getUserId());
         reply.setParentPostId(insertedPost.getPostId());
         reply.setParentCommentId(insertedComment.getCommentId());
@@ -350,11 +351,9 @@ public class ArangoHandlerTest {
 
     /**
      * testing Adding bookmark function
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     @Test
-    public void testAddBookmark() throws IOException, ClassNotFoundException {
+    public void testAddBookmark() {
         UserProfile user = insertedUser;
         String userId = user.getUserId();
         String postId = insertedPost.getPostId();
@@ -430,9 +429,11 @@ public class ArangoHandlerTest {
         Comment comment = new Comment();
         comment.setAuthorId(insertedUser.getUserId());
         comment.setParentPostId(insertedPost.getPostId());
+        comment.setCommentId(UUID.randomUUID().toString());
         comment.setLikesCount(12);
         comment.setRepliesCount(22);
-        comment.setText("comment Text");
+        comment.setText("Comment Test");
+        comment.setTimestamp(System.currentTimeMillis());
         arangoWallHandler.addComment(comment);
         Comment newComment = getComment(comment.getCommentId());
         assertEquals("Expected to have a certain comment in database",insertedPost.getPostId(), newComment.getParentPostId());

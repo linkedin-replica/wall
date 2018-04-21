@@ -42,6 +42,7 @@ public class AddPostCommand extends Command{
         boolean isArticle = request.get("isArticle").getAsBoolean();
 
         Post post = new Post();
+        post.setPostId(UUID.randomUUID().toString());
         post.setArticle(isArticle);
         post.setAuthorId(authorId);
         post.setImages(images);
