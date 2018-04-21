@@ -1,17 +1,16 @@
 package com.linkedin.replica.wall.commands.impl;
 
+
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Like;
 
-public class DeleteLikeCommand extends Command{
+public class DeleteLikeFromPostCommand extends Command{
 
-    public DeleteLikeCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
+    public DeleteLikeFromPostCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
         super(args,dbHandler);
     }
 
@@ -23,13 +22,19 @@ public class DeleteLikeCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likeId"});
+        validateArgs(new String[]{"likerId", "postId"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
-        String likeId = request.get("likeId").getAsString();
-        Like like = dbHandler.getLike(likeId);
-        boolean response = dbHandler.deleteLike(like);
+        String postId = null;
+        String likerId = null ;
+        if(request.get("likerId") != null)
+            likerId = request.get("likerId").getAsString();
+        if(request.get("postId") != null)
+            postId = request.get("postId").getAsString();
+
+        boolean response = dbHandler.deleteLikeFromPost(likerId,postId);
         return response;
     }
 }
+

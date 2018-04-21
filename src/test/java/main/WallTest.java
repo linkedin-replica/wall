@@ -41,7 +41,6 @@ public class WallTest {
     private static Comment insertedComment;
     private static Reply insertedReply;
     private static UserProfile insertedUser;
-    private static Like insertedLike;
     private static JsonArray videos;
     private static JsonArray images;
     @BeforeClass
@@ -61,13 +60,11 @@ public class WallTest {
         dbSeed.insertPosts();
         dbSeed.insertComments();
         dbSeed.insertReplies();
-        dbSeed.insertLikes();
         dbSeed.insertUsers();
         dbSeed.setFriendsAndTheirPosts();
 
         commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
         insertedComment = dbSeed.getInsertedComments().get(0);
-        insertedLike = dbSeed.getInsertedLikes().get(0);
         insertedPost = dbSeed.getInsertedPosts().get(0);
         insertedReply = dbSeed.getInsertedReplies().get(0);
         insertedUser = dbSeed.getInsertedUsers().get(0);
@@ -280,97 +277,7 @@ public class WallTest {
         assertEquals("response should be user's bookmark arraylist", result.size(), size);
     }
 
-    @Test
-    public void testAddLikeCommand() throws Exception {
-        HashMap<String, Object> request = new HashMap<>();
-        JsonObject object = new JsonObject();
-        object.addProperty("likerId", "100");
-        object.addProperty("likedPostId", insertedPost.getPostId());
-        object.add("likedCommentId", null);
-        object.add("likedReplyId", null);
-        object.addProperty("firstName", "Yara");
-        object.addProperty("lastName", "Yehia");
-        object.addProperty("headLine", "Yara and 5 others");
-        object.addProperty("imageUrl", "urlX");
-        request.put("request", object);
 
-        List<Like> likes = (List<Like>) wallService.serve("getPostLikes", request);
-        boolean response = (boolean)wallService.serve("addLike",request);
-        List<Like> testLikes = (List<Like>)  wallService.serve("getPostLikes", request);
-
-        assertEquals("response should be equal Reply created",response,true);
-        assertEquals("collection size should incremented by one",likes.size() + 1,testLikes.size());
-
-    }
-
-    @Test
-    public void testDeleteLikeCommand() throws Exception {
-        HashMap<String, Object> request = new HashMap<>();
-        JsonObject object = new JsonObject();
-        object.addProperty("likeId", insertedLike.getLikeId());
-        object.addProperty("likedPostId", insertedPost.getPostId());
-        request.put("request", object);
-
-        List<Like> likes = (List<Like>) wallService.serve("getPostLikes", request);
-        boolean response = (boolean) wallService.serve("deleteLike",request);
-        List<Like> testLikes = (List<Like>) wallService.serve("getPostLikes", request);
-
-        assertEquals("response should be equal Reply created",response,true);
-        assertEquals("collection size should decrement by one",likes.size() - 1,testLikes.size());
-
-    }
-
-    @Test
-    public void testGetPostLikesCommand() throws Exception {
-        HashMap<String, Object> request = new HashMap<>();
-        JsonObject object = new JsonObject();
-        String existingPostId =insertedLike.getLikedPostId();
-        object.addProperty("likedPostId", existingPostId);
-        request.put("request", object);
-
-        boolean equalsPostId = true;
-        List<Like> likes = (List<Like>) wallService.serve("getPostLikes",request);
-        for(Like like:likes){
-            if(!like.getLikedPostId().equals(existingPostId))
-                equalsPostId = false;
-        }
-        assertEquals("Incorrect like retrieved as the likedPostId does not match the existingPostId.", true, equalsPostId);
-    }
-
-    @Test
-    public void testGetCommentLikesCommand() throws Exception {
-        HashMap<String, Object> request = new HashMap<>();
-        String existingCommentId = dbSeed.getInsertedLikes().get(1).getLikedCommentId();
-        JsonObject object = new JsonObject();
-        object.addProperty("likedCommentId", existingCommentId);
-        request.put("request", object);
-
-        boolean equalsCommentId = true;
-        List<Like> likes = (List<Like>) wallService.serve("getCommentLikes",request);
-        for(Like like:likes){
-            if(!like.getLikedCommentId().equals(existingCommentId))
-                equalsCommentId = false;
-        }
-        assertEquals("Incorrect like retrieved as the likedCommentId does not match the existingCommentId.", true, equalsCommentId);
-    }
-
-    @Test
-    public void testGetReplyLikesCommand() throws Exception {
-        HashMap<String, Object> request = new HashMap<>();
-        String existingReplyId = dbSeed.getInsertedLikes().get(2).getLikedReplyId();
-        JsonObject object = new JsonObject();
-        object.addProperty("likedReplyId", existingReplyId);
-        request.put("request", object);
-
-        boolean equalsReplyId = true;
-        List<Like> likes = (List<Like>) wallService.serve("getReplyLikes",request);
-        for(Like like:likes){
-            if(!like.getLikedReplyId().equals(existingReplyId))
-                equalsReplyId = false;
-        }
-        assertEquals("Incorrect like retrieved as the likedReplyId does not match the existingReplyId.", true, equalsReplyId);
-
-    }
 
     @Test
     public void testAddPostCommand() throws Exception {
@@ -466,7 +373,6 @@ public class WallTest {
         dbSeed.deleteAllPosts();
         dbSeed.deleteAllReplies();
         dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
     }
 

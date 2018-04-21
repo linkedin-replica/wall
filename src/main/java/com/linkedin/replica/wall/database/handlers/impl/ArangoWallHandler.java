@@ -21,7 +21,6 @@ import java.util.*;
 public class ArangoWallHandler implements WallHandler {
     private ArangoDB arangoDB;
     private String dbName;
-    String likesCollection;
     String repliesCollection;
     String usersCollection;
     String commentsCollection;
@@ -32,7 +31,6 @@ public class ArangoWallHandler implements WallHandler {
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         Configuration config = Configuration.getInstance();
         dbName = config.getArangoConfig("arangodb.name");
-        likesCollection = config.getArangoConfig("collections.likes.name");
         repliesCollection = config.getArangoConfig("collections.replies.name");
         usersCollection = config.getArangoConfig("collections.users.name");
         commentsCollection = config.getArangoConfig("collections.comments.name");
@@ -441,185 +439,116 @@ public class ArangoWallHandler implements WallHandler {
         return  true;
     }
 
-    /**
-     * get specific like from like collection.
-     * @param likeId
-     * @return
-     */
-    public Like getLike(String likeId) throws ArangoDBException{
-        Like like = null;
-
-        like = arangoDB.db(dbName).collection(likesCollection).getDocument(likeId,
-                    Like.class);
-
-        return like;
-    }
-
-    /**
-     * get likes on specific likes.
-     * @param postId
-     * @return
-     */
-    public List<Like> getPostLikes(String postId) throws ArangoDBException {
-        ArrayList<Like> likes = new ArrayList<Like>();
-        String query = "FOR l IN " + likesCollection + " FILTER l.likedPostId == @postId RETURN l";
-        Map<String, Object> bindVars = new MapBuilder().put("postId", postId).get();
-        ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                Like.class);
-        cursor.forEachRemaining(likeDocument -> {
-            likes.add(likeDocument);
-        });
-
-        return likes;
-
-    }
-
-    /**
-     * function to get likes on comment.
-     * @param commentId
-     * @return
-     */
-    public List<Like> getCommentLikes(String commentId) throws ArangoDBException {
-        ArrayList<Like> likes = new ArrayList<Like>();
-
-        String query = "FOR l IN " + likesCollection + " FILTER l.likedCommentId == @commentId RETURN l";
-        Map<String, Object> bindVars = new MapBuilder().put("commentId", commentId).get();
-        ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                Like.class);
-        cursor.forEachRemaining(likeDocument -> {
-            likes.add(likeDocument);
-        });
-
-        return likes;
-    }
-
-    /**
-     * function to get likes on specific reply.
-     * @param replyId
-     * @return
-     */
-    public List<Like> getReplyLikes(String replyId) throws ArangoDBException {
-        ArrayList<Like> likes = new ArrayList<Like>();
-        String query = "FOR l IN " + likesCollection + " FILTER l.likedReplyId == @replyId RETURN l";
-        Map<String, Object> bindVars = new MapBuilder().put("replyId", replyId).get();
-        ArangoCursor<Like> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                Like.class);
-        cursor.forEachRemaining(likeDocument -> {
-            likes.add(likeDocument);
-        });
-
-        return likes;
-    }
-
-    /**
-     * function to add like on post/ like/ reply.
-     * @param like
-     * @return
-     */
-    public boolean addLike(Like like) throws ArangoDBException{
+    public boolean addLikeToPost(String likerId, String postId) throws ArangoDBException {
         boolean response = false;
-        String commentId = like.getLikedCommentId();
-        String replyId = like.getLikedReplyId();
-        String postId = like.getLikedPostId();
-        if((postId!= null && getPost(postId) != null) || (commentId != null && getComment(commentId) != null) || (replyId!= null && getReply(replyId) != null)) {
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("postId",postId);
+        bindVars.put("likerId",likerId);
+        //execute query
+        String query = "FOR u IN " + postsCollection +
+                " FILTER u._key == @postId " +
+                "LET newLikers = PUSH(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + postsCollection;
 
-            DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
-            response = true;
-
-
-            if (like.getLikedPostId() != null) {
-                Post post = getPost(like.getLikedPostId());
-                if (post != null) {
-                    post.setLikesCount(post.getLikesCount() + 1);
-                    HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
-                    editPostArgs.put("postId", post.getPostId());
-                    editPostArgs.put("likesCount", post.getLikesCount());
-                    editPost(editPostArgs);
-                } else {
-                    throw new WallException("Failed to update post's like count. ");
-                }
-            } else if (like.getLikedCommentId() != null) {
-                Comment comment = getComment(like.getLikedCommentId());
-                if (comment != null) {
-                    comment.setLikesCount(comment.getLikesCount() + 1);
-                    HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
-                    editCommentArgs.put("commentId", comment.getCommentId());
-                    editCommentArgs.put("likesCount", comment.getLikesCount());
-                    editComment(editCommentArgs);
-                } else {
-                    throw new WallException("Failed to update comment's like count. ");
-                }
-
-            } else if (like.getLikedReplyId() != null) {
-                Reply reply = getReply(like.getLikedReplyId());
-                if (reply != null) {
-                    reply.setLikesCount(reply.getLikesCount() + 1);
-                    HashMap<String, Object> editReplyArgs = new HashMap<String, Object>();
-                    editReplyArgs.put("replyId", reply.getReplyId());
-                    editReplyArgs.put("likesCount", reply.getLikesCount());
-                    editReply(editReplyArgs);
-
-                } else {
-                    throw new WallException("Failed to update reply's like count. ");
-                }
-
-            }
-        }
-        return response;
-
-
-    }
-
-    /**
-     * function to unlike post/ comment/ reply.
-     * @param like
-     * @return
-     */
-    public boolean deleteLike(Like like) throws ArangoDBException{
-        boolean response = false;
-
-        arangoDB.db(dbName).collection(likesCollection).deleteDocument(like.getLikeId());
+        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
         response = true;
 
-        if(like.getLikedPostId() != null){
-            Post post = getPost(like.getLikedPostId());
-            if(post !=null){
-                post.setLikesCount(post.getLikesCount() - 1);
-                HashMap<String, Object> editPostArgs = new HashMap<String, Object>();
-                editPostArgs.put("postId", post.getPostId());
-                editPostArgs.put("likesCount", post.getLikesCount());
-                editPost(editPostArgs);
-            }
-            else {
-                throw new WallException("Failed to update post's like count. ");
-            }
-        } else if (like.getLikedCommentId() != null) {
-            Comment comment = getComment(like.getLikedCommentId());
-            if (comment != null) {
-                comment.setLikesCount(comment.getLikesCount() - 1);
-                HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
-                editCommentArgs.put("commentId", comment.getCommentId());
-                editCommentArgs.put("likesCount", comment.getLikesCount());
-                editComment(editCommentArgs);
-            } else {
-                throw new WallException("Failed to update comment's like count. ");
-            }
 
-        } else if (like.getLikedReplyId() != null) {
-            Reply reply = getReply(like.getLikedReplyId());
-            if (reply != null) {
-                reply.setLikesCount(reply.getLikesCount() - 1);
-                HashMap<String, Object> editReplyArgs = new HashMap<String, Object>();
-                editReplyArgs.put("replyId", reply.getReplyId());
-                editReplyArgs.put("likesCount", reply.getLikesCount());
-                editReply(editReplyArgs);
-            } else {
-                throw new WallException("Failed to update reply's like count. ");
-            }
+        return response;
 
-        }
+
+    }
+
+    public boolean deleteLikeFromPost(String likerId,String postId) throws ArangoDBException {
+        boolean response = false;
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("postId",postId);
+        bindVars.put("likerId",likerId);
+        //execute query
+        String query = "FOR u IN " + postsCollection +
+                " FILTER u._key == @postId " +
+                "LET newLikers = REMOVE_VALUE(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + postsCollection;
+
+        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+        response = true;
+
+
         return response;
     }
+
+    public boolean addLikeToComment(String likerId, String commentId) throws ArangoDBException{
+        boolean response = false;
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("commentId",commentId);
+        bindVars.put("likerId",likerId);
+        //execute query
+        String query = "FOR u IN " + commentsCollection +
+                " FILTER u._key == @commentId " +
+                "LET newLikers = PUSH(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + commentsCollection;
+
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+        response = true;
+
+
+        return response;
+
+    }
+
+    public boolean deleteLikeFromComment(String likerId,String commentId) throws ArangoDBException {
+        boolean response = false;
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("commentId", commentId);
+        bindVars.put("likerId", likerId);
+        //execute query
+        String query = "FOR u IN " + commentsCollection +
+                " FILTER u._key == @commentId " +
+                "LET newLikers = REMOVE_VALUE(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + commentsCollection;
+
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+        response = true;
+        return response;
+    }
+
+
+
+    public boolean addLikeToReply(String likerId, String replyId) throws ArangoDBException{
+        boolean response = false;
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("replyId",replyId);
+        bindVars.put("likerId",likerId);
+        //execute query
+        String query = "FOR u IN " + repliesCollection +
+                " FILTER u._key == @replyId " +
+                "LET newLikers = PUSH(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + repliesCollection;
+
+        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+        response = true;
+
+
+        return response;
+    }
+
+
+    public boolean deleteLikeFromReply(String likerId,String replyId)throws ArangoDBException {
+        boolean response = false;
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("replyId",replyId);
+        bindVars.put("likerId",likerId);
+        //execute query
+        String query = "FOR u IN " + repliesCollection +
+                " FILTER u._key == @replyId " +
+                "LET newLikers = REMOVE_VALUE(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + repliesCollection;
+
+        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+        response = true;
+        return response;
+    }
+
 
     /**
      * function to get the top posts.

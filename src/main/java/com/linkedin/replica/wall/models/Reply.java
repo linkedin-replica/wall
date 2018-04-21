@@ -15,10 +15,19 @@ public class Reply {
     private int likesCount;
     private String text;
     private Long timestamp;
+    private ArrayList<String> likers;
 
     public Reply(){
+        super();
     }
 
+    public ArrayList<String> getLikers() {
+        return likers;
+    }
+
+    public void setLikers(ArrayList<String> likers) {
+        this.likers = likers;
+    }
 
     public void setReplyId(String replyId) {
         this.replyId = replyId;

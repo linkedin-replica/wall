@@ -43,7 +43,6 @@ public class AddPostCommand extends Command{
 
         Post post = new Post();
         post.setArticle(isArticle);
-        post.setHeadLine(headLine);
         post.setAuthorId(authorId);
         post.setImages(images);
         post.setVideos(videos);
