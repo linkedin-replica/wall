@@ -47,12 +47,11 @@ public class ArangoHandlerTest {
     @BeforeClass
     public static void setup() throws ClassNotFoundException, IOException, ParseException {
         // startup SearchEngine
-        String rootFolder = "src/main/resources/";
-        Configuration.init(rootFolder + "app.config",
-                rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+"cache.config");
-        config = Configuration.getInstance();
-        DatabaseConnection.init();
+		String rootFolder = "src/main/resources/";
+		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
+				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config");
+		config = Configuration.getInstance();
+		DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         arangoWallHandler = new ArangoWallHandler();
         dbName = Configuration.getInstance().getArangoConfig("arangodb.name");
