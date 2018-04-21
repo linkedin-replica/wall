@@ -238,13 +238,12 @@ public class ArangoHandlerTest {
    public void testEditPost() throws ParseException {
 
        Post post = insertedPost;
-     //  post.setLikesCount(13);
        HashMap<String, Object> editArgs = new HashMap<String, Object>();
        editArgs.put("postId", post.getPostId());
-     //  editArgs.put("likesCount", post.getLikesCount());
+       editArgs.put("text", "Yara discovered the bug :D");
        arangoWallHandler.editPost(editArgs);
        Post newPost = getPost(insertedPost.getPostId());
-       //assertEquals("Expected to have a certain post in database", 13, newPost.getLikesCount());
+       assertEquals("Expected to have a certain post in database","Yara discovered the bug :D", newPost.getText());
 
    }
 
