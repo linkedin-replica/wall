@@ -18,7 +18,6 @@ public class ReturnedPost {
     private String authorProfilePictureUrl;
     private String headLine;
     private boolean liked;
-    private ArrayList<Like> postLikes;
     private ArrayList<HashMap<String,String>> likers;
 
 
@@ -40,14 +39,6 @@ public class ReturnedPost {
 
     public void setLiked(boolean liked) {
         this.liked = liked;
-    }
-
-    public ArrayList<Like> getPostLikes() {
-        return postLikes;
-    }
-
-    public void setPostLikes(ArrayList<Like> postLikes) {
-        this.postLikes = postLikes;
     }
 
     public String getPostId() {

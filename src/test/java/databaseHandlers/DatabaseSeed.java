@@ -31,7 +31,6 @@ public class DatabaseSeed {
     private ArrayList<UserProfile> insertedUsers;
     private ArrayList<Post> insertedPosts;
     private ArrayList<Comment> insertedComments;
-    private ArrayList<Like> insertedLikes;
     private ArrayList<Reply> insertedReplies;
 
     public DatabaseSeed() throws IOException, ClassNotFoundException {
@@ -42,7 +41,6 @@ public class DatabaseSeed {
         config = Configuration.getInstance();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
         dbName = Configuration.getInstance().getArangoConfig("arangodb.name");
-        likesCollection = Configuration.getInstance().getArangoConfig("collections.likes.name");
         usersCollection = Configuration.getInstance().getArangoConfig("collections.users.name");
         commentsCollection = Configuration.getInstance().getArangoConfig("collections.comments.name");
         repliesCollection = Configuration.getInstance().getArangoConfig("collections.replies.name");
@@ -50,7 +48,6 @@ public class DatabaseSeed {
         insertedUsers = new ArrayList<>();
         insertedPosts = new ArrayList<>();
         insertedComments = new ArrayList<>();
-        insertedLikes = new ArrayList<>();
         insertedReplies = new ArrayList<>();
 
     }
@@ -98,6 +95,7 @@ public class DatabaseSeed {
             videos.add("videos");
             ArrayList<String> urls = new ArrayList<String>();
             urls.add("urls");
+            ArrayList<String> likers = new ArrayList<String>();
             ArrayList<String> hashtags = new ArrayList<String>();
             hashtags.add("hashtags");
             ArrayList<String> mentions = new ArrayList<String>();
@@ -107,16 +105,15 @@ public class DatabaseSeed {
 
             Post post = new Post();
             post.setArticle(false);
-            post.setHeadLine("headLine");
+           // post.setHeadLine("headLine");
             post.setAuthorId("2");
             post.setCommentsCount(12);
-            post.setLikesCount(22);
             post.setImages(images);
             post.setVideos(videos);
             post.setType("type");
             post.setText(text);
             post.setTimestamp(System.currentTimeMillis());
-
+            post.setLikers(likers);
             arangoDB.db(dbName).collection(postsCollection).insertDocument(post);
             insertedPosts.add(post);
             System.out.println("DBSEED   " + post.toString());
@@ -147,6 +144,7 @@ public class DatabaseSeed {
            comment.setLikesCount(12);
            comment.setRepliesCount(22);
            comment.setText(text);
+           comment.setLikers(new ArrayList<String>());
            comment.setTimestamp(System.currentTimeMillis());
            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
            insertedComments.add(comment);
@@ -178,54 +176,12 @@ public class DatabaseSeed {
             reply.setLikesCount(4500);
             reply.setText("You are so cute");
             reply.setTimestamp(System.currentTimeMillis());
+            reply.setLikers(new ArrayList<String>());
             arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
             insertedReplies.add(reply);
         }
     }
 
-    public void insertLikes() {
-        try{
-            arangoDB.db(dbName).createCollection(likesCollection);
-
-        }catch(ArangoDBException ex){
-            // check if exception was raised because that database was not created
-            if(ex.getErrorNum() == 1228){
-                arangoDB.createDatabase(dbName);
-                arangoDB.db(dbName).createCollection(likesCollection);
-            }else{
-                throw ex;
-            }
-        }
-        String [] userNames = new String [] {"Mohammed", "Nada", "Rana", "Safa", "Yara"};
-        Random rand;
-        for(int i = 0 ; i<10; i++) {
-            rand = new Random();
-            String likerId = "12";
-            String likedPostId = null;
-            String likedCommentId = null;
-            String likedReplyId = null;
-            if(i%3 == 0){
-                likedPostId = insertedPosts.get(0).getPostId();
-            } else if (i%3 == 1) {
-                likedCommentId = insertedComments.get(0).getCommentId();
-            } else {
-                likedReplyId = insertedReplies.get(0).getReplyId();
-            }
-            String userName = userNames[rand.nextInt(5)];
-            String imageUrl = "url" + i;
-            Like like = new Like();
-            like.setFirstName(userName);
-            like.setImageUrl(imageUrl);
-            like.setLastName("Ahmed");
-            like.setLikedCommentId(likedCommentId);
-            like.setLikedPostId(likedPostId);
-            like.setLikedReplyId(likedReplyId);
-            like.setLikerId(likerId);
-            DocumentCreateEntity likeDoc = arangoDB.db(dbName).collection(likesCollection).insertDocument(like);
-            insertedLikes.add(like);
-            System.out.println("New like document insert with key = "  + likeDoc.getKey());
-        }
-    }
 
     /**
      * seed collection Users in db with dummy data.
@@ -294,9 +250,6 @@ public class DatabaseSeed {
      * return list of inserted likes.
      * @return
      */
-    public ArrayList<Like> getInsertedLikes() {
-        return insertedLikes;
-    }
 
     /**
      * return list of inserted replies.
@@ -322,11 +275,6 @@ public class DatabaseSeed {
         System.out.println("Replies collection is dropped");
     }
 
-    public void deleteAllLikes() throws ArangoDBException, ClassNotFoundException, IOException {
-        DatabaseConnection.getInstance().getArangodb().db(dbName).collection(likesCollection).drop();
-        System.out.println("Likes collection is dropped");
-    }
-
     public void deleteAllUsers() throws ArangoDBException, ClassNotFoundException, IOException {
         DatabaseConnection.getInstance().getArangodb().db(dbName).collection(usersCollection).drop();
         System.out.println("Users collection is dropped");
@@ -336,4 +284,17 @@ public class DatabaseSeed {
         DatabaseConnection.getInstance().getArangodb().shutdown();
     }
 
+
+    public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
+        String rootFolder = "src/main/resources/";
+        Configuration.init(rootFolder + "app.config",
+                rootFolder + "arango.test.config",
+                rootFolder + "commands.config", rootFolder + "controller.config");
+        DatabaseConnection.init();
+        DatabaseSeed dbSeed = new DatabaseSeed();
+        dbSeed.insertPosts();
+        dbSeed.insertComments();
+        dbSeed.insertReplies();
+        dbSeed.insertUsers();
+    }
 }

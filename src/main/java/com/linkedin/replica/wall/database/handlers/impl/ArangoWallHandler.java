@@ -555,24 +555,31 @@ public class ArangoWallHandler implements WallHandler {
 
     }
 
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        String rootFolder = "src/main/resources/";
+        Configuration.init(rootFolder + "app.config",
+                rootFolder + "arango.test.config",
+                rootFolder + "commands.config", rootFolder + "controller.config");
+        DatabaseConnection.init();
+        ArangoWallHandler handler = new ArangoWallHandler();
+    }
+
+
     public String addLikeToPost(String likerId, String postId) {
         String response = "";
         Map<String, Object> bindVars = new MapBuilder().get();
         bindVars.put("postId",postId);
         bindVars.put("likerId",likerId);
         //execute query
-        String Query = "FOR post IN "+postsCollection+"  UPDATE { _key:"+"@postId";
-        Query +="} WITH{ likers: PUSH(post.likers,@likerId)}";
+        String query = "FOR u IN " + postsCollection +
+                " FILTER u._key == @postId " +
+                "LET newLikers = PUSH(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + postsCollection;
 
+        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+        System.out.println("hnaaaaaaaaaaaaa");
+        response = "Like added to post";
 
-        try {
-            ArangoCursor<String> cursor = arangoDB.db().query(Query, bindVars, null, String.class);
-            System.out.println(cursor);
-            response = "Like added to post";
-        }
-        catch (ArangoDBException e) {
-            response = "Failed to add like to post. " + e.getMessage();
-        }
 
         return response;
 
@@ -585,40 +592,32 @@ public class ArangoWallHandler implements WallHandler {
         bindVars.put("postId",postId);
         bindVars.put("likerId",likerId);
         //execute query
-        String Query = "FOR post IN "+postsCollection+"  UPDATE { _key:"+"@postId";
-        Query +="} WITH{ likers: REMOVE_VALUE(post.likers,@likerId)}";
+        String query = "FOR u IN " + postsCollection +
+                " FILTER u._key == @postId " +
+                "LET newLikers = REMOVE_VALUE(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + postsCollection;
 
-        try {
-            ArangoCursor<String> cursor = arangoDB.db().query(Query, bindVars, null, String.class);
-            System.out.println(cursor);
-            response = "Like delete from post";
-        }
-        catch (ArangoDBException e) {
-            response = "Failed to delete like from post. " + e.getMessage();
-        }
+        arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+        response = "Like removed from post";
+
 
         return response;
     }
 
     public String addLikeToComment(String likerId, String commentId) {
         String response = "";
-
         Map<String, Object> bindVars = new MapBuilder().get();
         bindVars.put("commentId",commentId);
         bindVars.put("likerId",likerId);
         //execute query
-        String Query = "FOR comment IN "+commentsCollection+"  UPDATE { _key:"+"@commentId";
-        Query +="} WITH{ likers: PUSH(comment.likers,@likerId)}";
+        String query = "FOR u IN " + commentsCollection +
+                " FILTER u._key == @commentId " +
+                "LET newLikers = PUSH(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + commentsCollection;
 
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+        response = "Like added to comment";
 
-        try {
-            ArangoCursor<String> cursor = arangoDB.db().query(Query, bindVars, null, String.class);
-            System.out.println(cursor);
-            response = "Like added to comment";
-        }
-        catch (ArangoDBException e) {
-            response = "Failed to add like to comment. " + e.getMessage();
-        }
 
         return response;
 
@@ -626,69 +625,54 @@ public class ArangoWallHandler implements WallHandler {
 
     public String deleteLikeFromComment(String likerId,String commentId) {
         String response = "";
-
         Map<String, Object> bindVars = new MapBuilder().get();
         bindVars.put("commentId",commentId);
         bindVars.put("likerId",likerId);
         //execute query
-        String Query = "FOR comment IN "+commentsCollection+"  UPDATE { _key:"+"@commentId";
-        Query +="} WITH{ likers: REMOVE_VALUE(comment.likers,@likerId)}";
+        String query = "FOR u IN " + commentsCollection +
+                " FILTER u._key == @commentId " +
+                "LET newLikers = REMOVE_VALUE(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + commentsCollection;
 
+        arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
+        response = "Like removed from comment";
 
-        try {
-            ArangoCursor<String> cursor = arangoDB.db().query(Query, bindVars, null, String.class);
-            System.out.println(cursor);
-            response = "Like deleted from comment";
-        }
-        catch (ArangoDBException e) {
-            response = "Failed to delete like from comment. " + e.getMessage();
-        }
 
         return response;
     }
 
     public String addLikeToReply(String likerId, String replyId) {
         String response = "";
-
         Map<String, Object> bindVars = new MapBuilder().get();
         bindVars.put("replyId",replyId);
         bindVars.put("likerId",likerId);
         //execute query
-        String Query = "FOR reply IN "+repliesCollection+"  UPDATE { _key:"+"@replyId";
-        Query +="} WITH{ likers: PUSH(reply.likers,@likerId)}";
+        String query = "FOR u IN " + repliesCollection +
+                " FILTER u._key == @replyId " +
+                "LET newLikers = PUSH(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + repliesCollection;
 
+        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+        response = "Like added to reply";
 
-        try {
-            ArangoCursor<String> cursor = arangoDB.db().query(Query, bindVars, null, String.class);
-            System.out.println(cursor);
-            response = "Like added to reply";
-        }
-        catch (ArangoDBException e) {
-            response = "Failed to add like to reply. " + e.getMessage();
-        }
 
         return response;
     }
 
     public String deleteLikeFromReply(String likerId,String replyId) {
         String response = "";
-
         Map<String, Object> bindVars = new MapBuilder().get();
         bindVars.put("replyId",replyId);
         bindVars.put("likerId",likerId);
         //execute query
-        String Query = "FOR reply IN "+repliesCollection+"  UPDATE { _key:"+"@replyId";
-        Query +="} WITH{ likers: REMOVE_VALUE(reply.likers,@likerId)}";
+        String query = "FOR u IN " + repliesCollection +
+                " FILTER u._key == @replyId " +
+                "LET newLikers = REMOVE_VALUE(u.likers, @likerId) UPDATE u WITH{ likers : newLikers } " +
+                "IN " + repliesCollection;
 
+        arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
+        response = "Like added to reply";
 
-        try {
-            ArangoCursor<String> cursor = arangoDB.db().query(Query, bindVars, null, String.class);
-            System.out.println(cursor);
-            response = "Like deleted from reply";
-        }
-        catch (ArangoDBException e) {
-            response = "Failed to delete like from reply. " + e.getMessage();
-        }
 
         return response;
     }
