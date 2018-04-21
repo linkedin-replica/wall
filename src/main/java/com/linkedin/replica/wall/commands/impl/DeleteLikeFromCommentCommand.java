@@ -29,10 +29,10 @@ public class DeleteLikeFromCommentCommand extends Command{
         String likerId = null ;
         if(request.get("likerId") != null)
             likerId = request.get("likerId").getAsString();
-        else if(request.get("commentId") != null)
+        if(request.get("commentId") != null)
             commentId = request.get("commentId").getAsString();
 
-        String response = dbHandler.deleteLikeFromComment(likerId,commentId);
+        boolean response = dbHandler.deleteLikeFromComment(likerId,commentId);
         return response;
     }
 }

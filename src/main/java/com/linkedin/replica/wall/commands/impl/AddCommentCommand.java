@@ -37,8 +37,7 @@ public class AddCommentCommand extends Command{
         comment.setParentPostId(parentPostId);
         comment.setText(text);
         comment.setTimestamp(timestamp);
-
-        String response =  dbHandler.addComment(comment);
+        boolean response =  dbHandler.addComment(comment);
         return response;
     }
 }

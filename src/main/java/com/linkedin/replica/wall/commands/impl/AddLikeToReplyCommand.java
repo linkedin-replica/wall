@@ -30,10 +30,10 @@ public class AddLikeToReplyCommand extends Command{
         String likerId = null ;
         if(request.get("likerId") != null)
             likerId = request.get("likerId").getAsString();
-        else if(request.get("replyId") != null)
+        if(request.get("replyId") != null)
             replyId = request.get("replyId").getAsString();
 
-        String response = dbHandler.addLikeToReply(likerId,replyId);
+        boolean response = dbHandler.addLikeToReply(likerId,replyId);
         return response;
     }
 }

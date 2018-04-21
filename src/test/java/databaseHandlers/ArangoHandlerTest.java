@@ -8,6 +8,7 @@ import java.util.*;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
+import com.arangodb.entity.BaseDocument;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
@@ -49,7 +50,7 @@ public class ArangoHandlerTest {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config");
+                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+"cache.config");
         config = Configuration.getInstance();
         DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -303,7 +304,7 @@ public class ArangoHandlerTest {
             reply = arangoDB.db(dbName).collection(repliesCollection).getDocument(replyId,
                     Reply.class);
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get reply: replyId; " + e.getMessage());
+            e.printStackTrace();
         }
         return reply;
     }
@@ -320,10 +321,11 @@ public class ArangoHandlerTest {
         reply.setParentPostId(insertedPost.getPostId());
         reply.setParentCommentId(insertedComment.getCommentId());
         reply.setLikesCount(2000);
-        reply.setText("You are so cute");
+        reply.setText("Test Add Reply");
+        reply.setTimestamp(System.currentTimeMillis());
         arangoWallHandler.addReply(reply);
         Reply replyDocument = arangoDB.db(dbName).collection(repliesCollection).getDocument(reply.getReplyId(),Reply.class);
-        assertEquals("Reply text should be", "You are so cute", replyDocument.getText());
+        assertEquals("Reply text should be", "Test Add Reply", replyDocument.getText());
     }
 
     @Test
@@ -421,7 +423,7 @@ public class ArangoHandlerTest {
             comment = arangoDB.db(dbName).collection(commentsCollection).getDocument(commentId,
                     Comment.class);
         } catch (ArangoDBException e) {
-            System.err.println("Failed to get comment: commentId; " + e.getMessage());
+            e.printStackTrace();
         }
         return comment;
     }
@@ -545,8 +547,8 @@ public class ArangoHandlerTest {
         user.getFriendsList().add(dbSeed.getInsertedUsers().get(0).getUserId());
         user.getFriendsList().add(dbSeed.getInsertedUsers().get(1).getUserId());
         List<Post> newsfeed = arangoWallHandler.getFriendsPosts(user,10,0);
-        assertEquals("Expected to have the list ordered", newsfeed.get(0).getText(), "post 2");
-        assertEquals("Expected to have a 4 posts returned", newsfeed.size(), 4);
+        assertEquals("Expected to have the list ordered",  "post 2", newsfeed.get(0).getText());
+        assertEquals("Expected to have a 4 posts returned", 4, newsfeed.size());
     }
 
 
@@ -558,6 +560,5 @@ public class ArangoHandlerTest {
         dbSeed.deleteAllComments();
         DatabaseConnection.getInstance().closeConnections();
       }
-
 
 }

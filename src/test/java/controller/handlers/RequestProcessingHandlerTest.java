@@ -27,8 +27,8 @@ public class RequestProcessingHandlerTest {
     @BeforeClass
     public static void setup() throws IOException{
         // initialize configuration
-        String[] a = {"src/main/resources/app.config","src/main/resources/arango.test.config", "src/main/resources/commands.config", "src/main/resources/controller.config"};
-        Configuration.init(a[0], a[1], a[2], a[3]);
+        String[] a = {"src/main/resources/app.config","src/main/resources/arango.test.config", "src/main/resources/commands.config", "src/main/resources/controller.config", "src/main/resources/cache.config"};
+        Configuration.init(a[0], a[1], a[2], a[3],a[4]);
     }
 
     @Test
@@ -158,7 +158,6 @@ public class RequestProcessingHandlerTest {
 
         // get error response create after catching exception
         LinkedHashMap<String, Object> err = channel.readOutbound();
-        System.out.println(err);
         assertEquals("Wrong type", HttpResponseStatus.BAD_REQUEST, (HttpResponseStatus)err.get("type"));
         assertEquals("Wrong code", 400, err.get("code"));
         assertEquals("Wrong errMessage", "Invalid parameters : [fileName, bytes, handler]. expected : [fileName, configPropKey, handler, bytes]", err.get("errMessage"));

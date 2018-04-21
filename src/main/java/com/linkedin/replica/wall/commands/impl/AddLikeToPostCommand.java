@@ -30,10 +30,10 @@ public class AddLikeToPostCommand extends Command{
         String likerId = null ;
         if(request.get("likerId") != null)
             likerId = request.get("likerId").getAsString();
-        else if(request.get("postId") != null)
+        if(request.get("postId") != null)
             postId = request.get("postId").getAsString();
 
-        String response = dbHandler.addLikeToPost(likerId,postId);
+        boolean response = dbHandler.addLikeToPost(likerId,postId);
         return response;
     }
 }

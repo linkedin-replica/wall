@@ -30,10 +30,10 @@ public class DeleteLikeFromPostCommand extends Command{
         String likerId = null ;
         if(request.get("likerId") != null)
             likerId = request.get("likerId").getAsString();
-        else if(request.get("postId") != null)
+        if(request.get("postId") != null)
             postId = request.get("postId").getAsString();
 
-        String response = dbHandler.deleteLikeFromPost(likerId,postId);
+        boolean response = dbHandler.deleteLikeFromPost(likerId,postId);
         return response;
     }
 }
