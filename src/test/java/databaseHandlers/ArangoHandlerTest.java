@@ -79,6 +79,7 @@ public class ArangoHandlerTest {
         String userId = dbSeed.getInsertedUsers().get(0).getUserId();
 
         arangoWallHandler.addLikeToPost(userId,postId);
+
         Post postAfterEdit = getPost(postId);
         assertEquals("Expected to have 1 liker" , 1, postAfterEdit.getLikers().size());
 
@@ -102,6 +103,56 @@ public class ArangoHandlerTest {
         arangoWallHandler.addLikeToReply(userId,replyId);
         Reply replyAfterAdd = getReply(replyId);
         assertEquals("Expected to have 1 liker" , 1, replyAfterAdd.getLikers().size());
+
+    }
+
+    @Test
+    public void deleteLikeFromPost(){
+        String postId = dbSeed.getInsertedPosts().get(0).getPostId();
+        String userId1 = dbSeed.getInsertedUsers().get(0).getUserId();
+        String userId2 = dbSeed.getInsertedUsers().get(1).getUserId();
+
+        arangoWallHandler.addLikeToPost(userId1, postId);
+        arangoWallHandler.addLikeToPost(userId2, postId);
+        arangoWallHandler.deleteLikeFromPost(userId1,postId);
+
+        Post post = getPost(postId);
+        assertEquals("Expected to have 1 liker" , 1, post.getLikers().size());
+
+
+    }
+
+    @Test
+    public void deleteLikeFromComment(){
+        String commentId = dbSeed.getInsertedComments().get(0).getCommentId();
+        String userId1 = dbSeed.getInsertedUsers().get(0).getUserId();
+        String userId2 = dbSeed.getInsertedUsers().get(1).getUserId();
+
+        arangoWallHandler.addLikeToComment(userId1, commentId);
+        arangoWallHandler.addLikeToComment(userId2, commentId);
+
+        arangoWallHandler.deleteLikeFromComment(userId1,commentId);
+
+        Comment comment = getComment(commentId);
+        assertEquals("Expected to have 1 liker" , 1, comment.getLikers().size());
+
+
+    }
+
+    @Test
+    public void deleteLikeFromReply(){
+        String replyId = dbSeed.getInsertedReplies().get(0).getReplyId();
+        String userId1 = dbSeed.getInsertedUsers().get(0).getUserId();
+        String userId2 = dbSeed.getInsertedUsers().get(1).getUserId();
+
+        arangoWallHandler.addLikeToReply(userId1, replyId);
+        arangoWallHandler.addLikeToReply(userId2, replyId);
+
+        arangoWallHandler.deleteLikeFromReply(userId1,replyId);
+
+        Reply reply = getReply(replyId);
+        assertEquals("Expected to have 1 liker" , 1, reply.getLikers().size());
+
 
     }
 
