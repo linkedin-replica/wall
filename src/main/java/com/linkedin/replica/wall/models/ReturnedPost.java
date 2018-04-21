@@ -1,156 +1,152 @@
 package com.linkedin.replica.wall.models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ReturnedPost {
-    private String postId;
-    private String authorId;
-    private String type;
-    private String text;
-    private int likesCount;
-    private ArrayList<String> images;
-    private ArrayList<String> videos;
-    private int commentsCount;
-    private boolean isArticle;
-    private long timestamp;
-    private String authorName;
-    private String authorProfilePictureUrl;
-    private String headLine;
-    private boolean liked;
-    private ArrayList<Like> postLikes;
-    private ArrayList<HashMap<String,String>> likers;
+	private String postId;
+	private String authorId;
+	private String text;
+	private ArrayList<String> images;
+	private ArrayList<String> videos;
+	private int commentsCount;
+	private long timestamp;
+	private boolean isCompanyPost;
 
+	private String authorName;
+	private String authorProfilePictureUrl;
+	private String headLine;
+	private int likesCount;
+	private boolean liked;
 
-    public ReturnedPost(){
+	public String getPostId() {
+		return postId;
+	}
 
-    }
+	public void setPostId(String postId) {
+		this.postId = postId;
+	}
 
-    public ArrayList<HashMap<String, String>> getLikers() {
-        return likers;
-    }
+	public String getAuthorId() {
+		return authorId;
+	}
 
-    public void setLikers(ArrayList<HashMap<String, String>> likers) {
-        this.likers = likers;
-    }
+	public void setAuthorId(String authorId) {
+		this.authorId = authorId;
+	}
 
-    public boolean isLiked() {
-        return liked;
-    }
+	public String getText() {
+		return text;
+	}
 
-    public void setLiked(boolean liked) {
-        this.liked = liked;
-    }
+	public void setText(String text) {
+		this.text = text;
+	}
 
-    public ArrayList<Like> getPostLikes() {
-        return postLikes;
-    }
+	public ArrayList<String> getImages() {
+		return images;
+	}
 
-    public void setPostLikes(ArrayList<Like> postLikes) {
-        this.postLikes = postLikes;
-    }
+	public void setImages(ArrayList<String> images) {
+		this.images = images;
+	}
 
-    public String getPostId() {
-        return postId;
-    }
+	public ArrayList<String> getVideos() {
+		return videos;
+	}
 
-    public void setPostId(String postId) {
-        this.postId = postId;
-    }
+	public void setVideos(ArrayList<String> videos) {
+		this.videos = videos;
+	}
 
-    public String getAuthorId() {
-        return authorId;
-    }
+	public int getCommentsCount() {
+		return commentsCount;
+	}
 
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
-    }
+	public void setCommentsCount(int commentsCount) {
+		this.commentsCount = commentsCount;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public long getTimestamp() {
+		return timestamp;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 
-    public String getText() {
-        return text;
-    }
+	public boolean isCompanyPost() {
+		return isCompanyPost;
+	}
 
-    public void setText(String text) {
-        this.text = text;
-    }
+	public void setCompanyPost(boolean isCompanyPost) {
+		this.isCompanyPost = isCompanyPost;
+	}
 
-    public String getHeadLine() {
-        return headLine;
-    }
+	public String getAuthorName() {
+		return authorName;
+	}
 
-    public void setHeadLine(String headLine) {
-        this.headLine = headLine;
-    }
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
 
-    public int getLikesCount() {
-        return likesCount;
-    }
+	public String getAuthorProfilePictureUrl() {
+		return authorProfilePictureUrl;
+	}
 
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
-    }
+	public void setAuthorProfilePictureUrl(String authorProfilePictureUrl) {
+		this.authorProfilePictureUrl = authorProfilePictureUrl;
+	}
 
-    public ArrayList<String> getImages() {
-        return images;
-    }
+	public String getHeadLine() {
+		return headLine;
+	}
 
-    public void setImages(ArrayList<String> images) {
-        this.images = images;
-    }
+	public void setHeadLine(String headLine) {
+		this.headLine = headLine;
+	}
 
-    public ArrayList<String> getVideos() {
-        return videos;
-    }
+	public int getLikesCount() {
+		return likesCount;
+	}
 
-    public void setVideos(ArrayList<String> videos) {
-        this.videos = videos;
-    }
+	public void setLikesCount(int likesCount) {
+		this.likesCount = likesCount;
+	}
 
-    public int getCommentsCount() {
-        return commentsCount;
-    }
+	public boolean isLiked() {
+		return liked;
+	}
 
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
-    }
+	public void setLiked(boolean liked) {
+		this.liked = liked;
+	}
 
-    public boolean isArticle() {
-        return isArticle;
-    }
+	public void set(String attributeName, Object val){
+		switch(attributeName){
+			case "postId" : setPostId(val.toString()); break;
+			case "authorId" : setAuthorId(val.toString()); break;
+			case "text" : setText(val.toString()); break;
+			case "images" : setImages((ArrayList<String>) val); break;
+			case "videos" :  setVideos((ArrayList<String>) val); break;
+			case "commentsCount" : setCommentsCount(Integer.parseInt(val.toString())); break;
+			case "timestamp" : setTimestamp(Long.parseLong(val.toString())); break;
+			case "isCompanyPost" : setCompanyPost(Boolean.getBoolean(val.toString())); break;
+			case "authorName" : setAuthorName(val.toString()); break;
+			case "authorProfilePictureUrl" : setAuthorProfilePictureUrl(val.toString()); break;
+			case "likesCount" : setLikesCount(Integer.parseInt(val.toString())); break;
+			case "headLine" : setHeadLine(val.toString()); break;
+			case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
+		}
+	}
 
-    public void setArticle(boolean article) {
-        isArticle = article;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
-    public String getAuthorProfilePictureUrl() {
-        return authorProfilePictureUrl;
-    }
-
-    public void setAuthorProfilePictureUrl(String authorProfilePictureUrl) {
-        this.authorProfilePictureUrl = authorProfilePictureUrl;
-    }
+	@Override
+	public String toString() {
+		return "ReturnedPost [postId=" + postId + ", authorId=" + authorId + ", text=" + text + ", images=" + images
+				+ ", videos=" + videos + ", commentsCount=" + commentsCount + ", timestamp=" + timestamp
+				+ ", isCompanyPost=" + isCompanyPost + ", authorName=" + authorName + ", authorProfilePictureUrl="
+				+ authorProfilePictureUrl + ", headLine=" + headLine + ", likesCount=" + likesCount + ", liked="
+				+ liked + "]";
+	}
+	
 }

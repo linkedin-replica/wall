@@ -27,9 +27,8 @@ public class DeleteReplyCommand extends Command{
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
         String replyId = request.get("replyId").getAsString();
-
         Reply reply = dbHandler.getReply(replyId);
-        String response = dbHandler.deleteReply(reply);
+        boolean response = dbHandler.deleteReply(reply);
         return response;
     }
 }

@@ -17,7 +17,7 @@ public class Comment {
 
 
         public Comment(){
-            super();
+
         }
 
         public String getCommentId() {

@@ -158,7 +158,6 @@ public class RequestProcessingHandlerTest {
 
         // get error response create after catching exception
         LinkedHashMap<String, Object> err = channel.readOutbound();
-        System.out.println(err);
         assertEquals("Wrong type", HttpResponseStatus.BAD_REQUEST, (HttpResponseStatus)err.get("type"));
         assertEquals("Wrong code", 400, err.get("code"));
         assertEquals("Wrong errMessage", "Invalid parameters : [fileName, bytes, handler]. expected : [fileName, configPropKey, handler, bytes]", err.get("errMessage"));

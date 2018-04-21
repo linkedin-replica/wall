@@ -56,7 +56,6 @@ public class CachePostTest {
         dbSeed.insertPosts();
         dbSeed.insertComments();
         dbSeed.insertReplies();
-        dbSeed.insertLikes();
         dbSeed.insertUsers();
         mentions = new JsonArray();
         hashtags = new JsonArray();
@@ -114,7 +113,6 @@ public class CachePostTest {
         object.addProperty("text", "Testing add post command");
         object.add("images", images);
         object.add("videos", videos);
-        object.addProperty("headLine", "test");
         object.addProperty("isArticle", false);
         request.put("request", object);
         wallService.serve("addPost",request);
@@ -139,7 +137,6 @@ public class CachePostTest {
         dbSeed.deleteAllPosts();
         dbSeed.deleteAllReplies();
         dbSeed.deleteAllComments();
-        dbSeed.deleteAllLikes();
         DatabaseConnection.getInstance().closeConnections();
     }
 }

@@ -1,12 +1,17 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 import com.google.gson.JsonObject;
+import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
+import com.linkedin.replica.wall.database.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.commands.Command;
+import com.linkedin.replica.wall.config.Configuration;
 
 public class AddCommentCommand extends Command{
 
@@ -33,13 +38,32 @@ public class AddCommentCommand extends Command{
         Long timestamp = System.currentTimeMillis();
 
         Comment comment = new Comment();
+        comment.setCommentId(UUID.randomUUID().toString());
         comment.setAuthorId(authorId);
         comment.setParentPostId(parentPostId);
         comment.setText(text);
         comment.setTimestamp(timestamp);
-
-        String response =  dbHandler.addComment(comment);
+        boolean response =  dbHandler.addComment(comment);
         return response;
     }
+    
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+		String rootFolder = "src/main/resources/";
+		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
+				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config");
+
+		DatabaseConnection.init();
+		ArangoWallHandler handler = new ArangoWallHandler();
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		JsonObject obj = new JsonObject();
+		obj.addProperty("authorId", "21112412");
+		obj.addProperty("text", "asfflnlakdnakfnw");
+		obj.addProperty("parentPostId", "2751590");
+		
+		map.put("request", obj);
+		AddCommentCommand command = new AddCommentCommand(map, handler);
+		command.execute();
+	}
 }
 

@@ -7,6 +7,7 @@ import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.ReturnedPost;
 import com.linkedin.replica.wall.models.UserProfile;
 
 import java.util.HashMap;
@@ -31,11 +32,10 @@ public class GetNewsfeedCommand extends Command{
         // call dbHandler to get error or success message from dbHandler
         Gson gson = new Gson();
         JsonObject request = (JsonObject) args.get("request");
-        UserProfile user = gson.fromJson(request.get("user").getAsJsonObject(), UserProfile.class);
+        String userId = request.get("userId").getAsString();
         int limit = request.get("limit").getAsInt();
-        int offset = request.get("offset").getAsInt();
 
-        List<Post> retrievedPosts = dbHandler.getFriendsPosts(user,limit,offset);
+        List<ReturnedPost> retrievedPosts = dbHandler.getNewsFeed(userId,limit);
 
         return retrievedPosts;
     }

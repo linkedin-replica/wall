@@ -24,9 +24,8 @@ public class EditPostCommand extends Command{
         PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"postId", "authorId", "type", "headLine", "isArticle"});
+        validateArgs(new String[]{"postId"});
 
-        // call dbHandler to get error or success message from dbHandler
         HashMap<String, Object> request = new HashMap<>();
         JsonObject requestArgs = (JsonObject) args.get("request");
         String postId = requestArgs.get("postId").getAsString();
@@ -39,15 +38,13 @@ public class EditPostCommand extends Command{
                 case "images":
                 case "videos": request.put(key, requestArgs.get(key).getAsJsonArray());break;
                 case "postId":
-                case "authorId":
                 case "type":
-                case "text":
-                case "headLine": request.put(key, requestArgs.get(key).getAsString());break;
+                case "text": request.put(key, requestArgs.get(key).getAsString());break;
                 default: break;
             }
         }
 
-        String response = dbHandler.editPost(request);
+        boolean response = dbHandler.editPost(request);
         cacheHandler.editPost(postId,request);
         return response;
     }

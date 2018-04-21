@@ -39,7 +39,7 @@ public class AddReplyCommand extends Command{
         reply.setText(text);
         reply.setTimestamp(timestamp);
 
-        String response = dbHandler.addReply(reply);
+        boolean response = dbHandler.addReply(reply);
         return response;
     }
 }
