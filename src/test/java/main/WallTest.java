@@ -366,6 +366,84 @@ public class WallTest {
 
     }
 
+    @Test
+    public void testAddLikeToPostCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
+        String userId = insertedUser.getUserId();
+        String postId = insertedPost.getPostId();
+        object.addProperty("likerId", userId);
+        object.addProperty("postId", postId);
+        request.put("request", object);
+        boolean response = (boolean) wallService.serve("addLikeToPost", request);
+        assertEquals("Like Added Successfully", response, true);
+    }
+
+    @Test
+    public void testDeleteLikeFromPostCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
+        String userId = insertedUser.getUserId();
+        String postId = insertedPost.getPostId();
+        object.addProperty("likerId", userId);
+        object.addProperty("postId", postId);
+        request.put("request", object);
+        boolean response = (boolean) wallService.serve("deleteLikeFromPost", request);
+        assertEquals("Like Deleted Successfully", response, true);
+    }
+
+    @Test
+    public void testAddLikeToCommentCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
+        String userId = insertedUser.getUserId();
+        String commentId = insertedComment.getCommentId();
+        object.addProperty("likerId", userId);
+        object.addProperty("commentId", commentId);
+        request.put("request", object);
+        boolean response = (boolean) wallService.serve("addLikeToComment", request);
+        assertEquals("Like Added Successfully", response, true);
+    }
+
+    @Test
+    public void testDeleteLikeFromCommentCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
+        String userId = insertedUser.getUserId();
+        String commentId = insertedComment.getCommentId();
+        object.addProperty("likerId", userId);
+        object.addProperty("commentId", commentId);
+        request.put("request", object);
+        boolean response = (boolean) wallService.serve("deleteLikeFromComment", request);
+        assertEquals("Like Deleted Successfully", response, true);
+    }
+
+    @Test
+    public void testAddLikeToReplyCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
+        String userId = insertedUser.getUserId();
+        String replyId = insertedReply.getReplyId();
+        object.addProperty("likerId", userId);
+        object.addProperty("replyId", replyId);
+        request.put("request", object);
+        boolean response = (boolean) wallService.serve("addLikeToReply", request);
+        assertEquals("Like Added Successfully", response, true);
+    }
+
+    @Test
+    public void testDeleteLikeFromReplyCommand() throws Exception {
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject object = new JsonObject();
+        String userId = insertedUser.getUserId();
+        String replyId = insertedReply.getReplyId();
+        object.addProperty("likerId", userId);
+        object.addProperty("replyId", replyId);
+        request.put("request", object);
+        boolean response = (boolean) wallService.serve("deleteLikeFromReply", request);
+        assertEquals("Like Deleted Successfully", response, true);
+    }
+
 
     @AfterClass
     public static void tearDown() throws ArangoDBException, ClassNotFoundException, IOException {
