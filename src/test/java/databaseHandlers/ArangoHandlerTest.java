@@ -536,7 +536,8 @@ public class ArangoHandlerTest {
         post4.setCommentsCount(12);
        // post4.setLikesCount(22);
         post4.setImages(images);
-        post4.setVideos(videos);        post4.setType("type");
+        post4.setVideos(videos);
+        post4.setType("type");
         post4.setText("post 4");
 
         addPost(post1);
