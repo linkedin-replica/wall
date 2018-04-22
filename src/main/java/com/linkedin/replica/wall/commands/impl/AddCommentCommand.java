@@ -46,24 +46,5 @@ public class AddCommentCommand extends Command{
         boolean response =  dbHandler.addComment(comment);
         return response;
     }
-
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-		String rootFolder = "src/main/resources/";
-		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
-				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config");
-
-		DatabaseConnection.init();
-		ArangoWallHandler handler = new ArangoWallHandler();
-
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		JsonObject obj = new JsonObject();
-		obj.addProperty("authorId", "21112412");
-		obj.addProperty("text", "asfflnlakdnakfnw");
-		obj.addProperty("parentPostId", "2751590");
-
-		map.put("request", obj);
-		AddCommentCommand command = new AddCommentCommand(map, handler);
-		command.execute();
-	}
 }
 

@@ -1,6 +1,7 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
@@ -29,8 +30,7 @@ public class AddBookmarkCommand extends Command {
         JsonObject request = (JsonObject) args.get("request");
         String userId = request.get("userId").getAsString();
         String postId = request.get("postId").getAsString();
-        Bookmark bookmark = new Bookmark(userId, postId);
-        boolean response  = dbHandler.addBookmark(bookmark);
+        boolean response  = dbHandler.addBookmark(userId, postId);
         return response;
     }
 }

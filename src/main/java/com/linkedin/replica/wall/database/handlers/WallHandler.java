@@ -11,11 +11,11 @@ public interface WallHandler extends DatabaseHandler {
 
     public List<ReturnedPost> getNewsFeed(String userId,int limit);
 
-    public ArrayList<Bookmark> getBookmarks(String userId);
+    public ArrayList<String> getBookmarks(String userId);
 
-    public boolean addBookmark(Bookmark bookmark);
+    public boolean addBookmark(String userId, String postId);
 
-    public boolean deleteBookmark(Bookmark bookmark);
+    public boolean deleteBookmark(String userId, String postId);
 
     public List<Post> getPosts(String userID);
 

@@ -358,14 +358,12 @@ public class ArangoHandlerTest {
         String userId = user.getUserId();
         String postId = insertedPost.getPostId();
         int bookmarkNo = user.getBookmarks().size() + 1;
-        Bookmark bookmark = new Bookmark(userId, postId);
-        arangoWallHandler.addBookmark(bookmark);
+        arangoWallHandler.addBookmark(userId, postId);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
-        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
-        Bookmark retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
-        assertEquals("size of bookmarks should increased by one", updatedBookmarks.size() , bookmarkNo);
-        assertEquals("userID should be the same in the inserted bookmark", bookmark.getUserId(), retrievedBookmark.getUserId());
-        assertEquals("postID should be the same in the inserted bookmark", bookmark.getPostId(), retrievedBookmark.getPostId());
+        ArrayList<String> updatedBookmarks = retrievedUser.getBookmarks();
+        String retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
+        assertEquals("size of bookmarks should have increased by one", updatedBookmarks.size() , bookmarkNo);
+        assertEquals("userID should be the same in the inserted bookmark", postId, retrievedBookmark);
     }
 
     /**
@@ -376,10 +374,10 @@ public class ArangoHandlerTest {
         UserProfile user = insertedUser;
         String userId = user.getUserId();
         int bookmarkNo = user.getBookmarks().size();
-        Bookmark bookmark = insertedUser.getBookmarks().get(0);
-        arangoWallHandler.deleteBookmark(bookmark);
+        String postId = insertedUser.getBookmarks().get(0);
+        arangoWallHandler.deleteBookmark(userId, postId);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
-        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
+        ArrayList<String> updatedBookmarks = retrievedUser.getBookmarks();
         assertEquals("size of bookmarks should decreased by one", bookmarkNo - 1, updatedBookmarks.size());
     }
 
@@ -390,8 +388,8 @@ public class ArangoHandlerTest {
     public void testGetBookmarks(){
         UserProfile user = insertedUser;
         String userId = user.getUserId();
-        ArrayList<Bookmark> bookmarks = user.getBookmarks();
-        ArrayList<Bookmark> retrievedBookmarks = arangoWallHandler.getBookmarks(userId);
+        ArrayList<String> bookmarks = user.getBookmarks();
+        ArrayList<String> retrievedBookmarks = arangoWallHandler.getBookmarks(userId);
         assertEquals("size of bookmarks arrays should be equal", bookmarks.size() , retrievedBookmarks.size());
         boolean check = true;
         for (int i = 0; i < bookmarks.size(); i++){
@@ -462,6 +460,8 @@ public class ArangoHandlerTest {
     public void testDeleteComment(){
         arangoWallHandler.deleteComment(insertedComment);
         Comment newComment = getComment(insertedComment.getCommentId());
+        System.out.println(insertedComment.getCommentId());
+        System.out.println(insertedComment.getParentPostId());
         assertEquals("Expected to not have that comment", null, newComment);
 
     }

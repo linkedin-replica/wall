@@ -31,7 +31,7 @@ public class GetBookmarksCommand extends Command{
         JsonObject request = (JsonObject) args.get("request");
         String userId = request.get("userId").getAsString();
 
-        List<Bookmark> bookmarks = dbHandler.getBookmarks(userId);
+        List<String> bookmarks = dbHandler.getBookmarks(userId);
         return bookmarks;
     }
 
