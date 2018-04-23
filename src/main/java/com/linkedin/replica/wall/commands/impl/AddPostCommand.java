@@ -34,14 +34,17 @@ public class AddPostCommand extends Command{
         JsonObject request = (JsonObject) args.get("request");
         String authorId = request.get("authorId").getAsString();
         String text = request.get("text").getAsString();
-        String title = String.valueOf(request.get("title"));
+        String title;
+        if(request.get("title") == null)
+            title = null;
+        else
+            title = request.get("title").getAsString();
+
         Long timestamp = System.currentTimeMillis();
         ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
         ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
         boolean isArticle = request.get("isArticle").getAsBoolean();
         boolean isCompanyPost = request.get("isCompanyPost").getAsBoolean();
-
-
         Post post = new Post();
         post.setPostId(UUID.randomUUID().toString());
         post.setArticle(isArticle);
