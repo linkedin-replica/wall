@@ -93,24 +93,14 @@ public class DatabaseSeed {
             images.add("images");
             ArrayList<String> videos = new ArrayList<String>();
             videos.add("videos");
-            ArrayList<String> urls = new ArrayList<String>();
-            urls.add("urls");
             ArrayList<String> likers = new ArrayList<String>();
-            ArrayList<String> hashtags = new ArrayList<String>();
-            hashtags.add("hashtags");
-            ArrayList<String> mentions = new ArrayList<String>();
-            mentions.add("mentions");
-            ArrayList<String> shares = new ArrayList<String>();
-            mentions.add("shares");
 
             Post post = new Post();
             post.setArticle(false);
-           // post.setHeadLine("headLine");
             post.setAuthorId("2");
             post.setCommentsCount(12);
             post.setImages(images);
             post.setVideos(videos);
-            post.setType("type");
             post.setText(text);
             post.setTimestamp(System.currentTimeMillis());
             post.setLikers(likers);

@@ -305,9 +305,6 @@ public class ArangoHandlerTest {
     @Test
     public void testDeleteReply() throws ParseException {
         arangoWallHandler.deleteReply(insertedReply.getReplyId());
-        System.out.println("Deleted R " + insertedReply.getReplyId());
-        System.out.println("Deleted R parent C" + insertedReply.getParentCommentId());
-        System.out.println("Deleted R parent P" + insertedReply.getParentPostId());
         Reply newReply = getReply(insertedReply.getReplyId());
         assertEquals("Expected to not have that comment",null, newReply);
     }
