@@ -23,7 +23,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean editPost(HashMap<String, Object> args);
 
-    public boolean deletePost(Post post);
+    public boolean deletePost(String postId);
 
     public List<Comment> getComments(String postID);
 
@@ -31,7 +31,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean editComment(HashMap<String, Object> args);
 
-    public boolean deleteComment(Comment comment);
+    public boolean deleteComment(String commentId);
 
     public List<Reply> getReplies(String commentId);
 
@@ -41,7 +41,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean editReply(HashMap<String, Object> args);
 
-    public boolean deleteReply(Reply reply);
+    public boolean deleteReply(String replyId);
 
     public boolean addLikeToPost(String likerId, String postId);
 

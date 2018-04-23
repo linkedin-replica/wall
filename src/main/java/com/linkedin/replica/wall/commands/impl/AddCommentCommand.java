@@ -1,17 +1,13 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
 import com.google.gson.JsonObject;
-import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.database.handlers.impl.ArangoWallHandler;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.commands.Command;
-import com.linkedin.replica.wall.config.Configuration;
 
 public class AddCommentCommand extends Command{
 

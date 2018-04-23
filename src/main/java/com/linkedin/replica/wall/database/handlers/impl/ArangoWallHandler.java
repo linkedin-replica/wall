@@ -11,7 +11,6 @@ import com.google.gson.JsonElement;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.exceptions.WallException;
 import com.linkedin.replica.wall.models.*;
 
 import java.io.IOException;
@@ -175,13 +174,13 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to delete specific post from database.
-     * @param post
+     * @param postId
      * @return
      */
-    public boolean deletePost(Post post) throws ArangoDBException{
+    public boolean deletePost(String postId) throws ArangoDBException{
         String query = "FOR post IN " + postsCollection + " FILTER post._key == @postId\t"
                 + "REMOVE post IN " + postsCollection;
-        Map<String, Object> bindVars = new MapBuilder().put("postId", post.getPostId()).get();
+        Map<String, Object> bindVars = new MapBuilder().put("postId", postId).get();
         arangoDB.db(dbName).query(query, bindVars, null,
                 Post.class);
         return true;
@@ -264,18 +263,17 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to delete specific comment in the database.
-     * @param comment
+     * @param commentId
      * @return
      */
 
-    public boolean deleteComment(Comment comment) throws ArangoDBException {
+    public boolean deleteComment(String commentId) throws ArangoDBException {
         String query = "FOR comment IN " + commentsCollection + " FILTER comment._key == @commentId\t"
                 + "REMOVE comment IN " + commentsCollection;
         query += " FOR post in " + postsCollection
-                + " FILTER post._key == @parentPostId\t"
+                + " FILTER post._key == comment.parentPostId\t"
                 + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
-        Map<String, Object> bindVars = new MapBuilder().put("commentId", comment.getCommentId()).get();
-        bindVars.put("parentPostId", comment.getParentPostId());
+        Map<String, Object> bindVars = new MapBuilder().put("commentId", commentId).get();
         arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
         return  true;
     }
@@ -350,23 +348,21 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to delete specific reply.
-     * @param reply
+     * @param replyId
      * @return
      */
-    public boolean deleteReply(Reply reply) throws ArangoDBException{
+    public boolean deleteReply(String replyId) throws ArangoDBException{
             String query = "FOR reply IN " + repliesCollection + " FILTER reply._key == @replyId\t"
                     + "REMOVE reply IN " + repliesCollection;
             // update comment query
             query += " FOR comment in " + commentsCollection
-                    + " FILTER comment._key == @parentCommentId\t"
+                    + " FILTER comment._key == reply.parentCommentId\t"
                     + "UPDATE comment WITH { repliesCount : comment.repliesCount - 1 } IN " + commentsCollection;
         // update post query
         query += " FOR post in " + postsCollection
-                    + " FILTER post._key == @parentPostId\t"
+                    + " FILTER post._key == reply.parentPostId\t"
                     + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
-        Map<String, Object> bindVars = new MapBuilder().put("replyId", reply.getReplyId()).get();
-        bindVars.put("parentPostId", reply.getParentPostId());
-        bindVars.put("parentCommentId", reply.getParentCommentId());
+        Map<String, Object> bindVars = new MapBuilder().put("replyId", replyId).get();
             arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
         return  true;
     }

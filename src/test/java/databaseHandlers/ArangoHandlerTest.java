@@ -249,7 +249,7 @@ public class ArangoHandlerTest {
    @Test
    public void testDeletePost() throws ParseException {
 
-       arangoWallHandler.deletePost(insertedPost);
+       arangoWallHandler.deletePost(insertedPost.getPostId());
        Post newPost = getPost(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database" , null, newPost);
    }
@@ -325,7 +325,10 @@ public class ArangoHandlerTest {
 
     @Test
     public void testDeleteReply() throws ParseException {
-        arangoWallHandler.deleteReply(insertedReply);
+        arangoWallHandler.deleteReply(insertedReply.getReplyId());
+        System.out.println("Deleted R " + insertedReply.getReplyId());
+        System.out.println("Deleted R parent C" + insertedReply.getParentCommentId());
+        System.out.println("Deleted R parent P" + insertedReply.getParentPostId());
         Reply newReply = getReply(insertedReply.getReplyId());
         assertEquals("Expected to not have that comment",null, newReply);
     }
@@ -458,10 +461,8 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testDeleteComment(){
-        arangoWallHandler.deleteComment(insertedComment);
+        arangoWallHandler.deleteComment(insertedComment.getCommentId());
         Comment newComment = getComment(insertedComment.getCommentId());
-        System.out.println(insertedComment.getCommentId());
-        System.out.println(insertedComment.getParentPostId());
         assertEquals("Expected to not have that comment", null, newComment);
 
     }

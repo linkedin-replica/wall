@@ -23,9 +23,7 @@ public class DeletePostCommand extends Command{
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
         String postId = request.get("postId").getAsString();
-        Post post = dbHandler.getPost(postId);
-
-        boolean response = dbHandler.deletePost(post);
+        boolean response = dbHandler.deletePost(postId);
         postsCacheHandler.deletePost(postId);
         return response;
     }

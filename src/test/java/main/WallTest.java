@@ -292,12 +292,11 @@ public class WallTest {
         HashMap<String, Object> request = new HashMap<String, Object>();
         JsonObject object = new JsonObject();
         object.addProperty("authorId","1");
-        object.addProperty("type","post");
         object.addProperty("text", "Testing add post command");
         object.add("images", images);
         object.add("videos", videos);
-        object.addProperty("headLine", "test");
         object.addProperty("isArticle", false);
+        object.addProperty("isCompanyPost", false);
         request.put("request", object);
         boolean response = (boolean) wallService.serve("addPost",request);
         List<Post> posts = (List<Post>)  wallService.serve("getPosts", request);

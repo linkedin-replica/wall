@@ -27,19 +27,19 @@ public class AddPostCommand extends Command{
         PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "type", "text", "headLine", "isArticle"});
+        validateArgs(new String[]{"authorId", "text", "images", "videos", "isCompanyPost", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
         Gson gson = new Gson();
         JsonObject request = (JsonObject) args.get("request");
         String authorId = request.get("authorId").getAsString();
-        String type = request.get("type").getAsString();
         String text = request.get("text").getAsString();
-        String headLine = request.get("headLine").getAsString();
         Long timestamp = System.currentTimeMillis();
         ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
         ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
         boolean isArticle = request.get("isArticle").getAsBoolean();
+        boolean isCompanyPost = request.get("isCompanyPost").getAsBoolean();
+
 
         Post post = new Post();
         post.setPostId(UUID.randomUUID().toString());
@@ -47,9 +47,9 @@ public class AddPostCommand extends Command{
         post.setAuthorId(authorId);
         post.setImages(images);
         post.setVideos(videos);
-        post.setType(type);
         post.setText(text);
         post.setTimestamp(timestamp);
+        post.setCompanyPost(isCompanyPost);
 
         boolean response = dbHandler.addPost(post);
         cacheHandler.cachePost(post.getPostId(),post);
