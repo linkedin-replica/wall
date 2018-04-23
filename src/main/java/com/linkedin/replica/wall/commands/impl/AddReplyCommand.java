@@ -33,6 +33,7 @@ public class AddReplyCommand extends Command{
         Long timestamp = System.currentTimeMillis();
 
         Reply reply = new Reply();
+        reply.setReplyId(UUID.randomUUID().toString());
         reply.setAuthorId(authorId);
         reply.setParentPostId(parentPostId);
         reply.setParentCommentId(parentCommentId);

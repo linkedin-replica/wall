@@ -11,10 +11,11 @@ import com.google.gson.JsonElement;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.exceptions.WallException;
 import com.linkedin.replica.wall.models.*;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class ArangoWallHandler implements WallHandler {
@@ -27,7 +28,7 @@ public class ArangoWallHandler implements WallHandler {
 	String commentsCollection;
 	String postsCollection;
 
-	public ArangoWallHandler() throws IOException, ClassNotFoundException {
+	public ArangoWallHandler() {
 		arangoDB = DatabaseConnection.getInstance().getArangodb();
 		config = Configuration.getInstance();
 		dbName = config.getArangoConfig("arangodb.name");
@@ -38,78 +39,38 @@ public class ArangoWallHandler implements WallHandler {
 		postsCollection = config.getArangoConfig("collections.posts.name");
 
 	}
-    
-    public List<Post> getFriendsPosts(UserProfile user,int limit, int offset){
-        ArrayList<Post> returnedPosts = new ArrayList<Post>();
-        for(int i=0; i<user.getFriendsList().size(); i++){
-            returnedPosts.addAll(getPostsWithLimit(user.getFriendsList().get(i),limit,offset));
-        }
-
-
-        Collections.sort(returnedPosts);
-        return returnedPosts;
-    }
-
-    public List<Post> getPostsWithLimit(String userID,int limit, int offset) {
-        ArrayList<Post> posts = new ArrayList<Post>();
-        try {
-            String query = "FOR l IN " + postsCollection + " FILTER l.authorId == @authorId SORT l.timestamp DESC\n" +
-                    "  LIMIT "+offset+" , "+limit+" RETURN l";
-            Map<String, Object> bindVars = new MapBuilder().put("authorId", userID).get();
-            ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                    Post.class);
-            cursor.forEachRemaining(postDocument -> {
-                posts.add(postDocument);
-            });
-        } catch (ArangoDBException e) {
-            e.printStackTrace();
-        }
-        return posts;
-    }
 
     /**
      * method to update user's bookmarks list by adding new bookmark.
      *
-     * @param bookmark to be added.
+     * @param postId to be added.
+     * @param userId
      * @return message tells whether the process is successful or failed.
      */
-    public boolean addBookmark(Bookmark bookmark) throws ArangoDBException {
-        String userId = bookmark.getUserId();
-        String postId = bookmark.getPostId();
-        boolean message = false;
-        if(postId != null && getPost(postId) != null) {
-
-                UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
-
-                ArrayList<Bookmark> bookmarkList = user.getBookmarks();
-
-                bookmarkList.add(bookmark);
-                arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
-
-                message = true;
-
-        }else
-           throw  new WallException("Failed to add bookmark No post found");
-        return message;
+    public boolean addBookmark(String userId, String postId) throws ArangoDBException {
+        String query = " FOR user in " + usersCollection
+                + " FILTER user._key == @userId\t"
+                + "UPDATE user WITH { bookmarks : PUSH(user.bookmarks, @postId) } IN " + usersCollection;
+        Map<String, Object> bindVars = new MapBuilder().put("userId", userId).get();
+        bindVars.put("postId", postId);
+        arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
+        return true;
     }
 
     /**
      * method to update user's bookmarks list by deleting new bookmark.
-     * @param bookmark to be deleted
+     * @param postId to be deleted
+     * @param userId
      * @return message tells whether the process is successful or failed.
      */
-    public boolean deleteBookmark(Bookmark bookmark) throws ArangoDBException {
-
-        String userId = bookmark.getUserId();
-        boolean message = false;
-
-        UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
-        ArrayList<Bookmark> bookmarkList = user.getBookmarks();
-        bookmarkList.remove(bookmark);
-        arangoDB.db(dbName).collection(usersCollection).updateDocument(userId, user);
-        message = true ;
-
-        return message;
+    public boolean deleteBookmark(String userId, String postId) throws ArangoDBException {
+        String query = " FOR user in " + usersCollection
+                + " FILTER user._key == @userId\t"
+                + "UPDATE user WITH { bookmarks : REMOVE_VALUE(user.bookmarks, @postId) } IN " + usersCollection;
+        Map<String, Object> bindVars = new MapBuilder().put("userId", userId).get();
+        bindVars.put("postId", postId);
+        arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
+        return true;
     }
 
     /**
@@ -118,9 +79,8 @@ public class ArangoWallHandler implements WallHandler {
      * @return list of users bookmarks.
      */
 
-    public ArrayList<Bookmark> getBookmarks(String userId) throws ArangoDBException {
-        ArrayList<Bookmark> ans = new ArrayList<>();
-        String message = "";
+    public ArrayList<String> getBookmarks(String userId) throws ArangoDBException {
+        ArrayList<String> ans = new ArrayList<>();
         UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
         ans = user.getBookmarks();
 
@@ -133,18 +93,21 @@ public class ArangoWallHandler implements WallHandler {
      * @param userID
      * @return
      */
-    public List<Post> getPosts(String userID) throws ArangoDBException {
-        ArrayList<Post> posts = new ArrayList<Post>();
-
-        String query = "FOR l IN " + postsCollection + " FILTER l.authorId == @authorId RETURN l";
-        Map<String, Object> bindVars = new MapBuilder().put("authorId", userID).get();
-        ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                Post.class);
-        cursor.forEachRemaining(postDocument -> {
-
-            posts.add(postDocument);
+    public List<ReturnedPost> getPosts(String companyId, int limit) throws ArangoDBException {
+		String query = config.getQueryConfigProp("get.companies.posts.query");
+		Map<String, Object> bindVars = new MapBuilder().get();
+		bindVars.put("companyId", companyId);
+		bindVars.put("limit", limit);
+		
+		ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
+        ArangoCursor<ReturnedPost> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+        		ReturnedPost.class);
+        cursor.forEachRemaining(commentDocument -> {
+        	returnedList.add(commentDocument);
         });
-        return posts;
+		System.out.println(returnedList);
+		System.out.println(new Gson().toJson(returnedList));
+        return returnedList;
     }
 
     /**
@@ -152,7 +115,7 @@ public class ArangoWallHandler implements WallHandler {
      * @param postId
      * @return
      */
-    public Post getPost(String postId) throws ArangoDBException{
+    public Post getArticle(String postId) throws ArangoDBException{
         Post post = null;
         post = arangoDB.db(dbName).collection(postsCollection).getDocument(postId,
                     Post.class);
@@ -216,13 +179,13 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to delete specific post from database.
-     * @param post
+     * @param postId
      * @return
      */
-    public boolean deletePost(Post post) throws ArangoDBException{
+    public boolean deletePost(String postId) throws ArangoDBException{
         String query = "FOR post IN " + postsCollection + " FILTER post._key == @postId\t"
                 + "REMOVE post IN " + postsCollection;
-        Map<String, Object> bindVars = new MapBuilder().put("postId", post.getPostId()).get();
+        Map<String, Object> bindVars = new MapBuilder().put("postId", postId).get();
         arangoDB.db(dbName).query(query, bindVars, null,
                 Post.class);
         return true;
@@ -266,18 +229,21 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean addComment(Comment comment) throws ArangoDBException{
-        String postId = comment.getParentPostId();
-        if(postId != null && getPost(postId) != null) {
-            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
-            String query = "FOR post in " + postsCollection
-                    + " FILTER post._key == @parentPostId\t"
-                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
-            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
+//<<<<<<< HEAD
+//        String postId = comment.getParentPostId();
+//        if(postId != null && getPost(postId) != null) {
+//            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
+//            String query = "FOR post in " + postsCollection
+//=======
+//            String query = "Insert @comment IN " + commentsCollection;
+//            query +=" FOR post in " + postsCollection
+//>>>>>>> 8fb675ce7d0612122ad188e0ffc51fdca19d4917
+//                    + " FILTER post._key == @parentPostId\t"
+//                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
+//            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
+//            bindVars.put("comment", comment);
+//            arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
             return true;
-        } else {
-            throw new WallException("Failed to add a comment missing post found.");
-        }
     }
 
     /**
@@ -309,27 +275,18 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to delete specific comment in the database.
-     * @param comment
+     * @param commentId
      * @return
      */
 
-    public boolean deleteComment(Comment comment) throws ArangoDBException {
-        String postId = comment.getParentPostId();
-        if(postId != null && getPost(postId) != null) {
-            String query = "FOR comment IN " + commentsCollection + " FILTER comment._key == @commentId\t"
-                    + "REMOVE comment IN " + commentsCollection;
-
-            Map<String, Object> bindVars = new MapBuilder().put("commentId", comment.getCommentId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
-
-            query = "FOR post in " + postsCollection
-                    + " FILTER post._key == @parentPostId\t"
-                    + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
-            bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
-        } else {
-            throw new WallException("Failed to add a comment missing post found.");
-        }
+    public boolean deleteComment(String commentId) throws ArangoDBException {
+        String query = "FOR comment IN " + commentsCollection + " FILTER comment._key == @commentId\t"
+                + "REMOVE comment IN " + commentsCollection;
+        query += " FOR post in " + postsCollection
+                + " FILTER post._key == comment.parentPostId\t"
+                + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
+        Map<String, Object> bindVars = new MapBuilder().put("commentId", commentId).get();
+        arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
         return  true;
     }
 
@@ -358,24 +315,17 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean addReply(Reply reply) throws ArangoDBException {
-        String commentId = reply.getParentCommentId();
-        String postId = reply.getParentPostId();
-        if((postId != null && getPost(postId) != null) && (commentId != null && getComment(commentId ) != null)) {
-            arangoDB.db(dbName).collection(repliesCollection).insertDocument(reply);
-            String query = "FOR comment in " + commentsCollection
-                    + " FILTER comment._key == @parentCommentId\t"
-                    + "UPDATE comment WITH { repliesCount : comment.repliesCount + 1 } IN " + commentsCollection;
-            Map<String, Object> bindVars = new MapBuilder().put("parentCommentId", reply.getParentCommentId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
-
-            query = "FOR post in " + postsCollection
-                    + " FILTER post._key == @parentPostId\t"
-                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
-            bindVars = new MapBuilder().put("parentPostId", reply.getParentPostId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
-        } else {
-            throw new WallException("missing information");
-        }
+        String query = "Insert @reply IN " + repliesCollection;
+        query += " FOR comment in " + commentsCollection
+                + " FILTER comment._key == @parentCommentId\t"
+                + "UPDATE comment WITH { repliesCount : comment.repliesCount + 1 } IN " + commentsCollection;
+        query += " FOR post in " + postsCollection
+                + " FILTER post._key == @parentPostId\t"
+                + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
+        Map<String, Object> bindVars = new MapBuilder().put("parentPostId", reply.getParentPostId()).get();
+        bindVars.put("parentCommentId", reply.getParentCommentId());
+        bindVars.put("reply", reply);
+        arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
         return  true;
 
     }
@@ -410,33 +360,22 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to delete specific reply.
-     * @param reply
+     * @param replyId
      * @return
      */
-    public boolean deleteReply(Reply reply) throws ArangoDBException{
-        String commentId = reply.getParentCommentId();
-        String postId = reply.getParentPostId();
-        if((postId != null && getPost(postId) != null) && (commentId != null && getComment(commentId ) != null)) {
+    public boolean deleteReply(String replyId) throws ArangoDBException{
             String query = "FOR reply IN " + repliesCollection + " FILTER reply._key == @replyId\t"
                     + "REMOVE reply IN " + repliesCollection;
-
-            Map<String, Object> bindVars = new MapBuilder().put("replyId", reply.getReplyId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Reply.class);
             // update comment query
-            query = "FOR comment in " + commentsCollection
-                    + " FILTER comment._key == @parentCommentId\t"
+            query += " FOR comment in " + commentsCollection
+                    + " FILTER comment._key == reply.parentCommentId\t"
                     + "UPDATE comment WITH { repliesCount : comment.repliesCount - 1 } IN " + commentsCollection;
-            bindVars = new MapBuilder().put("parentCommentId", reply.getParentCommentId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Comment.class);
-
-            query = "FOR post in " + postsCollection
-                    + " FILTER post._key == @parentPostId\t"
+        // update post query
+        query += " FOR post in " + postsCollection
+                    + " FILTER post._key == reply.parentPostId\t"
                     + "UPDATE post WITH { commentsCount : post.commentsCount - 1 } IN " + postsCollection;
-            bindVars = new MapBuilder().put("parentPostId", reply.getParentPostId()).get();
-            arangoDB.db(dbName).query(query, bindVars, null, Post.class);
-        } else {
-            throw new WallException("missing information");
-        }
+        Map<String, Object> bindVars = new MapBuilder().put("replyId", replyId).get();
+            arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
         return  true;
     }
 
@@ -551,48 +490,7 @@ public class ArangoWallHandler implements WallHandler {
     }
     
 	public ArrayList<ReturnedPost> getNewsFeed(String userId, int limit) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("FOR user in users ");
-		builder.append("FILTER user.userId == @userId ");
-		builder.append("LET friendPosts =  ( ");
-		builder.append("for friend in users ");
-		builder.append("filter friend.userId in user.friendsList ");
-		builder.append("for p in posts ");
-		builder.append("FILTER p.authorId == friend.userId and p.isArticle == false ");
-		builder.append("SORT p.timestamp DESC ");
-		builder.append("Limit 0, @limit ");
-		builder.append("return MERGE_RECURSIVE( ");
-		builder.append("{ \"authorName\":  concat(friend.firstName, \" \", friend.lastName), ");
-		builder.append("\"authorProfilePictureUrl\" : friend.profilePictureUrl, ");
-		builder.append("\"headline\" : friend.headline ");
-		builder.append(" }, ");
-		builder.append("{\"authorId\" : p.authorId, \"postId\" : p.postId, \"text\" : p.text, ");
-		builder.append("\"images\" : p.images, \"videos\" : p.videos, \"commentsCount\" : p.commentsCount, ");
-		builder.append("\"timestamp\" : p.timestamp, \"isCompanyPost\" : p.isCompanyPost, \"likesCount\" : LENGTH(p.likers), ");
-		builder.append("\"liked\" : p.likers any == user.userId } ");
-		builder.append(" ) ");
-		builder.append(" ) ");
-		builder.append(" LET companiesPosts = ( ");
-		builder.append("for company in companies ");
-		builder.append("filter company.companyId in user.followedCompanies ");
-		builder.append("FOR p in posts ");
-		builder.append("FILTER p.authorId == company.companyId and p.isArticle == false and p.timestamp >= @minTimestamp ");
-		builder.append("SORT p.weight DESC ");
-		builder.append("Limit 0, @limit ");
-		builder.append("return MERGE_RECURSIVE( ");
-		builder.append("{ \"authorName\": company.companyName, ");
-		builder.append("\"authorProfilePictureUrl\" : company.profilePictureUrl, ");
-		builder.append("\"headline\" : company.industryType ");
-		builder.append("}, ");
-		builder.append("{\"authorId\" : p.authorId, \"postId\" : p.postId, \"text\" : p.text, ");
-		builder.append("\"images\" : p.images, \"videos\" : p.videos, \"commentsCount\" : p.commentsCount, ");
-		builder.append("\"timestamp\" : p.timestamp, \"isCompanyPost\" : p.isCompanyPost, \"likesCount\" : LENGTH(p.likers), ");
-		builder.append("\"liked\" : p.likers any == user.userId } ");
-		builder.append(" ) ");
-		builder.append(" ) ");
-		builder.append("return { [ \"results\" ]: APPEND(friendPosts, companiesPosts)} ");
-
-		String query = builder.toString();
+		String query = config.getQueryConfigProp("get.newsfeed.query");
 		Map<String, Object> bindVars = new MapBuilder().get();
 		bindVars.put("userId", userId);
 		bindVars.put("limit", limit);
@@ -602,6 +500,7 @@ public class ArangoWallHandler implements WallHandler {
 		calendar.setTime(new Date());
 		calendar.add(Calendar.WEEK_OF_MONTH, -period);
 		bindVars.put("minTimestamp", calendar.getTime().getTime());
+	
 		ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
 		ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
 		cursor.forEachRemaining(postDocument -> {
@@ -619,16 +518,24 @@ public class ArangoWallHandler implements WallHandler {
 			}
 		});
 		System.out.println(returnedList);
+		System.out.println(new Gson().toJson(returnedList));
 		return returnedList;
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
 		String rootFolder = "src/main/resources/";
 		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
-				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config");
+				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config",
+				rootFolder + "query.config");
 
 		DatabaseConnection.init();
 		ArangoWallHandler handler = new ArangoWallHandler();
 		handler.getNewsFeed("1", 10);
+//		handler.getPosts("12", 10);
+		
+//		Properties properties = new Properties();
+//		properties.load(new FileInputStream("src/main/resources/query.config"));
+//		System.out.println(properties.getProperty("get.newsfeed.query"));
+//		System.out.println(properties.getProperty("get.companies.post.query"));
 	}
 }

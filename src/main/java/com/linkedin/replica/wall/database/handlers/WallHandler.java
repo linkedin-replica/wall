@@ -11,19 +11,19 @@ public interface WallHandler extends DatabaseHandler {
 
     public List<ReturnedPost> getNewsFeed(String userId,int limit);
 
-    public ArrayList<Bookmark> getBookmarks(String userId);
+    public ArrayList<String> getBookmarks(String userId);
 
-    public boolean addBookmark(Bookmark bookmark);
+    public boolean addBookmark(String userId, String postId);
 
-    public boolean deleteBookmark(Bookmark bookmark);
+    public boolean deleteBookmark(String userId, String postId);
 
-    public List<Post> getPosts(String userID);
+    public List<ReturnedPost> getPosts(String companyId, int limit);
 
     public boolean addPost(Post post);
 
     public boolean editPost(HashMap<String, Object> args);
 
-    public boolean deletePost(Post post);
+    public boolean deletePost(String postId);
 
     public List<Comment> getComments(String postID);
 
@@ -31,7 +31,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean editComment(HashMap<String, Object> args);
 
-    public boolean deleteComment(Comment comment);
+    public boolean deleteComment(String commentId);
 
     public List<Reply> getReplies(String commentId);
 
@@ -41,7 +41,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean editReply(HashMap<String, Object> args);
 
-    public boolean deleteReply(Reply reply);
+    public boolean deleteReply(String replyId);
 
     public boolean addLikeToPost(String likerId, String postId);
 
@@ -56,10 +56,6 @@ public interface WallHandler extends DatabaseHandler {
     public boolean deleteLikeFromReply(String likerId, String replyId);
     
     public Comment getComment(String commentId);
-
-    public Post getPost(String postId);
-
-
 
     public UserProfile getUser(String userId);
 

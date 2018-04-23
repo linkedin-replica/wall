@@ -1,6 +1,8 @@
 package com.linkedin.replica.wall.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class ReturnedPost {
 	private String postId;
@@ -15,7 +17,7 @@ public class ReturnedPost {
 	private String authorName;
 	private String authorProfilePictureUrl;
 	private String headLine;
-	private int likesCount;
+	private ArrayList<Liker> likers;
 	private boolean liked;
 
 	public String getPostId() {
@@ -106,14 +108,6 @@ public class ReturnedPost {
 		this.headLine = headLine;
 	}
 
-	public int getLikesCount() {
-		return likesCount;
-	}
-
-	public void setLikesCount(int likesCount) {
-		this.likesCount = likesCount;
-	}
-
 	public boolean isLiked() {
 		return liked;
 	}
@@ -122,6 +116,26 @@ public class ReturnedPost {
 		this.liked = liked;
 	}
 
+	public ArrayList<Liker> getLikers() {
+		return likers;
+	}
+
+	public void setLikers(Object val) {
+		this.likers = new ArrayList<Liker>();
+		ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String,Object>>) val;
+		for(int i=0; i<list.size(); ++i){
+			HashMap<String, Object> map = list.get(i);
+			Iterator<String> iter = map.keySet().iterator();
+			Liker liker = new Liker();
+			likers.add(liker);
+			while(iter.hasNext()){
+				String key = iter.next();
+				Object value = map.get(key);
+				liker.set(key, value);
+			}
+		}
+	}
+	
 	public void set(String attributeName, Object val){
 		switch(attributeName){
 			case "postId" : setPostId(val.toString()); break;
@@ -134,19 +148,17 @@ public class ReturnedPost {
 			case "isCompanyPost" : setCompanyPost(Boolean.getBoolean(val.toString())); break;
 			case "authorName" : setAuthorName(val.toString()); break;
 			case "authorProfilePictureUrl" : setAuthorProfilePictureUrl(val.toString()); break;
-			case "likesCount" : setLikesCount(Integer.parseInt(val.toString())); break;
+			case "likers" : setLikers(val);; break;
 			case "headLine" : setHeadLine(val.toString()); break;
 			case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
 		}
 	}
-
+		
 	@Override
 	public String toString() {
 		return "ReturnedPost [postId=" + postId + ", authorId=" + authorId + ", text=" + text + ", images=" + images
 				+ ", videos=" + videos + ", commentsCount=" + commentsCount + ", timestamp=" + timestamp
 				+ ", isCompanyPost=" + isCompanyPost + ", authorName=" + authorName + ", authorProfilePictureUrl="
-				+ authorProfilePictureUrl + ", headLine=" + headLine + ", likesCount=" + likesCount + ", liked="
-				+ liked + "]";
+				+ authorProfilePictureUrl + ", headLine=" + headLine + ", likers=" + likers + ", liked=" + liked + "]";
 	}
-	
 }

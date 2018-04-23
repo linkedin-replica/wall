@@ -30,8 +30,7 @@ public class DeleteCommentCommand extends Command{
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
         String commentId = request.get("commentId").getAsString();
-        Comment comment = dbHandler.getComment(commentId);
-        boolean response =  dbHandler.deleteComment(comment);
+        boolean response =  dbHandler.deleteComment(commentId);
         return response;
     }
 }

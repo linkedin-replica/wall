@@ -249,7 +249,7 @@ public class ArangoHandlerTest {
    @Test
    public void testDeletePost() throws ParseException {
 
-       arangoWallHandler.deletePost(insertedPost);
+       arangoWallHandler.deletePost(insertedPost.getPostId());
        Post newPost = getPost(insertedPost.getPostId());
        assertEquals("Expected to have a certain post in database" , null, newPost);
    }
@@ -311,6 +311,7 @@ public class ArangoHandlerTest {
         ArrayList<String> mentionsImagesUrls = new ArrayList<String>();
         mentionsImagesUrls.add("Test");
         Reply reply = new Reply();
+        reply.setReplyId(UUID.randomUUID().toString());
         reply.setAuthorId(insertedUser.getUserId());
         reply.setParentPostId(insertedPost.getPostId());
         reply.setParentCommentId(insertedComment.getCommentId());
@@ -324,7 +325,10 @@ public class ArangoHandlerTest {
 
     @Test
     public void testDeleteReply() throws ParseException {
-        arangoWallHandler.deleteReply(insertedReply);
+        arangoWallHandler.deleteReply(insertedReply.getReplyId());
+        System.out.println("Deleted R " + insertedReply.getReplyId());
+        System.out.println("Deleted R parent C" + insertedReply.getParentCommentId());
+        System.out.println("Deleted R parent P" + insertedReply.getParentPostId());
         Reply newReply = getReply(insertedReply.getReplyId());
         assertEquals("Expected to not have that comment",null, newReply);
     }
@@ -350,23 +354,19 @@ public class ArangoHandlerTest {
 
     /**
      * testing Adding bookmark function
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     @Test
-    public void testAddBookmark() throws IOException, ClassNotFoundException {
+    public void testAddBookmark() {
         UserProfile user = insertedUser;
         String userId = user.getUserId();
         String postId = insertedPost.getPostId();
         int bookmarkNo = user.getBookmarks().size() + 1;
-        Bookmark bookmark = new Bookmark(userId, postId);
-        arangoWallHandler.addBookmark(bookmark);
+        arangoWallHandler.addBookmark(userId, postId);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
-        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
-        Bookmark retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
-        assertEquals("size of bookmarks should increased by one", updatedBookmarks.size() , bookmarkNo);
-        assertEquals("userID should be the same in the inserted bookmark", bookmark.getUserId(), retrievedBookmark.getUserId());
-        assertEquals("postID should be the same in the inserted bookmark", bookmark.getPostId(), retrievedBookmark.getPostId());
+        ArrayList<String> updatedBookmarks = retrievedUser.getBookmarks();
+        String retrievedBookmark = updatedBookmarks.get(updatedBookmarks.size() - 1);
+        assertEquals("size of bookmarks should have increased by one", updatedBookmarks.size() , bookmarkNo);
+        assertEquals("userID should be the same in the inserted bookmark", postId, retrievedBookmark);
     }
 
     /**
@@ -377,10 +377,10 @@ public class ArangoHandlerTest {
         UserProfile user = insertedUser;
         String userId = user.getUserId();
         int bookmarkNo = user.getBookmarks().size();
-        Bookmark bookmark = insertedUser.getBookmarks().get(0);
-        arangoWallHandler.deleteBookmark(bookmark);
+        String postId = insertedUser.getBookmarks().get(0);
+        arangoWallHandler.deleteBookmark(userId, postId);
         UserProfile retrievedUser = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
-        ArrayList<Bookmark> updatedBookmarks = retrievedUser.getBookmarks();
+        ArrayList<String> updatedBookmarks = retrievedUser.getBookmarks();
         assertEquals("size of bookmarks should decreased by one", bookmarkNo - 1, updatedBookmarks.size());
     }
 
@@ -391,8 +391,8 @@ public class ArangoHandlerTest {
     public void testGetBookmarks(){
         UserProfile user = insertedUser;
         String userId = user.getUserId();
-        ArrayList<Bookmark> bookmarks = user.getBookmarks();
-        ArrayList<Bookmark> retrievedBookmarks = arangoWallHandler.getBookmarks(userId);
+        ArrayList<String> bookmarks = user.getBookmarks();
+        ArrayList<String> retrievedBookmarks = arangoWallHandler.getBookmarks(userId);
         assertEquals("size of bookmarks arrays should be equal", bookmarks.size() , retrievedBookmarks.size());
         boolean check = true;
         for (int i = 0; i < bookmarks.size(); i++){
@@ -430,9 +430,11 @@ public class ArangoHandlerTest {
         Comment comment = new Comment();
         comment.setAuthorId(insertedUser.getUserId());
         comment.setParentPostId(insertedPost.getPostId());
+        comment.setCommentId(UUID.randomUUID().toString());
         comment.setLikesCount(12);
         comment.setRepliesCount(22);
-        comment.setText("comment Text");
+        comment.setText("Comment Test");
+        comment.setTimestamp(System.currentTimeMillis());
         arangoWallHandler.addComment(comment);
         Comment newComment = getComment(comment.getCommentId());
         assertEquals("Expected to have a certain comment in database",insertedPost.getPostId(), newComment.getParentPostId());
@@ -459,7 +461,7 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testDeleteComment(){
-        arangoWallHandler.deleteComment(insertedComment);
+        arangoWallHandler.deleteComment(insertedComment.getCommentId());
         Comment newComment = getComment(insertedComment.getCommentId());
         assertEquals("Expected to not have that comment", null, newComment);
 

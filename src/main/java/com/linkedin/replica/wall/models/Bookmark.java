@@ -3,6 +3,7 @@ import com.arangodb.entity.DocumentField;
 
 public class Bookmark {
     @DocumentField(DocumentField.Type.KEY)
+    private String bookmarkId;
     private String postId;
     private String userId;
 
@@ -12,9 +13,22 @@ public class Bookmark {
 
     public  Bookmark(){
     }
-    public Bookmark(String userId, String postId){
+
+    public void setBookmarkId(String bookmarkId) {
+        this.bookmarkId = bookmarkId;
+    }
+
+    public void setPostId(String postId) {
         this.postId = postId;
+    }
+
+    public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getBookmarkId() {
+
+        return bookmarkId;
     }
 
     /**

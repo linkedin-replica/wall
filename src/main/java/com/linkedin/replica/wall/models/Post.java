@@ -19,8 +19,17 @@ public class Post implements Comparable<Post>{
     private int commentsCount;
     private boolean isArticle;
     private long timestamp;
+    private boolean isCompanyPost;
 
     public Post(){
+    }
+
+    public boolean isCompanyPost() {
+        return isCompanyPost;
+    }
+
+    public void setCompanyPost(boolean companyPost) {
+        isCompanyPost = companyPost;
     }
 
     public ArrayList<String> getLikers() {

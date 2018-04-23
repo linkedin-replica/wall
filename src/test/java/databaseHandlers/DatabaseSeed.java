@@ -211,9 +211,8 @@ public class DatabaseSeed {
             user.setFollowedCompaniesList(new ArrayList<String>());
             arangoDB.db(dbName).collection(usersCollection).insertDocument(user);
 
-            Bookmark bookmark = new Bookmark(user.getUserId(), insertedPosts.get(0).getPostId());
-            ArrayList<Bookmark> b = new ArrayList<>();
-            b.add(bookmark);
+            ArrayList<String> b = new ArrayList<>();
+            b.add(insertedPosts.get(0).getPostId());
             user.setBookmarks(b);
             arangoDB.db(dbName).collection(usersCollection).updateDocument(user.getUserId(), user);
             insertedUsers.add(user);

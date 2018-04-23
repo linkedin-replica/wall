@@ -5,7 +5,7 @@ import com.arangodb.entity.DocumentField;
 import java.util.ArrayList;
 
 public class UserProfile {
-    private ArrayList<Bookmark> bookmarks;
+    private ArrayList<String> bookmarks;
 
     @DocumentField(DocumentField.Type.KEY)
     private String userId;
@@ -47,9 +47,9 @@ public class UserProfile {
         this.followedCompaniesList = followedCompaniesList;
     }
 
-    public ArrayList<Bookmark> getBookmarks(){return this.bookmarks;}
+    public ArrayList<String> getBookmarks(){return this.bookmarks;}
 
-    public void setBookmarks(ArrayList<Bookmark> bookmarks){this.bookmarks = bookmarks;}
+    public void setBookmarks(ArrayList<String> bookmarks){this.bookmarks = bookmarks;}
 
     public String getUserId() {
         return userId;

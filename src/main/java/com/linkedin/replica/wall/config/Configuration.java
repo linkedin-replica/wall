@@ -18,7 +18,8 @@ public class Configuration {
     private final Properties arangoConfig = new Properties();
     private final Properties redisConfig = new Properties();
     private final Properties controllerConfig = new Properties();
-
+    private final Properties queryConfig = new Properties();
+    
     private String appConfigPath;
     private String arangoConfigPath;
     private String commandsConfigPath;
@@ -31,12 +32,14 @@ public class Configuration {
 
     private static Configuration instance;
 
-    private Configuration(String appConfigPath, String arangoConfigPath, String commandsConfigPath, String controllerConfigPath, String redisConfigPath) throws IOException {
+    private Configuration(String appConfigPath, String arangoConfigPath, String commandsConfigPath,
+    		String controllerConfigPath, String redisConfigPath, String queryConfigPath) throws IOException {
         populateWithConfig(appConfigPath, appConfig);
         populateWithConfig(arangoConfigPath, arangoConfig);
         populateWithConfig(commandsConfigPath, commandConfig);
         populateWithConfig(controllerConfigPath, controllerConfig);
         populateWithConfig(redisConfigPath, redisConfig);
+        populateWithConfig(queryConfigPath, queryConfig);
 
         this.appConfigPath = appConfigPath;
         this.arangoConfigPath = arangoConfigPath;
@@ -51,8 +54,9 @@ public class Configuration {
         inputStream.close();
     }
 
-    public static void init(String appConfigPath, String arangoConfigPath, String commandsConfigPath, String controllerConfigPath,String redisConfigPath) throws IOException {
-        instance = new Configuration(appConfigPath, arangoConfigPath, commandsConfigPath, controllerConfigPath,redisConfigPath);
+    public static void init(String appConfigPath, String arangoConfigPath, String commandsConfigPath, 
+    		String controllerConfigPath,String redisConfigPath, String queryConfigPath) throws IOException {
+        instance = new Configuration(appConfigPath, arangoConfigPath, commandsConfigPath, controllerConfigPath,redisConfigPath, queryConfigPath);
     }
 
     public static Configuration getInstance() {
@@ -102,7 +106,10 @@ public class Configuration {
         return appConfig.getProperty(key);
     }
 
-
+    public String getQueryConfigProp(String key) {
+        return queryConfig.getProperty(key);
+    }
+    
     public void setAppControllerProp(String key, String val){
         if(val != null)
             appConfig.setProperty(key, val);
