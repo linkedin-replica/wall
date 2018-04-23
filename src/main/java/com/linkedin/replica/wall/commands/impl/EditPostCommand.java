@@ -32,13 +32,11 @@ public class EditPostCommand extends Command{
 
         for(String key: requestArgs.keySet()) {
             switch (key) {
+                case "isCompanyPost":
                 case "isArticle": request.put(key, requestArgs.get(key).getAsBoolean());break;
-                case "likesCount":
-                case "commentsCount": request.put(key, requestArgs.get(key).getAsInt());break;
                 case "images":
                 case "videos": request.put(key, requestArgs.get(key).getAsJsonArray());break;
                 case "postId":
-                case "type":
                 case "text": request.put(key, requestArgs.get(key).getAsString());break;
                 default: break;
             }

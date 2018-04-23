@@ -11,7 +11,6 @@ public class Post implements Comparable<Post>{
     @DocumentField(DocumentField.Type.KEY)
     private String postId;
     private String authorId;
-    private String type;
     private String text;
     private ArrayList<String> images;
     private ArrayList<String> videos;
@@ -20,8 +19,17 @@ public class Post implements Comparable<Post>{
     private boolean isArticle;
     private long timestamp;
     private boolean isCompanyPost;
+    private String title;
 
     public Post(){
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public boolean isCompanyPost() {
@@ -61,10 +69,6 @@ public class Post implements Comparable<Post>{
         return authorId;
     }
 
-    public String getType(){
-        return type;
-    }
-
     public String getText() {
         return text;
     }
@@ -79,10 +83,6 @@ public class Post implements Comparable<Post>{
 
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public void setText(String text) {
@@ -118,14 +118,15 @@ public class Post implements Comparable<Post>{
         return "Post{" +
                 "postId='" + postId + '\'' +
                 ", authorId='" + authorId + '\'' +
-                ", type='" + type + '\'' +
                 ", text='" + text + '\'' +
                 ", images=" + images +
                 ", videos=" + videos +
+                ", likers=" + likers +
                 ", commentsCount=" + commentsCount +
                 ", isArticle=" + isArticle +
                 ", timestamp=" + timestamp +
+                ", isCompanyPost=" + isCompanyPost +
+                ", title='" + title + '\'' +
                 '}';
     }
-
 }

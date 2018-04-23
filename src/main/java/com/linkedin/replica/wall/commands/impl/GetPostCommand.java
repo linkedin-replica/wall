@@ -20,17 +20,17 @@ public class GetPostCommand extends Command{
 
 
     @Override
-    public Object execute() throws NoSuchMethodException, IllegalAccessException, ParseException, NoSuchFieldException, IOException, InstantiationException {
+    public Object execute() throws IllegalAccessException, NoSuchFieldException, IOException, InstantiationException {
 
         WallHandler dbHandler = (WallHandler) this.dbHandler;
         PostsCacheHandler postsCacheHandler = (PostsCacheHandler)this.cacheHandler;
         validateArgs(new String[]{"postId"});
         String postId = args.get("postId").toString();
-        Object post = postsCacheHandler.getPost((String) args.get("postId"),Post.class);
+        Object post = postsCacheHandler.getPost(postId,Post.class);
         if( post == null){
             post = dbHandler.getPost(postId);
             postsCacheHandler.cachePost(postId,post);
-            }
+        }
         return post;
 
     }

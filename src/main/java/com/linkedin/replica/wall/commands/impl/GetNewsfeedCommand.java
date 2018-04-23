@@ -26,11 +26,10 @@ public class GetNewsfeedCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"user","limit","offset"});
+        validateArgs(new String[]{"user","limit"});
 
 
         // call dbHandler to get error or success message from dbHandler
-        Gson gson = new Gson();
         JsonObject request = (JsonObject) args.get("request");
         String userId = request.get("userId").getAsString();
         int limit = request.get("limit").getAsInt();

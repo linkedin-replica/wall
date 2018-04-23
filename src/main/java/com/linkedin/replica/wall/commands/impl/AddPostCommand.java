@@ -34,6 +34,7 @@ public class AddPostCommand extends Command{
         JsonObject request = (JsonObject) args.get("request");
         String authorId = request.get("authorId").getAsString();
         String text = request.get("text").getAsString();
+        String title = request.get("title").getAsString();
         Long timestamp = System.currentTimeMillis();
         ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
         ArrayList<String> videos = gson.fromJson(request.get("videos").getAsJsonArray(), ArrayList.class);
@@ -50,6 +51,7 @@ public class AddPostCommand extends Command{
         post.setText(text);
         post.setTimestamp(timestamp);
         post.setCompanyPost(isCompanyPost);
+        post.setTitle(title);
 
         boolean response = dbHandler.addPost(post);
         cacheHandler.cachePost(post.getPostId(),post);

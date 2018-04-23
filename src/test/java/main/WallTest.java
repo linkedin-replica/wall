@@ -115,8 +115,6 @@ public class WallTest {
         HashMap<String, Object> request = new HashMap<String, Object>();
         JsonObject object = new JsonObject();
         object.addProperty("replyId", insertedReply.getReplyId());
-        object.addProperty("authorId",insertedReply.getAuthorId());
-        object.addProperty("parentPostId",insertedReply.getParentPostId());
         object.addProperty("parentCommentId",insertedReply.getParentCommentId());
         object.addProperty("text", "Edit Working");
         request.put("request", object);
@@ -182,7 +180,6 @@ public class WallTest {
         HashMap<String,Object> request = new HashMap<String,Object>();
         JsonObject object = new JsonObject();
         object.addProperty("commentId", insertedComment.getCommentId());
-        object.addProperty("authorId", "1");
         object.addProperty("parentPostId", insertedPost.getPostId());
         object.addProperty("text", "Edited Text in comment");
         request.put("request", object);
@@ -318,12 +315,9 @@ public class WallTest {
         JsonObject object = new JsonObject();
         object.addProperty("postId", insertedPost.getPostId());
         object.addProperty("authorId",insertedPost.getAuthorId());
-        object.addProperty("type","post");
-        object.addProperty("headLine","headLine");
         object.addProperty("isArticle",false);
         object.addProperty("text", "Testing edit post command");
         object.add("images", images);
-        object.addProperty("commentsCount", 2);
         request.put("request", object);
         boolean response = (boolean) wallService.serve("editPost",request);
         List<Post> posts = (List<Post>) wallService.serve("getPosts", request);

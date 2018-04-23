@@ -198,30 +198,17 @@ public class ArangoHandlerTest {
        images.add("images");
        ArrayList<String> videos = new ArrayList<String>();
        videos.add("videos");
-       ArrayList<String> urls = new ArrayList<String>();
-       urls.add("urls");
-       ArrayList<String> hashtags = new ArrayList<String>();
-       hashtags.add("hashtags");
-       ArrayList<String> mentions = new ArrayList<String>();
-       mentions.add("mentions");
-       ArrayList<String> shares = new ArrayList<String>();
-       mentions.add("shares");
-
        Post post = new Post();
        post.setArticle(false);
-      // post.setHeadLine("headLine");
        post.setAuthorId(insertedUser.getUserId());
-       post.setCommentsCount(12);
-     //  post.setLikesCount(22);
        post.setImages(images);
        post.setVideos(videos);
-       post.setType("type");
-       post.setText("Text");
+       post.setText("Test Add");
        post.setTimestamp(System.currentTimeMillis());
 
        arangoWallHandler.addPost(post);
        Post newPost = getPost(post.getPostId());
-      // assertEquals("Expected to have a certain post in database", "headLine", newPost.getHeadLine());
+       assertEquals("Expected to have a certain post in database", "Test Add", newPost.getText());
 
    }
 
@@ -265,13 +252,6 @@ public class ArangoHandlerTest {
         ArrayList<String> videos = new ArrayList<String>();
         videos.add("videos");
         ArrayList<String> urls = new ArrayList<String>();
-        urls.add("urls");
-        ArrayList<String> hashtags = new ArrayList<String>();
-        hashtags.add("hashtags");
-        ArrayList<String> mentions = new ArrayList<String>();
-        mentions.add("mentions");
-        ArrayList<String> shares = new ArrayList<String>();
-        mentions.add("shares");
 
         Post post = new Post();
         post.setArticle(false);
@@ -279,7 +259,6 @@ public class ArangoHandlerTest {
         post.setCommentsCount(12);
         post.setImages(images);
         post.setVideos(videos);
-        post.setType("type");
         post.setText("Text");
 
         addPost(post);
@@ -450,10 +429,10 @@ public class ArangoHandlerTest {
         updatedComment.setParentPostId(dbSeed.getInsertedPosts().get(1).getPostId());
         HashMap<String, Object> editCommentArgs = new HashMap<String, Object>();
         editCommentArgs.put("commentId", updatedComment.getCommentId());
-        editCommentArgs.put("parentPostId", updatedComment.getParentPostId());
+        editCommentArgs.put("text", "test edit");
         arangoWallHandler.editComment(editCommentArgs);
         Comment newComment = getComment(insertedComment.getCommentId());
-        assertEquals("Expected to edit a certain comment in database",dbSeed.getInsertedPosts().get(1).getPostId(), newComment.getParentPostId());
+        assertEquals("Expected to edit a certain comment in database","test edit", newComment.getText());
     }
 
     /**
