@@ -267,7 +267,6 @@ public class ArangoWallHandler implements WallHandler {
      */
     public boolean addComment(Comment comment) throws ArangoDBException{
         String postId = comment.getParentPostId();
-        System.out.println(dbName);
         if(postId != null && getPost(postId) != null) {
             arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
             String query = "FOR post in " + postsCollection
