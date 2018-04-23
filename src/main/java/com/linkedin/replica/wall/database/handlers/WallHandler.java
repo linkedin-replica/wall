@@ -17,7 +17,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean deleteBookmark(String userId, String postId);
 
-    public List<Post> getPosts(String userID);
+    public List<ReturnedPost> getPosts(String companyId, int limit);
 
     public boolean addPost(Post post);
 
@@ -56,10 +56,6 @@ public interface WallHandler extends DatabaseHandler {
     public boolean deleteLikeFromReply(String likerId, String replyId);
     
     public Comment getComment(String commentId);
-
-    public Post getPost(String postId);
-
-
 
     public UserProfile getUser(String userId);
 

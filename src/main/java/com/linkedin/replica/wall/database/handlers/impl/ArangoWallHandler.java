@@ -13,7 +13,9 @@ import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.*;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class ArangoWallHandler implements WallHandler {
@@ -91,18 +93,21 @@ public class ArangoWallHandler implements WallHandler {
      * @param userID
      * @return
      */
-    public List<Post> getPosts(String userID) throws ArangoDBException {
-        ArrayList<Post> posts = new ArrayList<Post>();
-
-        String query = "FOR l IN " + postsCollection + " FILTER l.authorId == @authorId RETURN l";
-        Map<String, Object> bindVars = new MapBuilder().put("authorId", userID).get();
-        ArangoCursor<Post> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                Post.class);
-        cursor.forEachRemaining(postDocument -> {
-
-            posts.add(postDocument);
+    public List<ReturnedPost> getPosts(String companyId, int limit) throws ArangoDBException {
+		String query = config.getQueryConfigProp("get.companies.posts.query");
+		Map<String, Object> bindVars = new MapBuilder().get();
+		bindVars.put("companyId", companyId);
+		bindVars.put("limit", limit);
+		
+		ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
+        ArangoCursor<ReturnedPost> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+        		ReturnedPost.class);
+        cursor.forEachRemaining(commentDocument -> {
+        	returnedList.add(commentDocument);
         });
-        return posts;
+		System.out.println(returnedList);
+		System.out.println(new Gson().toJson(returnedList));
+        return returnedList;
     }
 
     /**
@@ -110,7 +115,7 @@ public class ArangoWallHandler implements WallHandler {
      * @param postId
      * @return
      */
-    public Post getPost(String postId) throws ArangoDBException{
+    public Post getArticle(String postId) throws ArangoDBException{
         Post post = null;
         post = arangoDB.db(dbName).collection(postsCollection).getDocument(postId,
                     Post.class);
@@ -224,13 +229,20 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean addComment(Comment comment) throws ArangoDBException{
-            String query = "Insert @comment IN " + commentsCollection;
-            query +=" FOR post in " + postsCollection
-                    + " FILTER post._key == @parentPostId\t"
-                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
-            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
-            bindVars.put("comment", comment);
-            arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
+//<<<<<<< HEAD
+//        String postId = comment.getParentPostId();
+//        if(postId != null && getPost(postId) != null) {
+//            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
+//            String query = "FOR post in " + postsCollection
+//=======
+//            String query = "Insert @comment IN " + commentsCollection;
+//            query +=" FOR post in " + postsCollection
+//>>>>>>> 8fb675ce7d0612122ad188e0ffc51fdca19d4917
+//                    + " FILTER post._key == @parentPostId\t"
+//                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
+//            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
+//            bindVars.put("comment", comment);
+//            arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
             return true;
     }
 
@@ -478,48 +490,7 @@ public class ArangoWallHandler implements WallHandler {
     }
     
 	public ArrayList<ReturnedPost> getNewsFeed(String userId, int limit) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("FOR user in users ");
-		builder.append("FILTER user.userId == @userId ");
-		builder.append("LET friendPosts =  ( ");
-		builder.append("for friend in users ");
-		builder.append("filter friend.userId in user.friendsList ");
-		builder.append("for p in posts ");
-		builder.append("FILTER p.authorId == friend.userId and p.isArticle == false ");
-		builder.append("SORT p.timestamp DESC ");
-		builder.append("Limit 0, @limit ");
-		builder.append("return MERGE_RECURSIVE( ");
-		builder.append("{ \"authorName\":  concat(friend.firstName, \" \", friend.lastName), ");
-		builder.append("\"authorProfilePictureUrl\" : friend.profilePictureUrl, ");
-		builder.append("\"headline\" : friend.headline ");
-		builder.append(" }, ");
-		builder.append("{\"authorId\" : p.authorId, \"postId\" : p.postId, \"text\" : p.text, ");
-		builder.append("\"images\" : p.images, \"videos\" : p.videos, \"commentsCount\" : p.commentsCount, ");
-		builder.append("\"timestamp\" : p.timestamp, \"isCompanyPost\" : p.isCompanyPost, \"likesCount\" : LENGTH(p.likers), ");
-		builder.append("\"liked\" : p.likers any == user.userId } ");
-		builder.append(" ) ");
-		builder.append(" ) ");
-		builder.append(" LET companiesPosts = ( ");
-		builder.append("for company in companies ");
-		builder.append("filter company.companyId in user.followedCompanies ");
-		builder.append("FOR p in posts ");
-		builder.append("FILTER p.authorId == company.companyId and p.isArticle == false and p.timestamp >= @minTimestamp ");
-		builder.append("SORT p.weight DESC ");
-		builder.append("Limit 0, @limit ");
-		builder.append("return MERGE_RECURSIVE( ");
-		builder.append("{ \"authorName\": company.companyName, ");
-		builder.append("\"authorProfilePictureUrl\" : company.profilePictureUrl, ");
-		builder.append("\"headline\" : company.industryType ");
-		builder.append("}, ");
-		builder.append("{\"authorId\" : p.authorId, \"postId\" : p.postId, \"text\" : p.text, ");
-		builder.append("\"images\" : p.images, \"videos\" : p.videos, \"commentsCount\" : p.commentsCount, ");
-		builder.append("\"timestamp\" : p.timestamp, \"isCompanyPost\" : p.isCompanyPost, \"likesCount\" : LENGTH(p.likers), ");
-		builder.append("\"liked\" : p.likers any == user.userId } ");
-		builder.append(" ) ");
-		builder.append(" ) ");
-		builder.append("return { [ \"results\" ]: APPEND(friendPosts, companiesPosts)} ");
-
-		String query = builder.toString();
+		String query = config.getQueryConfigProp("get.newsfeed.query");
 		Map<String, Object> bindVars = new MapBuilder().get();
 		bindVars.put("userId", userId);
 		bindVars.put("limit", limit);
@@ -529,6 +500,7 @@ public class ArangoWallHandler implements WallHandler {
 		calendar.setTime(new Date());
 		calendar.add(Calendar.WEEK_OF_MONTH, -period);
 		bindVars.put("minTimestamp", calendar.getTime().getTime());
+	
 		ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
 		ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
 		cursor.forEachRemaining(postDocument -> {
@@ -546,16 +518,24 @@ public class ArangoWallHandler implements WallHandler {
 			}
 		});
 		System.out.println(returnedList);
+		System.out.println(new Gson().toJson(returnedList));
 		return returnedList;
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
 		String rootFolder = "src/main/resources/";
 		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
-				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config");
+				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config",
+				rootFolder + "query.config");
 
 		DatabaseConnection.init();
 		ArangoWallHandler handler = new ArangoWallHandler();
 		handler.getNewsFeed("1", 10);
+//		handler.getPosts("12", 10);
+		
+//		Properties properties = new Properties();
+//		properties.load(new FileInputStream("src/main/resources/query.config"));
+//		System.out.println(properties.getProperty("get.newsfeed.query"));
+//		System.out.println(properties.getProperty("get.companies.post.query"));
 	}
 }
