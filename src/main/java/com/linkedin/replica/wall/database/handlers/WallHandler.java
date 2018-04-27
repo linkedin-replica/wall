@@ -19,13 +19,15 @@ public interface WallHandler extends DatabaseHandler {
 
     public List<ReturnedPost> getPosts(String companyId, int limit);
 
+    public ReturnedPost getArticle(String postId, String userId);
+
     public boolean addPost(Post post);
 
     public boolean editPost(HashMap<String, Object> args);
 
     public boolean deletePost(String postId);
 
-    public List<Comment> getComments(String postID);
+    public List<ReturnedComment> getComments(String postId, String userId, int limit);
 
     public boolean addComment(Comment comment);
 
@@ -33,7 +35,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public boolean deleteComment(String commentId);
 
-    public List<Reply> getReplies(String commentId);
+    public List<ReturnedReply> getReplies(String commentId, String userId, int limit);
 
     public Reply getReply(String replyId);
 

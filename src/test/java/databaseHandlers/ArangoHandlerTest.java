@@ -43,7 +43,7 @@ public class ArangoHandlerTest {
         // startup SearchEngine
 		String rootFolder = "src/main/resources/";
 		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
-				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config");
+				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config", rootFolder + "query.config");
 		config = Configuration.getInstance();
 		DatabaseConnection.init();
         arangoDB = DatabaseConnection.getInstance().getArangodb();
@@ -262,7 +262,7 @@ public class ArangoHandlerTest {
         post.setText("Text");
 
         addPost(post);
-        List<Post> newPost = arangoWallHandler.getPosts(insertedUser.getUserId());
+        List<ReturnedPost> newPost = arangoWallHandler.getPosts(insertedUser.getUserId(),10);
         assertEquals("Expected to have 1 post with that post ID", 1, newPost.size());
     }
 
@@ -448,7 +448,7 @@ public class ArangoHandlerTest {
      */
     @Test
     public void testGetComments(){
-        List<Comment> newComments = arangoWallHandler.getComments(insertedComment.getParentPostId());
+        List<ReturnedComment> newComments = arangoWallHandler.getComments(insertedComment.getParentPostId(), insertedUser.getUserId(), 10);
         assertEquals("Expected to have 1 comment with that post ID", 10, newComments.size());
 
     }

@@ -10,6 +10,7 @@ import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.models.ReturnedReply;
 
 public class GetRepliesCommand extends Command{
 
@@ -30,8 +31,10 @@ public class GetRepliesCommand extends Command{
         // call dbHandler to list of replies from db
         JsonObject request = (JsonObject) args.get("request");
         String parentCommentId = request.get("parentCommentId").getAsString();
+        String authorId = request.get("authorId").getAsString();
+        int limit = request.get("limit").getAsInt();
 
-        List<Reply> replies = dbHandler.getReplies(parentCommentId);
+        List<ReturnedReply> replies = dbHandler.getReplies(parentCommentId, authorId, limit);
         return replies;
     }
 

@@ -52,7 +52,7 @@ public class WallTest {
         String rootFolder = "src/main/resources/";
         Configuration.init(rootFolder + "app.config",
                 rootFolder + "arango.test.config",
-                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+ "cache.config");
+                rootFolder + "commands.config", rootFolder + "controller.config",rootFolder+ "cache.config", rootFolder + "query.config");
         config = Configuration.getInstance();
         wallService = new WallService();
         DatabaseConnection.init();

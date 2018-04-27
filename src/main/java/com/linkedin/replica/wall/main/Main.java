@@ -20,7 +20,7 @@ public class Main {
      */
     public static void testingStart(String... args) throws FileNotFoundException, ClassNotFoundException, IOException {
         // create singleton instance of Configuration class that will hold configuration files paths
-        Configuration.init(args[0], args[1], args[2],args[3],args[4]);
+        Configuration.init(args[0], args[1], args[2],args[3],args[4], args[5]);
 
         // create singleton instance of DatabaseConnection class that is responsible for intiating connections
         // with databases
@@ -28,12 +28,12 @@ public class Main {
     }
 
     public static void start(String... args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, TimeoutException{
-        if(args.length != 5)
+        if(args.length != 6)
             throw new IllegalArgumentException("Expected three arguments. 1- app config file path \n "
                     + "2- database config file path \n  3- commands config file path \n 4- controller config file path \n 5- redis config file path");
 
         // create singleton instance of Configuration class that will hold configuration files paths
-        Configuration.init(args[0], args[1], args[2], args[3],args[4]);
+        Configuration.init(args[0], args[1], args[2], args[3],args[4], args[5]);
 
         // create singleton instance of DatabaseConnection class that is responsible for intiating connections
         // with databases

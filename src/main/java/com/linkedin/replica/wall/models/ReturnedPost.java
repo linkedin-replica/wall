@@ -8,6 +8,7 @@ public class ReturnedPost {
 	private String postId;
 	private String authorId;
 	private String text;
+	private String title;
 	private ArrayList<String> images;
 	private ArrayList<String> videos;
 	private int commentsCount;
@@ -42,6 +43,14 @@ public class ReturnedPost {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public ArrayList<String> getImages() {
@@ -141,6 +150,7 @@ public class ReturnedPost {
 			case "postId" : setPostId(val.toString()); break;
 			case "authorId" : setAuthorId(val.toString()); break;
 			case "text" : setText(val.toString()); break;
+			case "title" : setTitle(val.toString()); break;
 			case "images" : setImages((ArrayList<String>) val); break;
 			case "videos" :  setVideos((ArrayList<String>) val); break;
 			case "commentsCount" : setCommentsCount(Integer.parseInt(val.toString())); break;
@@ -153,10 +163,11 @@ public class ReturnedPost {
 			case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
 		}
 	}
+
 		
 	@Override
 	public String toString() {
-		return "ReturnedPost [postId=" + postId + ", authorId=" + authorId + ", text=" + text + ", images=" + images
+		return "ReturnedPost [postId=" + postId + ", authorId=" + authorId + ", text=" + text + ", title=" + title + ", images=" + images
 				+ ", videos=" + videos + ", commentsCount=" + commentsCount + ", timestamp=" + timestamp
 				+ ", isCompanyPost=" + isCompanyPost + ", authorName=" + authorName + ", authorProfilePictureUrl="
 				+ authorProfilePictureUrl + ", headLine=" + headLine + ", likers=" + likers + ", liked=" + liked + "]";

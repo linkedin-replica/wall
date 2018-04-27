@@ -27,8 +27,8 @@ public class RequestProcessingHandlerTest {
     @BeforeClass
     public static void setup() throws IOException{
         // initialize configuration
-        String[] a = {"src/main/resources/app.config","src/main/resources/arango.test.config", "src/main/resources/commands.config", "src/main/resources/controller.config", "src/main/resources/cache.config"};
-        Configuration.init(a[0], a[1], a[2], a[3],a[4]);
+        String[] a = {"src/main/resources/app.config","src/main/resources/arango.test.config", "src/main/resources/commands.config", "src/main/resources/controller.config", "src/main/resources/cache.config", "src/main/resources/query.config"};
+        Configuration.init(a[0], a[1], a[2], a[3],a[4], a[5]);
     }
 
     @Test

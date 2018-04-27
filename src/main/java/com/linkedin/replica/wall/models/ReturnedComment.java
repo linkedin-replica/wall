@@ -2,17 +2,21 @@ package com.linkedin.replica.wall.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class ReturnedComment {
     private String commentId;
-    private String authorId,parentPostId;
-    private int likesCount,repliesCount;
+    private String authorId;
+    private String parentPostId;
+    private int repliesCount;
     private String text;
-    private Long timestamp;
+    private long timestamp;
+
     private String authorName;
     private String authorProfilePictureUrl;
+    private String headLine;
     private boolean liked;
-    private ArrayList<HashMap<String,String>> likers;
+    private ArrayList<Liker> likers;
 
     public ReturnedComment(){
 
@@ -42,14 +46,6 @@ public class ReturnedComment {
         this.parentPostId = parentPostId;
     }
 
-    public int getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
-    }
-
     public int getRepliesCount() {
         return repliesCount;
     }
@@ -66,11 +62,11 @@ public class ReturnedComment {
         this.text = text;
     }
 
-    public Long getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Long timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -90,11 +86,72 @@ public class ReturnedComment {
         this.authorProfilePictureUrl = authorProfilePictureUrl;
     }
 
+    public String getHeadLine() {
+        return headLine;
+    }
+
+    public void setHeadLine(String headLine) {
+        this.headLine = headLine;
+    }
+
     public boolean isLiked() {
         return liked;
     }
 
     public void setLiked(boolean liked) {
         this.liked = liked;
+    }
+
+    public ArrayList<Liker> getLikers() {
+        return likers;
+    }
+
+    public void setLikers(Object val) {
+        this.likers = new ArrayList<Liker>();
+        ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String,Object>>) val;
+        for(int i=0; i<list.size(); ++i){
+            HashMap<String, Object> map = list.get(i);
+            Iterator<String> iter = map.keySet().iterator();
+            Liker liker = new Liker();
+            likers.add(liker);
+            while(iter.hasNext()){
+                String key = iter.next();
+                Object value = map.get(key);
+                liker.set(key, value);
+            }
+        }
+    }
+
+    public void set(String attributeName, Object val){
+        switch(attributeName){
+            case "commentId" : setCommentId(val.toString()); break;
+            case "authorId" : setAuthorId(val.toString()); break;
+            case "parentPostId" : setParentPostId(val.toString()); break;
+            case "text" : setText(val.toString()); break;
+            case "repliesCount" : setRepliesCount(Integer.parseInt(val.toString())); break;
+            case "timestamp" : setTimestamp(Long.parseLong(val.toString())); break;
+            case "authorName" : setAuthorName(val.toString()); break;
+            case "authorProfilePictureUrl" : setAuthorProfilePictureUrl(val.toString()); break;
+            case "likers" : setLikers(val);; break;
+            case "headLine" : setHeadLine(val.toString()); break;
+            case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ReturnedComment{" +
+                "commentId='" + commentId + '\'' +
+                ", authorId='" + authorId + '\'' +
+                ", parentPostId='" + parentPostId + '\'' +
+                ", repliesCount=" + repliesCount +
+                ", text='" + text + '\'' +
+                ", timestamp=" + timestamp +
+                ", authorName='" + authorName + '\'' +
+                ", authorProfilePictureUrl='" + authorProfilePictureUrl + '\'' +
+                ", headLine='" + headLine + '\'' +
+                ", liked=" + liked +
+                ", likers=" + likers +
+                '}';
     }
 }

@@ -90,7 +90,8 @@ public class ArangoWallHandler implements WallHandler {
 
     /**
      * function to get posts of specific user.
-     * @param userID
+     * @param companyId
+     * @param limit
      * @return
      */
     public List<ReturnedPost> getPosts(String companyId, int limit) throws ArangoDBException {
@@ -102,11 +103,9 @@ public class ArangoWallHandler implements WallHandler {
 		ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
         ArangoCursor<ReturnedPost> cursor = arangoDB.db(dbName).query(query, bindVars, null,
         		ReturnedPost.class);
-        cursor.forEachRemaining(commentDocument -> {
-        	returnedList.add(commentDocument);
+        cursor.forEachRemaining(postDocument -> {
+        	returnedList.add(postDocument);
         });
-		System.out.println(returnedList);
-		System.out.println(new Gson().toJson(returnedList));
         return returnedList;
     }
 
@@ -115,12 +114,19 @@ public class ArangoWallHandler implements WallHandler {
      * @param postId
      * @return
      */
-    public Post getArticle(String postId) throws ArangoDBException{
-        Post post = null;
-        post = arangoDB.db(dbName).collection(postsCollection).getDocument(postId,
-                    Post.class);
+    public ReturnedPost getArticle(String postId, String userId) throws ArangoDBException{
+        String query = config.getQueryConfigProp("get.articles.query");
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("postId", postId);
+        bindVars.put("userId", userId);
 
-        return post;
+        ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
+        ArangoCursor<ReturnedPost> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                ReturnedPost.class);
+        cursor.forEachRemaining(articleDocument -> {
+            returnedList.add(articleDocument);
+        });
+        return returnedList.get(0);
     }
 
     public UserProfile getUser(String userId) throws ArangoDBException {
@@ -197,17 +203,19 @@ public class ArangoWallHandler implements WallHandler {
      * @param postId
      * @return
      */
-    public List<Comment> getComments(String postId) throws ArangoDBException {
-        ArrayList<Comment> comments = new ArrayList<Comment>();
-        String query = "FOR l IN " + commentsCollection + " FILTER l.parentPostId == @parentPostId RETURN l";
-        Map<String, Object> bindVars = new MapBuilder().put("parentPostId", postId).get();
-        ArangoCursor<Comment> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                Comment.class);
+    public List<ReturnedComment> getComments(String postId, String userId, int limit ) throws ArangoDBException {
+        String query = config.getQueryConfigProp("get.comments.query");
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("postId", postId);
+        bindVars.put("userId", userId);
+        bindVars.put("limit", limit);
+        ArrayList<ReturnedComment> returnedList = new ArrayList<ReturnedComment>();
+        ArangoCursor<ReturnedComment> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                ReturnedComment.class);
         cursor.forEachRemaining(commentDocument -> {
-            comments.add(commentDocument);
+            returnedList.add(commentDocument);
         });
-
-        return comments;
+        return returnedList;
     }
 
     /**
@@ -229,21 +237,14 @@ public class ArangoWallHandler implements WallHandler {
      * @return
      */
     public boolean addComment(Comment comment) throws ArangoDBException{
-//<<<<<<< HEAD
-//        String postId = comment.getParentPostId();
-//        if(postId != null && getPost(postId) != null) {
-//            arangoDB.db(dbName).collection(commentsCollection).insertDocument(comment);
-//            String query = "FOR post in " + postsCollection
-//=======
-//            String query = "Insert @comment IN " + commentsCollection;
-//            query +=" FOR post in " + postsCollection
-//>>>>>>> 8fb675ce7d0612122ad188e0ffc51fdca19d4917
-//                    + " FILTER post._key == @parentPostId\t"
-//                    + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
-//            Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
-//            bindVars.put("comment", comment);
-//            arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
-            return true;
+        String query = "Insert @comment IN " + commentsCollection;
+        query +=" FOR post in " + postsCollection
+                + " FILTER post._key == @parentPostId\t"
+                + "UPDATE post WITH { commentsCount : post.commentsCount + 1 } IN " + postsCollection;
+        Map<String, Object> bindVars = new MapBuilder().put("parentPostId", comment.getParentPostId()).get();
+        bindVars.put("comment", comment);
+        arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
+        return true;
     }
 
     /**
@@ -290,17 +291,19 @@ public class ArangoWallHandler implements WallHandler {
         return  true;
     }
 
-    public List<Reply> getReplies(String commentId) throws ArangoDBException {
-        ArrayList<Reply> replies = new ArrayList<Reply>();
-        String query = "FOR r IN " + repliesCollection + " FILTER r.parentCommentId == @parentCommentId RETURN r";
-        Map<String, Object> bindVars = new MapBuilder().put("parentCommentId", commentId).get();
-        ArangoCursor<Reply> cursor = arangoDB.db(dbName).query(query, bindVars, null,
-                Reply.class);
-        cursor.forEachRemaining(replyDocument -> {
-            replies.add(replyDocument);
+    public List<ReturnedReply> getReplies(String commentId, String userId, int limit) throws ArangoDBException {
+        String query = config.getQueryConfigProp("get.replies.query");
+        Map<String, Object> bindVars = new MapBuilder().get();
+        bindVars.put("commentId", commentId);
+        bindVars.put("userId", userId);
+        bindVars.put("limit", limit);
+        ArrayList<ReturnedReply> returnedList = new ArrayList<ReturnedReply>();
+        ArangoCursor<ReturnedReply> cursor = arangoDB.db(dbName).query(query, bindVars, null,
+                ReturnedReply.class);
+        cursor.forEachRemaining(commentDocument -> {
+            returnedList.add(commentDocument);
         });
-
-        return replies;
+        return returnedList;
     }
 
     public Reply getReply(String replyId) throws ArangoDBException {
@@ -517,25 +520,7 @@ public class ArangoWallHandler implements WallHandler {
 				}
 			}
 		});
-		System.out.println(returnedList);
-		System.out.println(new Gson().toJson(returnedList));
 		return returnedList;
 	}
 
-	public static void main(String[] args) throws ClassNotFoundException, IOException {
-		String rootFolder = "src/main/resources/";
-		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
-				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config",
-				rootFolder + "query.config");
-
-		DatabaseConnection.init();
-		ArangoWallHandler handler = new ArangoWallHandler();
-		handler.getNewsFeed("1", 10);
-//		handler.getPosts("12", 10);
-		
-//		Properties properties = new Properties();
-//		properties.load(new FileInputStream("src/main/resources/query.config"));
-//		System.out.println(properties.getProperty("get.newsfeed.query"));
-//		System.out.println(properties.getProperty("get.companies.post.query"));
-	}
 }

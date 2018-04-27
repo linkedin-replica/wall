@@ -9,6 +9,7 @@ import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.models.ReturnedComment;
 
 public class GetCommentsCommand extends Command{
 
@@ -29,8 +30,9 @@ public class GetCommentsCommand extends Command{
         // call dbHandler to list of comments from db
         JsonObject request = (JsonObject) args.get("request");
         String parentPostId = request.get("parentPostId").getAsString();
-
-        List<Comment> comments = dbHandler.getComments(parentPostId);
+        String authorId = request.get("authorId").getAsString();
+        int limit = request.get("limit").getAsInt();
+        List<ReturnedComment> comments = dbHandler.getComments(parentPostId, authorId, limit);
         return comments;
     }
 

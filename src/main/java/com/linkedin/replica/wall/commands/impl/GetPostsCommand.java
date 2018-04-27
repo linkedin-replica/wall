@@ -10,6 +10,7 @@ import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.ReturnedPost;
 
 public class GetPostsCommand extends Command{
 
@@ -24,14 +25,14 @@ public class GetPostsCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId"});
+        validateArgs(new String[]{"companyId"});
 
 
         // call dbHandler to list of posts from db
         JsonObject request = (JsonObject) args.get("request");
-        String authorID = request.get("authorId").getAsString();
-
-        List<Post> posts = dbHandler.getPosts(authorID);
+        String companyId = request.get("companyId").getAsString();
+        int limit = request.get("limit").getAsInt();
+        List<ReturnedPost> posts = dbHandler.getPosts(companyId, limit);
         return posts;
     }
 

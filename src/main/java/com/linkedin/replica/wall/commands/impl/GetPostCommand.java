@@ -26,9 +26,10 @@ public class GetPostCommand extends Command{
         PostsCacheHandler postsCacheHandler = (PostsCacheHandler)this.cacheHandler;
         validateArgs(new String[]{"postId"});
         String postId = args.get("postId").toString();
+        String userId = args.get("usserId").toString();
         Object post = postsCacheHandler.getPost(postId,Post.class);
         if( post == null){
-            post = dbHandler.getPost(postId);
+            post = dbHandler.getArticle(postId, userId);
             postsCacheHandler.cachePost(postId,post);
         }
         return post;
