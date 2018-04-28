@@ -89,13 +89,14 @@ public class WallTest {
 
         HashMap<String, Object> request = new HashMap<String, Object>();
         JsonObject object = new JsonObject();
-        object.addProperty("authorId","1");
+        object.addProperty("authorId",insertedUser.getUserId());
         object.addProperty("parentPostId", insertedPost.getPostId());
         object.addProperty("parentCommentId",insertedComment.getCommentId());
         object.addProperty("text","TestTestTest");
+        object.addProperty("limit",10);
         request.put("request", object);
         boolean response = (boolean) wallService.serve("addReply",request);
-        List<Reply> replies = (List<Reply>)  wallService.serve("getReplies", request);
+        List<ReturnedReply> replies = (List<ReturnedReply>)  wallService.serve("getReplies", request);
         Boolean found = false;
         for(int i = 0;i < replies.size(); i++){
                 if(replies.get(i).getText().equals("TestTestTest")){
@@ -115,8 +116,10 @@ public class WallTest {
         HashMap<String, Object> request = new HashMap<String, Object>();
         JsonObject object = new JsonObject();
         object.addProperty("replyId", insertedReply.getReplyId());
+        object.addProperty("authorId",insertedUser.getUserId());
         object.addProperty("parentCommentId",insertedReply.getParentCommentId());
         object.addProperty("text", "Edit Working");
+        object.addProperty("limit",10);
         request.put("request", object);
         boolean response = (boolean) wallService.serve("editReply",request);
         List<Reply> replies = (List<Reply>) wallService.serve("getReplies", request);

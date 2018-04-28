@@ -14,7 +14,6 @@ public class ReturnedReply {
 
     private String authorName;
     private String authorProfilePictureUrl;
-    private String headLine;
     private boolean liked;
     private ArrayList<Liker> likers;
 
@@ -86,14 +85,6 @@ public class ReturnedReply {
         this.authorProfilePictureUrl = authorProfilePictureUrl;
     }
 
-    public String getHeadLine() {
-        return headLine;
-    }
-
-    public void setHeadLine(String headLine) {
-        this.headLine = headLine;
-    }
-
     public boolean isLiked() {
         return liked;
     }
@@ -133,7 +124,6 @@ public class ReturnedReply {
             case "authorName" : setAuthorName(val.toString()); break;
             case "authorProfilePictureUrl" : setAuthorProfilePictureUrl(val.toString()); break;
             case "likers" : setLikers(val);; break;
-            case "headLine" : setHeadLine(val.toString()); break;
             case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
         }
     }
@@ -149,7 +139,6 @@ public class ReturnedReply {
                 ", timestamp=" + timestamp +
                 ", authorName='" + authorName + '\'' +
                 ", authorProfilePictureUrl='" + authorProfilePictureUrl + '\'' +
-                ", headLine='" + headLine + '\'' +
                 ", liked=" + liked +
                 ", likers=" + likers +
                 '}';

@@ -11,10 +11,10 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
-public class GetPostCommand extends Command{
+public class GetArticleCommand extends Command{
 
 
-    public GetPostCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
+    public GetArticleCommand(HashMap<String, Object> args, DatabaseHandler dbHandler){
         super(args,dbHandler);
     }
 
@@ -24,9 +24,9 @@ public class GetPostCommand extends Command{
 
         WallHandler dbHandler = (WallHandler) this.dbHandler;
         PostsCacheHandler postsCacheHandler = (PostsCacheHandler)this.cacheHandler;
-        validateArgs(new String[]{"postId"});
+        validateArgs(new String[]{"postId", "userId"});
         String postId = args.get("postId").toString();
-        String userId = args.get("usserId").toString();
+        String userId = args.get("userId").toString();
         Object post = postsCacheHandler.getPost(postId,Post.class);
         if( post == null){
             post = dbHandler.getArticle(postId, userId);

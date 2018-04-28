@@ -24,7 +24,7 @@ public class GetCommentsCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"parentPostId"});
+        validateArgs(new String[]{"parentPostId", "authorId", "limit"});
 
 
         // call dbHandler to list of comments from db

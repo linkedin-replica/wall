@@ -26,7 +26,7 @@ public class GetNewsfeedCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"user","limit"});
+        validateArgs(new String[]{"userId","limit"});
 
 
         // call dbHandler to get error or success message from dbHandler

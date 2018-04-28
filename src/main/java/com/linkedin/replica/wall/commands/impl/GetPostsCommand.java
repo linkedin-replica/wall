@@ -25,7 +25,7 @@ public class GetPostsCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"companyId"});
+        validateArgs(new String[]{"companyId", "limit"});
 
 
         // call dbHandler to list of posts from db

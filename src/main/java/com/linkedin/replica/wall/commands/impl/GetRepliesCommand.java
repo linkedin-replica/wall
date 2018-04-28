@@ -25,7 +25,7 @@ public class GetRepliesCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"parentCommentId"});
+        validateArgs(new String[]{"parentCommentId", "authorId", "limit"});
 
 
         // call dbHandler to list of replies from db
