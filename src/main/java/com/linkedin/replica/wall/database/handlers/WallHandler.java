@@ -11,7 +11,7 @@ public interface WallHandler extends DatabaseHandler {
 
     public List<ReturnedPost> getNewsFeed(String userId,int limit);
 
-    public ArrayList<String> getBookmarks(String userId);
+    public ArrayList<ReturnedPost> getBookmarks(String userId, int limit);
 
     public boolean addBookmark(String userId, String postId);
 
