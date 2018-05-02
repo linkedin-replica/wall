@@ -13,9 +13,7 @@ import com.linkedin.replica.wall.database.DatabaseConnection;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public class ArangoWallHandler implements WallHandler {
@@ -79,13 +77,26 @@ public class ArangoWallHandler implements WallHandler {
      * @return list of users bookmarks.
      */
 
-    public ArrayList<String> getBookmarks(String userId) throws ArangoDBException {
-        ArrayList<String> ans = new ArrayList<>();
-        UserProfile user = arangoDB.db(dbName).collection(usersCollection).getDocument(userId, UserProfile.class);
-        ans = user.getBookmarks();
+    public ArrayList<ReturnedPost> getBookmarks(String userId, int limit) throws ArangoDBException {
+		String query = config.getQueryConfigProp("get.bookmarks.query");
+		Map<String, Object> bindVars = new MapBuilder().get();
+		bindVars.put("userId", userId);
+		bindVars.put("limit", limit);
 
-        return ans;
-
+		ArangoCursor<ArrayList> cursor = arangoDB.db(dbName).query(query, bindVars, null, ArrayList.class);
+		ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
+		cursor.forEachRemaining(list -> {
+				HashMap<String, Object> map = (HashMap<String, Object> ) list.get(0);
+				Iterator<String> iter = map.keySet().iterator();
+				ReturnedPost returnedPost = new ReturnedPost();
+				returnedList.add(returnedPost);
+				while(iter.hasNext()){
+					String key = iter.next();
+					Object val = map.get(key);
+					returnedPost.set(key, val);
+			}
+		});
+		return returnedList;
     }
 
     /**
@@ -123,10 +134,15 @@ public class ArangoWallHandler implements WallHandler {
         ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
         ArangoCursor<ReturnedPost> cursor = arangoDB.db(dbName).query(query, bindVars, null,
                 ReturnedPost.class);
-        cursor.forEachRemaining(articleDocument -> {
-            returnedList.add(articleDocument);
-        });
-        return returnedList.get(0);
+        
+        if(cursor.hasNext())
+        	return cursor.next();
+        else 
+        	return null;
+//        cursor.forEachRemaining(articleDocument -> {
+//            returnedList.add(articleDocument);
+//        });
+//        return returnedList.get(0);
     }
 
     public UserProfile getUser(String userId) throws ArangoDBException {
@@ -523,4 +539,25 @@ public class ArangoWallHandler implements WallHandler {
 		return returnedList;
 	}
 
+	public static void main(String[] args) throws ClassNotFoundException, IOException {
+		String rootFolder = "src/main/resources/";
+		Configuration.init(rootFolder + "app.config", rootFolder + "arango.test.config",
+				rootFolder + "commands.config", rootFolder + "controller.config", rootFolder + "cache.config",
+				rootFolder + "query.config");
+
+		DatabaseConnection.init();
+		ArangoWallHandler handler = new ArangoWallHandler();
+//		System.out.println(handler.getNewsFeed("1", 10));
+//		System.out.println(handler.getPosts("12", 10));
+//		System.out.println(handler.getArticle("4", "1"));
+//		System.out.println(handler.getComments("1", "1", 10));
+//		System.out.println(handler.getReplies("1", "1", 10));
+		System.out.println(handler.getBookmarks("1", 10));
+		DatabaseConnection.getInstance().closeConnections();
+
+//		Properties properties = new Properties();
+//		properties.load(new FileInputStream("src/main/resources/query.config"));
+//		System.out.println(properties.getProperty("get.newsfeed.query"));
+//		System.out.println(properties.getProperty("get.companies.post.query"));
+	}
 }

@@ -2,7 +2,6 @@ package com.linkedin.replica.wall.commands.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -11,8 +10,6 @@ import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Comment;
-import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.ReturnedPost;
 
 public class GetPostsCommand extends Command{
@@ -31,7 +28,7 @@ public class GetPostsCommand extends Command{
         // validate that all required arguments that are passed
         validateArgs(new String[]{"companyId", "limit"});
         // call dbHandler to list of posts from db
-        JsonObject request = (JsonObject) args.get("request");
+        JsonObject request = (JsonObject) args.get("request"); 
         String companyId = request.get("companyId").getAsString();
         int limit = request.get("limit").getAsInt();
         List<ReturnedPost> posts = (List<ReturnedPost>) postsCacheHandler.getCompanyPosts(companyId,limit,ReturnedPost.class);

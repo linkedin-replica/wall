@@ -17,7 +17,7 @@ public class ReturnedPost implements Comparable<ReturnedPost> {
 
 	private String authorName;
 	private String authorProfilePictureUrl;
-	private String headLine;
+	private String headline;
 	private ArrayList<Liker> likers;
 	private boolean liked;
 
@@ -109,12 +109,12 @@ public class ReturnedPost implements Comparable<ReturnedPost> {
 		this.authorProfilePictureUrl = authorProfilePictureUrl;
 	}
 
-	public String getHeadLine() {
-		return headLine;
+	public String getHeadline() {
+		return headline;
 	}
 
-	public void setHeadLine(String headLine) {
-		this.headLine = headLine;
+	public void setHeadline(String headline) {
+		this.headline = headline;
 	}
 
 	public boolean isLiked() {
@@ -159,7 +159,7 @@ public class ReturnedPost implements Comparable<ReturnedPost> {
 			case "authorName" : setAuthorName(val.toString()); break;
 			case "authorProfilePictureUrl" : setAuthorProfilePictureUrl(val.toString()); break;
 			case "likers" : setLikers(val);; break;
-			case "headLine" : setHeadLine(val.toString()); break;
+			case "headline" : setHeadline(val.toString()); break;
 			case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
 		}
 	}
@@ -170,7 +170,7 @@ public class ReturnedPost implements Comparable<ReturnedPost> {
 		return "ReturnedPost [postId=" + postId + ", authorId=" + authorId + ", text=" + text + ", title=" + title + ", images=" + images
 				+ ", videos=" + videos + ", commentsCount=" + commentsCount + ", timestamp=" + timestamp
 				+ ", isCompanyPost=" + isCompanyPost + ", authorName=" + authorName + ", authorProfilePictureUrl="
-				+ authorProfilePictureUrl + ", headLine=" + headLine + ", likers=" + likers + ", liked=" + liked + "]";
+				+ authorProfilePictureUrl + ", headline=" + headline + ", likers=" + likers + ", liked=" + liked + "]";
 	}
 
 

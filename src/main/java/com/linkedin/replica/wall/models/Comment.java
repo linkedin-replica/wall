@@ -3,14 +3,13 @@ package com.linkedin.replica.wall.models;
 import com.arangodb.entity.DocumentField;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Comment {
 
     @DocumentField(DocumentField.Type.KEY)
         private String commentId;
         private String authorId,parentPostId;
-        private int likesCount,repliesCount;
+        private int likesCount, repliesCount;
         private String text;
         private Long timestamp;
         private ArrayList<String> likers;
