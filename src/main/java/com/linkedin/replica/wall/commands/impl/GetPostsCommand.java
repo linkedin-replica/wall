@@ -1,15 +1,12 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Comment;
-import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.ReturnedPost;
 
 public class GetPostsCommand extends Command{
@@ -29,7 +26,7 @@ public class GetPostsCommand extends Command{
 
 
         // call dbHandler to list of posts from db
-        JsonObject request = (JsonObject) args.get("request");
+        JsonObject request = (JsonObject) args.get("request"); 
         String companyId = request.get("companyId").getAsString();
         int limit = request.get("limit").getAsInt();
         List<ReturnedPost> posts = dbHandler.getPosts(companyId, limit);
