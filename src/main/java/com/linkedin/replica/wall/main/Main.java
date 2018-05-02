@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.main;
 
+import com.linkedin.replica.wall.cache.Cache;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.controller.Server;
 import com.linkedin.replica.wall.database.DatabaseConnection;
@@ -38,6 +39,8 @@ public class Main {
         // create singleton instance of DatabaseConnection class that is responsible for intiating connections
         // with databases
         DatabaseConnection.init();
+        //Initialize cache
+        Cache.init();
         // start RabbitMQ
         new MessageReceiver();
         // start server
