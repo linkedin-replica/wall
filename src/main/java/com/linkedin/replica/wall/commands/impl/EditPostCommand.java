@@ -43,7 +43,7 @@ public class EditPostCommand extends Command{
         }
 
         boolean response = dbHandler.editPost(request);
-        cacheHandler.editPost(postId,request);
+        cacheHandler.deletePost(postId);
         return response;
     }
 }
