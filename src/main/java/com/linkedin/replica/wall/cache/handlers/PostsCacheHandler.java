@@ -1,9 +1,6 @@
 package com.linkedin.replica.wall.cache.handlers;
 
-import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.models.ReturnedPost;
-
-import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;

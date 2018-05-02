@@ -30,10 +30,13 @@ public class GetArticleCommand extends Command {
 		String userId = request.get("userId").getAsString();
 		Object post = postsCacheHandler.getPost(postId, ReturnedPost.class);
 		if (post == null) {
-			dbHandler.getArticle(postId, userId);
+			post = dbHandler.getArticle(postId, userId);
 			postsCacheHandler.cachePost(postId, post);
 		}
-		return post;
+		if(post!=null)
+			return post;
+		else
+			return new Object();
 
 	}
 }
