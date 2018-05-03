@@ -30,6 +30,8 @@ public class Liker {
 	}
 
 	public void set(String attributeName, Object val) {
+		if(val == null)
+			return;
 		switch (attributeName) {
 		case "likerId":
 			setLikerId(val.toString());

@@ -25,13 +25,13 @@ public class GetRepliesCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"parentCommentId", "authorId", "limit"});
+        validateArgs(new String[]{"parentCommentId", "userId", "limit"});
 
 
         // call dbHandler to list of replies from db
         JsonObject request = (JsonObject) args.get("request");
         String parentCommentId = request.get("parentCommentId").getAsString();
-        String authorId = request.get("authorId").getAsString();
+        String authorId = request.get("userId").getAsString();
         int limit = request.get("limit").getAsInt();
 
         List<ReturnedReply> replies = dbHandler.getReplies(parentCommentId, authorId, limit);

@@ -20,7 +20,6 @@ public class DatabaseConnection {
     private DatabaseConnection() {
         config = Configuration.getInstance();
         instantiateArrangoDB();
-        //redis = new Jedis();
     }
 
     /**

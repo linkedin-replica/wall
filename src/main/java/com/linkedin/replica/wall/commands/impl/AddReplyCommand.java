@@ -22,11 +22,11 @@ public class AddReplyCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "parentCommentId", "text"});
+        validateArgs(new String[]{"userId", "parentPostId", "parentCommentId", "text"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
-        String authorId = request.get("authorId").getAsString();
+        String authorId = request.get("userId").getAsString();
         String parentPostId = request.get("parentPostId").getAsString();
         String parentCommentId = request.get("parentCommentId").getAsString();
         String text = request.get("text").getAsString();

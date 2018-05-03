@@ -148,6 +148,9 @@ public class ReturnedReply {
 		case "authorProfilePictureUrl":
 			setAuthorProfilePictureUrl(val.toString());
 			break;
+		case "headline":
+			setHeadline(val.toString());
+			break;
 		case "likers":
 			setLikers(val);
 			;
