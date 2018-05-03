@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class ReturnedPost {
+public class ReturnedPost implements Comparable<ReturnedPost> {
 	private String postId;
 	private String authorId;
 	private String text;
@@ -173,5 +173,12 @@ public class ReturnedPost {
 				+ ", videos=" + videos + ", commentsCount=" + commentsCount + ", timestamp=" + timestamp
 				+ ", isCompanyPost=" + isCompanyPost + ", authorName=" + authorName + ", authorProfilePictureUrl="
 				+ authorProfilePictureUrl + ", headline=" + headline + ", likers=" + likers + ", liked=" + liked + "]";
+	}
+
+
+
+	@Override
+	public int compareTo(ReturnedPost o) {
+		return Long.compare( o.getTimestamp(),this.getTimestamp());
 	}
 }

@@ -4,18 +4,17 @@ import com.google.gson.Gson;
 import com.linkedin.replica.wall.cache.Cache;
 import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
 import com.linkedin.replica.wall.config.Configuration;
-import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.ReturnedPost;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisException;
 
+
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Set;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class JedisCacheHandler implements PostsCacheHandler{
 
@@ -31,7 +30,7 @@ public class JedisCacheHandler implements PostsCacheHandler{
     }
 
     @Override
-    public void cachePost(String postId, Object post) throws IOException, IllegalAccessException, InstantiationException {
+    public void cachePost(String postId, Object post) throws IOException, IllegalAccessException{
 
         try(Jedis cacheResource = jedisPool.getResource()){
             Pipeline jedisPipeline = cacheResource.pipelined();
@@ -66,8 +65,10 @@ public class JedisCacheHandler implements PostsCacheHandler{
 
             Pipeline jedisPipeline = cacheResource.pipelined();
             Field [] postFields = postClass.getDeclaredFields();
+
             for (int i = 0; i<postFields.length; i++){
                 String fieldName = postFields[i].getName();
+
                 String value = cacheResource.hget(postId,fieldName);
                 Object objectValue = gson.fromJson(value,postFields[i].getType());
 
@@ -93,6 +94,8 @@ public class JedisCacheHandler implements PostsCacheHandler{
 
         return post;
     }
+
+
 
     @Override
     public void deletePost(String postId) {
@@ -128,6 +131,58 @@ public class JedisCacheHandler implements PostsCacheHandler{
             }
             jedisPipeline.sync();
             jedisPipeline.close();
+        }
+        catch (JedisException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public Object getCompanyPosts(String companyId, int limit,Class<?> postClass)  {
+       TreeSet<ReturnedPost> returnedPosts = new TreeSet<>();
+        try(Jedis cacheResource = jedisPool.getResource()){
+            cacheResource.select(postDBIndex);
+            if(!cacheResource.exists(companyId)){
+                return null;
+            }
+            if(cacheResource.hlen(companyId)<limit){
+                return null;
+            }
+
+            Map<String,String> posts = cacheResource.hgetAll(companyId);
+            for (Map.Entry<String, String> value : posts.entrySet())
+            {
+               returnedPosts.add(gson.fromJson(value.getValue(), (Type) postClass));
+            }
+     }
+
+        return new ArrayList<>(returnedPosts);
+    }
+
+    @Override
+    public void cacheCompanyPosts(String companyId,  List<ReturnedPost> returnedPosts) throws IOException {
+        try(Jedis cacheResource = jedisPool.getResource()){
+            Pipeline jedisPipeline = cacheResource.pipelined();
+            cacheResource.select(postDBIndex);
+            for (int i = 0 ; i <returnedPosts.size();i++){
+                jedisPipeline.hset(companyId,"post" + returnedPosts.get(i).getPostId(), gson.toJson(returnedPosts.get(i)));
+            }
+            jedisPipeline.sync();
+            jedisPipeline.close();
+        }
+        catch (JedisException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void deleteCompanyPosts(String companyId, String postId) throws IOException {
+        try(Jedis cacheResource = jedisPool.getResource()){
+            cacheResource.select(postDBIndex);
+            cacheResource.hdel(companyId, String.format("post%s", postId));
+
         }
         catch (JedisException e){
             e.printStackTrace();

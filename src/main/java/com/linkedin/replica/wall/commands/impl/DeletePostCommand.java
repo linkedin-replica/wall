@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.commands.impl;
 
+import java.io.IOException;
 import java.util.*;
 import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
 import com.google.gson.JsonObject;
@@ -15,7 +16,7 @@ public class DeletePostCommand extends Command{
 
 
     @Override
-    public Object execute() {
+    public Object execute() throws IOException {
         WallHandler dbHandler = (WallHandler) this.dbHandler;
         PostsCacheHandler postsCacheHandler = (PostsCacheHandler)this.cacheHandler;
         validateArgs(new String[]{"postId"});
@@ -24,7 +25,12 @@ public class DeletePostCommand extends Command{
         JsonObject request = (JsonObject) args.get("request");
         String postId = request.get("postId").getAsString();
         boolean response = dbHandler.deletePost(postId);
-        postsCacheHandler.deletePost(postId);
+        if(request.get("isCompanyPost")!=null && request.get("authorId")!=null && request.get("isCompanyPost").getAsBoolean())
+            postsCacheHandler.deleteCompanyPosts(request.get("authorId").getAsString(), postId);
+
+        if(request.get("isArticle")!=null && request.get("isArticle").getAsBoolean())
+            postsCacheHandler.deletePost(postId);
+
         return response;
     }
 }
