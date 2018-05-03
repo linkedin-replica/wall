@@ -40,6 +40,9 @@ public class Liker {
 		case "likerProfilePictureUrl":
 			setLikerProfilePictureUrl(val.toString());
 			break;
+		case "headline":
+			setHeadline(val.toString());
+			break;
 		}
 	}
 
