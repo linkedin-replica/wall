@@ -13,4 +13,5 @@ public interface PostsCacheHandler extends CacheHandler {
     void editPost(String postId,HashMap<String, Object> args) throws IOException;
     Object getCompanyPosts(String companyId, int limit,Class<?> postClass) throws NoSuchFieldException, IllegalAccessException;
     void cacheCompanyPosts(String companyId,  List<ReturnedPost> returnedPosts) throws IllegalAccessException, IOException;
+    void deleteCompanyPosts(String companyId, String postId) throws IOException;
 }

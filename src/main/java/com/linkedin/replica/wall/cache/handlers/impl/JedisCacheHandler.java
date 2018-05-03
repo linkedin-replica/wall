@@ -176,4 +176,17 @@ public class JedisCacheHandler implements PostsCacheHandler{
         }
 
     }
+
+    @Override
+    public void deleteCompanyPosts(String companyId, String postId) throws IOException {
+        try(Jedis cacheResource = jedisPool.getResource()){
+            cacheResource.select(postDBIndex);
+            cacheResource.hdel(companyId, String.format("post%s", postId));
+
+        }
+        catch (JedisException e){
+            e.printStackTrace();
+        }
+
+    }
 }

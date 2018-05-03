@@ -43,7 +43,10 @@ public class EditPostCommand extends Command{
         }
 
         boolean response = dbHandler.editPost(request);
-        cacheHandler.deletePost(postId);
+        if(requestArgs.get("isCompanyPost").getAsBoolean())
+            cacheHandler.deleteCompanyPosts(requestArgs.get("authorId").getAsString(), postId);
+        if((Boolean) request.get("isArticle"))
+            cacheHandler.deletePost(postId);
         return response;
     }
 }
