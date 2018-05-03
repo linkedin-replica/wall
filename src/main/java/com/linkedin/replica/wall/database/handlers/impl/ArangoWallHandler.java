@@ -547,12 +547,12 @@ public class ArangoWallHandler implements WallHandler {
 
 		DatabaseConnection.init();
 		ArangoWallHandler handler = new ArangoWallHandler();
-//		System.out.println(handler.getNewsFeed("1", 10));
+		System.out.println(handler.getNewsFeed("1", 10));
 //		System.out.println(handler.getPosts("12", 10));
 //		System.out.println(handler.getArticle("4", "1"));
 //		System.out.println(handler.getComments("1", "1", 10));
 //		System.out.println(handler.getReplies("1", "1", 10));
-		System.out.println(handler.getBookmarks("1", 10));
+//		System.out.println(handler.getBookmarks("1", 10));
 		DatabaseConnection.getInstance().closeConnections();
 
 //		Properties properties = new Properties();

@@ -2,7 +2,8 @@ package com.linkedin.replica.wall.models;
 import com.arangodb.entity.DocumentField;
 
 public class Bookmark {
-    @DocumentField(DocumentField.Type.KEY)
+
+	private String _key;
     private String bookmarkId;
     private String postId;
     private String userId;
