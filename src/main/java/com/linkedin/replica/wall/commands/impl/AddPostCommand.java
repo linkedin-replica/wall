@@ -24,7 +24,6 @@ public class AddPostCommand extends Command{
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
-        PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
         validateArgs(new String[]{"userId", "authorId", "text", "images", "videos", "isCompanyPost", "isArticle"});
@@ -40,7 +39,6 @@ public class AddPostCommand extends Command{
 
         if(request.get("weight") != null)
             weight = request.get("weight").getAsInt();
-
 
         Long timestamp = System.currentTimeMillis();
         ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
@@ -59,8 +57,8 @@ public class AddPostCommand extends Command{
         post.setTitle(title);
         post.setWeight(weight);
 
+
         boolean response = dbHandler.addPost(post);
-        cacheHandler.cachePost(post.getPostId(),post);
         return response;
     }
 }

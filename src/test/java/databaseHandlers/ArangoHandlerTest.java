@@ -369,6 +369,7 @@ public class ArangoHandlerTest {
         String userId = user.getUserId();
         ArrayList<String> bookmarks = user.getBookmarks();
         ArrayList<ReturnedPost> retrievedBookmarks = arangoWallHandler.getBookmarks(userId, 10);
+
         assertEquals("size of bookmarks arrays should be equal", bookmarks.size() , retrievedBookmarks.size());
         boolean check = true;
         for (int i = 0; i < bookmarks.size(); i++){

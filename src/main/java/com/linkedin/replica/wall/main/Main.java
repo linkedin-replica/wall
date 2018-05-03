@@ -39,8 +39,9 @@ public class Main {
         // create singleton instance of DatabaseConnection class that is responsible for intiating connections
         // with databases
         DatabaseConnection.init();
+        //Initialize cache
         Cache.init();
-        System.out.println("HERE");
+
         // start RabbitMQ
         new MessageReceiver();
         // start server
