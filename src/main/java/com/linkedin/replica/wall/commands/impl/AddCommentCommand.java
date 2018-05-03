@@ -1,13 +1,9 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.*;
+import java.util.UUID;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Comment;
@@ -27,24 +23,24 @@ public class AddCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "likesCount", "repliesCount", "images", "urls", "mentions", "text"});
+        validateArgs(new String[]{"userId", "parentPostId", "text"});
 
 
         // call dbHandler to get error or success message from dbHandler
-        Comment comment;
+        JsonObject request = (JsonObject) args.get("request");
+        String authorId = request.get("userId").getAsString();
+        String parentPostId = request.get("parentPostId").getAsString();
+        String text = request.get("text").getAsString();
+        Long timestamp = System.currentTimeMillis();
 
-        Gson googleJson = new Gson();
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        int likesCount = (int) args.get("likesCount");
-        int repliesCount = (int) args.get("repliesCount");
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
-        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
-        String text = args.get("text").toString();
-        String timestamp = args.get("timestamp").toString();
-        comment = new Comment(authorId, parentPostId, likesCount, repliesCount, images, urls,mentions,text,timestamp);
-        String response =  dbHandler.addComment(comment);
+        Comment comment = new Comment();
+        comment.setCommentId(UUID.randomUUID().toString());
+        comment.setAuthorId(authorId);
+        comment.setParentPostId(parentPostId);
+        comment.setText(text);
+        comment.setTimestamp(timestamp);
+        boolean response =  dbHandler.addComment(comment);
         return response;
     }
 }
+

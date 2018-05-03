@@ -2,12 +2,14 @@ package com.linkedin.replica.wall.commands.impl;
 
 import java.util.*;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Bookmark;
 import com.linkedin.replica.wall.models.Comment;
 import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.models.ReturnedComment;
 
 public class GetCommentsCommand extends Command{
 
@@ -22,13 +24,15 @@ public class GetCommentsCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"parentPostId"});
+        validateArgs(new String[]{"parentPostId", "userId", "limit"});
 
 
         // call dbHandler to list of comments from db
-        String parentPostId = args.get("parentPostId").toString();
-
-        List<Comment> comments = dbHandler.getComments(parentPostId);
+        JsonObject request = (JsonObject) args.get("request");
+        String parentPostId = request.get("parentPostId").getAsString();
+        String authorId = request.get("userId").getAsString();
+        int limit = request.get("limit").getAsInt();
+        List<ReturnedComment> comments = dbHandler.getComments(parentPostId, authorId, limit);
         return comments;
     }
 

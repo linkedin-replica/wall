@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.config;
 
+import com.linkedin.replica.wall.cache.handlers.CacheHandler;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 
@@ -15,12 +16,15 @@ public class Configuration {
     private final Properties commandConfig = new Properties();
     private final Properties appConfig = new Properties();
     private final Properties arangoConfig = new Properties();
+    private final Properties redisConfig = new Properties();
     private final Properties controllerConfig = new Properties();
-
+    private final Properties queryConfig = new Properties();
+    
     private String appConfigPath;
     private String arangoConfigPath;
     private String commandsConfigPath;
     private String controllerConfigPath;
+    private String redisConfigPath;
 
     private boolean isAppConfigModified;
     private boolean isArangoConfigModified;
@@ -28,16 +32,20 @@ public class Configuration {
 
     private static Configuration instance;
 
-    private Configuration(String appConfigPath, String arangoConfigPath, String commandsConfigPath, String controllerConfigPath) throws IOException {
+    private Configuration(String appConfigPath, String arangoConfigPath, String commandsConfigPath,
+    		String controllerConfigPath, String redisConfigPath, String queryConfigPath) throws IOException {
         populateWithConfig(appConfigPath, appConfig);
         populateWithConfig(arangoConfigPath, arangoConfig);
         populateWithConfig(commandsConfigPath, commandConfig);
         populateWithConfig(controllerConfigPath, controllerConfig);
+        populateWithConfig(redisConfigPath, redisConfig);
+        populateWithConfig(queryConfigPath, queryConfig);
 
         this.appConfigPath = appConfigPath;
         this.arangoConfigPath = arangoConfigPath;
         this.commandsConfigPath = commandsConfigPath;
         this.controllerConfigPath = controllerConfigPath;
+        this.redisConfigPath = redisConfigPath;
     }
 
     private static void populateWithConfig(String configFilePath, Properties properties) throws IOException {
@@ -46,8 +54,9 @@ public class Configuration {
         inputStream.close();
     }
 
-    public static void init(String appConfigPath, String arangoConfigPath, String commandsConfigPath, String controllerConfigPath) throws IOException {
-        instance = new Configuration(appConfigPath, arangoConfigPath, commandsConfigPath, controllerConfigPath);
+    public static void init(String appConfigPath, String arangoConfigPath, String commandsConfigPath, 
+    		String controllerConfigPath,String redisConfigPath, String queryConfigPath) throws IOException {
+        instance = new Configuration(appConfigPath, arangoConfigPath, commandsConfigPath, controllerConfigPath,redisConfigPath, queryConfigPath);
     }
 
     public static Configuration getInstance() {
@@ -68,6 +77,12 @@ public class Configuration {
         String handlerClassPath = handlerPackageName + "." + handlerName;
         return Class.forName(handlerClassPath);
     }
+    public Class getCacheClass(String commandName) throws ClassNotFoundException {
+        String handlerPackageName = CacheHandler.class.getPackage().getName() + ".impl";
+        String handlerName = "JedisCacheHandler";
+        String handlerClassPath = handlerPackageName + "." + handlerName;
+        return Class.forName(handlerClassPath);
+    }
     public String getControllerConfigProp(String key){
         return controllerConfig.getProperty(key);
     }
@@ -83,12 +98,18 @@ public class Configuration {
     public String getArangoConfig(String key) {
         return arangoConfig.getProperty(key);
     }
+    public String getRedisConfigProp(String key) {
+        return redisConfig.getProperty(key);
+    }
 
     public String getAppConfigProp(String key) {
         return appConfig.getProperty(key);
     }
 
-
+    public String getQueryConfigProp(String key) {
+        return queryConfig.getProperty(key);
+    }
+    
     public void setAppControllerProp(String key, String val){
         if(val != null)
             appConfig.setProperty(key, val);

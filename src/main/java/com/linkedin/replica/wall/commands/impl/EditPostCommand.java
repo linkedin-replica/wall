@@ -1,17 +1,12 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.linkedin.replica.wall.cache.handlers.PostsCacheHandler;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.commands.Command;
 
 public class EditPostCommand extends Command{
@@ -22,38 +17,33 @@ public class EditPostCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() throws IOException {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
+        PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"postId", "authorId", "type", "companyId", "privacy", "text", "hashtags", "mentions", "likesCount", "images", "videos", "urls", "commentsCount", "shares", "isCompanyPost", "isPrior"});
+        validateArgs(new String[]{"postId"});
 
-        // call dbHandler to get error or success message from dbHandler
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        Post post;
-        Gson googleJson = new Gson();
-        String postId = args.get("postId").toString();
-        String authorId = args.get("authorId").toString();
-        String type = args.get("type").toString();
-        String companyId = args.get("companyId").toString();
-        String privacy = args.get("privacy").toString();
-        String text = args.get("text").toString();
-        Date timestamp = format.parse(args.get("timestamp").toString());
-        ArrayList<String> hashtags = googleJson.fromJson((JsonArray) args.get("hashtags"), ArrayList.class);
-        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
-        int likesCount = (int) args.get("likesCount");
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> videos = googleJson.fromJson((JsonArray) args.get("videos"), ArrayList.class);
-        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
-        int commentsCount = (int) args.get("commentsCount");
-        String shares = args.get("shares").toString();
-        boolean isCompanyPost = (boolean) args.get("isCompanyPost");
-        boolean isPrior = (boolean) args.get("isPrior");
+        HashMap<String, Object> request = new HashMap<>();
+        JsonObject requestArgs = (JsonObject) args.get("request");
+        String postId = requestArgs.get("postId").getAsString();
 
-        post = dbHandler.getPost(postId);
-        String response = dbHandler.editPost(post);
+        for(String key: requestArgs.keySet()) {
+            switch (key) {
+                case "isCompanyPost":
+                case "isArticle": request.put(key, requestArgs.get(key).getAsBoolean());break;
+                case "images":
+                case "videos": request.put(key, requestArgs.get(key).getAsJsonArray());break;
+                case "postId":
+                case "text": request.put(key, requestArgs.get(key).getAsString());break;
+                default: break;
+            }
+        }
+
+        boolean response = dbHandler.editPost(request);
+        cacheHandler.editPost(postId,request);
         return response;
     }
 }

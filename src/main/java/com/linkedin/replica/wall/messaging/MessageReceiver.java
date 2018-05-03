@@ -28,6 +28,9 @@ public class MessageReceiver {
     public MessageReceiver() throws IOException, TimeoutException{
         factory = new ConnectionFactory();
         factory.setHost(RABBIT_MQ_IP);
+        factory.setUsername(configuration.getAppConfigProp("rabbitmq.username"));
+        factory.setPassword(configuration.getAppConfigProp("rabbitmq.password"));
+
         connection = factory.newConnection();
         channel = connection.createChannel();
 
@@ -58,37 +61,7 @@ public class MessageReceiver {
                         JsonObject object = new JsonParser().parse(new String(body)).getAsJsonObject();
                         String commandName = object.get("commandName").getAsString();
                         HashMap<String, Object> args = new HashMap<>();
-                        for(String key: object.keySet()) {
-                            if(key.equals("mentions"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("images"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("videos"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("urls"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if(key.equals("likesCount"))
-                                args.put(key,object.get(key).getAsInt());
-                            else if(key.equals("repliesCount"))
-                                args.put(key,object.get(key).getAsInt());
-                            else if(key.equals("commentsCount"))
-                                args.put(key,object.get(key).getAsInt());
-                            else if(key.equals("timestamp"))
-                                args.put(key,object.get(key).getAsString());
-                            else if(key.equals("isCompanyPost"))
-                                args.put(key,object.get(key).getAsBoolean());
-                            else if(key.equals("isPrior"))
-                                args.put(key,object.get(key).getAsBoolean());
-                            else if(key.equals("hashtags"))
-                                args.put(key,object.get(key).getAsJsonArray());
-                            else if (!key.equals("commandName"))
-                                args.put(key, object.get(key).getAsString());
-
-
-                        }
-
-
-
+                        args.put("request",object);
 
                         // Call the service and form the response
                         LinkedHashMap<String, Object> response = new LinkedHashMap<>();

@@ -1,14 +1,13 @@
 package com.linkedin.replica.wall.commands.impl;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
-import com.linkedin.replica.wall.models.Bookmark;
-import com.linkedin.replica.wall.models.Post;
+import com.linkedin.replica.wall.models.ReturnedPost;
 
 public class GetBookmarksCommand extends Command{
 
@@ -24,14 +23,15 @@ public class GetBookmarksCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"userId"});
+        validateArgs(new String[]{"userId", "limit"});
 
-        // call dbHandler to list of bookmarks from db
-        String userId = args.get("userId").toString();
-        String postId = args.get("postId").toString();
-        Bookmark bookmark = new Bookmark(userId, postId);
 
-        List<Bookmark> bookmarks = dbHandler.getBookmarks(userId);
+        // call dbHandler to list of posts from db
+        JsonObject request = (JsonObject) args.get("request"); 
+        String userId = request.get("userId").getAsString();
+        int limit = request.get("limit").getAsInt();
+
+        List<ReturnedPost> bookmarks = dbHandler.getBookmarks(userId, limit);
         return bookmarks;
     }
 

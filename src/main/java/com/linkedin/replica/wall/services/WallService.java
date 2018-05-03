@@ -1,6 +1,7 @@
 
 package com.linkedin.replica.wall.services;
 
+import com.linkedin.replica.wall.cache.handlers.CacheHandler;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
@@ -29,6 +30,11 @@ public class WallService {
         Class<?> commandClass = config.getCommandClass(commandName);
         Constructor constructor = commandClass.getConstructor(new Class<?>[]{HashMap.class, DatabaseHandler.class});
         Command command = (Command) constructor.newInstance(args,dbHandler);
+
+        Class<?> cacheHandlerClass = config.getCacheClass(commandName);
+        CacheHandler cacheHandler = (CacheHandler) cacheHandlerClass.newInstance();
+        command.setCacheHandler(cacheHandler);
+
 
         return command.execute();
     }

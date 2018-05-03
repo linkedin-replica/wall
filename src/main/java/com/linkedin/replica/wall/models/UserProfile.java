@@ -5,7 +5,7 @@ import com.arangodb.entity.DocumentField;
 import java.util.ArrayList;
 
 public class UserProfile {
-    private ArrayList<Bookmark> bookmarks;
+    private ArrayList<String> bookmarks;
 
     @DocumentField(DocumentField.Type.KEY)
     private String userId;
@@ -13,22 +13,43 @@ public class UserProfile {
     private String email;
     private String firstName;
     private String lastName;
+    private String headline;
+    private ArrayList<String> friendsList;
+    private ArrayList<String> followedCompaniesList;
 
     public UserProfile() {
-        super();
+
     }
 
-    public UserProfile(String email, String firstName, String lastName) {
-        this();
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.bookmarks = new ArrayList<>();
+
+    public String getHeadline() {
+        return headline;
     }
 
-    public ArrayList<Bookmark> getBookmarks(){return this.bookmarks;}
+    public void setHeadline(String headline) {
+        this.headline = headline;
+    }
 
-    public void setBookmarks(ArrayList<Bookmark> bookmarks){this.bookmarks = bookmarks;}
+
+    public ArrayList<String> getFriendsList() {
+        return this.friendsList;
+    }
+
+    public void setFriendsList(ArrayList<String> friendsList) {
+        this.friendsList = friendsList;
+    }
+
+    public ArrayList<String> getFollowedCompaniesList() {
+        return this.followedCompaniesList;
+    }
+
+    public void setFollowedCompaniesList(ArrayList<String> followedCompaniesList) {
+        this.followedCompaniesList = followedCompaniesList;
+    }
+
+    public ArrayList<String> getBookmarks(){return this.bookmarks;}
+
+    public void setBookmarks(ArrayList<String> bookmarks){this.bookmarks = bookmarks;}
 
     public String getUserId() {
         return userId;

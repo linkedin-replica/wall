@@ -1,62 +1,64 @@
 package com.linkedin.replica.wall.database.handlers;
 
-import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.models.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public interface WallHandler extends DatabaseHandler {
 
-    public ArrayList<Bookmark> getBookmarks(String userId);
+    public List<ReturnedPost> getNewsFeed(String userId,int limit);
 
-    public String addBookmark(Bookmark bookmark);
+    public ArrayList<ReturnedPost> getBookmarks(String userId, int limit);
 
-    public String deleteBookmark(Bookmark bookmark);
+    public boolean addBookmark(String userId, String postId);
 
-    public List<Post> getPosts(String userID);
+    public boolean deleteBookmark(String userId, String postId);
 
-    public String addPost(Post post);
+    public List<ReturnedPost> getPosts(String companyId, int limit);
 
-    public String editPost(Post post);
+    public ReturnedPost getArticle(String postId, String userId);
 
-    public String deletePost(Post post);
+    public boolean addPost(Post post);
 
-    public List<Comment> getComments(String postID);
+    public boolean editPost(HashMap<String, Object> args);
 
-    public String addComment(Comment comment);
+    public boolean deletePost(String postId);
 
-    public String editComment(Comment comment);
+    public List<ReturnedComment> getComments(String postId, String userId, int limit);
 
-    public String deleteComment(Comment comment);
+    public boolean addComment(Comment comment);
 
-    public List<Reply> getReplies(String commentId);
+    public boolean editComment(HashMap<String, Object> args);
+
+    public boolean deleteComment(String commentId);
+
+    public List<ReturnedReply> getReplies(String commentId, String userId, int limit);
 
     public Reply getReply(String replyId);
 
-    public String addReply(Reply reply);
+    public boolean addReply(Reply reply);
 
-    public String editReply(Reply reply);
+    public boolean editReply(HashMap<String, Object> args);
 
-    public String deleteReply(Reply reply);
+    public boolean deleteReply(String replyId);
 
-    public List<Like> getPostLikes(String postId);
+    public boolean addLikeToPost(String likerId, String postId);
 
-    public List<Like> getCommentLikes(String commentId);
+    public boolean addLikeToComment(String likerId, String commentId);
 
-    public List<Like> getReplyLikes(String replyId);
+    public boolean addLikeToReply(String likerId, String replyId);
 
-    public String addLike(Like like);
+    public boolean deleteLikeFromPost(String likerId, String postId);
 
-    public String deleteLike(Like like);
+    public boolean deleteLikeFromComment(String likerId, String commentId);
 
-    public void getTopPosts() throws ParseException;
-
+    public boolean deleteLikeFromReply(String likerId, String replyId);
+    
     public Comment getComment(String commentId);
 
-    public Post getPost(String postId);
-
-    public Like getLike(String likeId);
+    public UserProfile getUser(String userId);
 
 }

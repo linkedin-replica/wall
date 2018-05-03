@@ -1,13 +1,8 @@
 package com.linkedin.replica.wall.commands.impl;
 
-import java.util.LinkedHashMap;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
@@ -21,31 +16,31 @@ public class AddReplyCommand extends Command{
 
 
     @Override
-    public Object execute() throws ParseException {
+    public Object execute() {
 
         // get database handler that implements functionality of this command
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "parentCommentId", "mentions", "likesCount", "text", "images", "urls"});
+        validateArgs(new String[]{"userId", "parentPostId", "parentCommentId", "text"});
 
         // call dbHandler to get error or success message from dbHandler
-        Reply reply;
-        Gson googleJson = new Gson();
-        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy hh:mm a", Locale.ENGLISH);
-        String authorId = args.get("authorId").toString();
-        String parentPostId = args.get("parentPostId").toString();
-        String parentCommentId = args.get("parentCommentId").toString();
-        ArrayList<String> mentions = googleJson.fromJson((JsonArray) args.get("mentions"), ArrayList.class);
-        int likesCount = (int) args.get("likesCount");
-        String text = args.get("text").toString();
-        Date timestamp = format.parse(args.get("timestamp").toString());
-        ArrayList<String> images = googleJson.fromJson((JsonArray) args.get("images"), ArrayList.class);
-        ArrayList<String> urls = googleJson.fromJson((JsonArray) args.get("urls"), ArrayList.class);
+        JsonObject request = (JsonObject) args.get("request");
+        String authorId = request.get("userId").getAsString();
+        String parentPostId = request.get("parentPostId").getAsString();
+        String parentCommentId = request.get("parentCommentId").getAsString();
+        String text = request.get("text").getAsString();
+        Long timestamp = System.currentTimeMillis();
 
+        Reply reply = new Reply();
+        reply.setReplyId(UUID.randomUUID().toString());
+        reply.setAuthorId(authorId);
+        reply.setParentPostId(parentPostId);
+        reply.setParentCommentId(parentCommentId);
+        reply.setText(text);
+        reply.setTimestamp(timestamp);
 
-        reply = new Reply(authorId, parentPostId, parentCommentId, mentions, likesCount, text, timestamp, images, urls);
-        String response = dbHandler.addReply(reply);
+        boolean response = dbHandler.addReply(reply);
         return response;
     }
 }

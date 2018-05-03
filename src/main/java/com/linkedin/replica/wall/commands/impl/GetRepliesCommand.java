@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import com.linkedin.replica.wall.commands.Command;
 import com.linkedin.replica.wall.database.handlers.DatabaseHandler;
 import com.linkedin.replica.wall.database.handlers.WallHandler;
 import com.linkedin.replica.wall.models.Post;
 import com.linkedin.replica.wall.models.Reply;
+import com.linkedin.replica.wall.models.ReturnedReply;
 
 public class GetRepliesCommand extends Command{
 
@@ -23,13 +25,16 @@ public class GetRepliesCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"parentCommentId"});
+        validateArgs(new String[]{"parentCommentId", "userId", "limit"});
 
 
         // call dbHandler to list of replies from db
-        String parentCommentId = args.get("parentCommentId").toString();
+        JsonObject request = (JsonObject) args.get("request");
+        String parentCommentId = request.get("parentCommentId").getAsString();
+        String authorId = request.get("userId").getAsString();
+        int limit = request.get("limit").getAsInt();
 
-        List<Reply> replies = dbHandler.getReplies(parentCommentId);
+        List<ReturnedReply> replies = dbHandler.getReplies(parentCommentId, authorId, limit);
         return replies;
     }
 
