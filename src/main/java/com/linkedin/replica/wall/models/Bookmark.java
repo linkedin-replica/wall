@@ -17,6 +17,7 @@ public class Bookmark {
 
     public void setBookmarkId(String bookmarkId) {
         this.bookmarkId = bookmarkId;
+        this._key = bookmarkId;
     }
 
     public void setPostId(String postId) {
