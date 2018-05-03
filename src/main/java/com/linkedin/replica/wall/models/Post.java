@@ -20,6 +20,7 @@ public class Post implements Comparable<Post>{
     private long timestamp;
     private boolean isCompanyPost;
     private String title;
+    private Integer weight;
 
     public Post(){
     }
@@ -112,6 +113,14 @@ public class Post implements Comparable<Post>{
     public long getTimestamp() { return timestamp; }
 
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
 
     @Override
     public String toString() {

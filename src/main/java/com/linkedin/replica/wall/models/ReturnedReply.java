@@ -114,17 +114,19 @@ public class ReturnedReply {
     }
 
     public void set(String attributeName, Object val){
+        if(val == null)
+            return;
         switch(attributeName){
             case "replyId" : setReplyId(val.toString()); break;
             case "authorId" : setAuthorId(val.toString()); break;
             case "parentPostId" : setParentPostId(val.toString()); break;
             case "parentCommentId" : setParentCommentId(val.toString()); break;
             case "text" : setText(val.toString()); break;
-            case "timestamp" : setTimestamp(Long.parseLong(val.toString())); break;
+            case "timestamp" : setTimestamp(((Number) val).longValue()); break;
             case "authorName" : setAuthorName(val.toString()); break;
             case "authorProfilePictureUrl" : setAuthorProfilePictureUrl(val.toString()); break;
             case "likers" : setLikers(val);; break;
-            case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
+            case "liked" : setLiked((Boolean) val); break;
         }
     }
 

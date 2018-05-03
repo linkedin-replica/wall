@@ -27,18 +27,20 @@ public class AddPostCommand extends Command{
         PostsCacheHandler cacheHandler = (PostsCacheHandler) this.cacheHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "text", "images", "videos", "isCompanyPost", "isArticle"});
+        validateArgs(new String[]{"userId", "authorId", "text", "images", "videos", "isCompanyPost", "isArticle"});
 
         // call dbHandler to get error or success message from dbHandler
         Gson gson = new Gson();
         JsonObject request = (JsonObject) args.get("request");
         String authorId = request.get("authorId").getAsString();
         String text = request.get("text").getAsString();
-        String title;
-        if(request.get("title") == null)
-            title = null;
-        else
+        String title = null; Integer weight = null;
+        if(request.get("title") != null)
             title = request.get("title").getAsString();
+
+        if(request.get("weight") != null)
+            weight = request.get("weight").getAsInt();
+
 
         Long timestamp = System.currentTimeMillis();
         ArrayList<String> images = gson.fromJson(request.get("images").getAsJsonArray(), ArrayList.class);
@@ -55,6 +57,7 @@ public class AddPostCommand extends Command{
         post.setTimestamp(timestamp);
         post.setCompanyPost(isCompanyPost);
         post.setTitle(title);
+        post.setWeight(weight);
 
         boolean response = dbHandler.addPost(post);
         cacheHandler.cachePost(post.getPostId(),post);

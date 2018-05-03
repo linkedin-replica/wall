@@ -24,13 +24,13 @@ public class GetCommentsCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"parentPostId", "authorId", "limit"});
+        validateArgs(new String[]{"parentPostId", "userId", "limit"});
 
 
         // call dbHandler to list of comments from db
         JsonObject request = (JsonObject) args.get("request");
         String parentPostId = request.get("parentPostId").getAsString();
-        String authorId = request.get("authorId").getAsString();
+        String authorId = request.get("userId").getAsString();
         int limit = request.get("limit").getAsInt();
         List<ReturnedComment> comments = dbHandler.getComments(parentPostId, authorId, limit);
         return comments;

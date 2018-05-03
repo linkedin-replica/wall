@@ -1,5 +1,6 @@
 package com.linkedin.replica.wall.main;
 
+import com.linkedin.replica.wall.cache.Cache;
 import com.linkedin.replica.wall.config.Configuration;
 import com.linkedin.replica.wall.controller.Server;
 import com.linkedin.replica.wall.database.DatabaseConnection;
@@ -38,6 +39,8 @@ public class Main {
         // create singleton instance of DatabaseConnection class that is responsible for intiating connections
         // with databases
         DatabaseConnection.init();
+        Cache.init();
+        System.out.println("HERE");
         // start RabbitMQ
         new MessageReceiver();
         // start server
@@ -59,7 +62,12 @@ public class Main {
     }
 
     public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, TimeoutException {
-        String[] arr = {"src/main/resources/app.config","src/main/resources/arango.test.config", "src/main/resources/commands.config", "src/main/resources/controller.config","src/main/resources/cache.config"};
+        String[] arr = {"src/main/resources/app.config",
+                "src/main/resources/arango.test.config",
+                "src/main/resources/commands.config",
+                "src/main/resources/controller.config",
+                "src/main/resources/cache.config",
+                "src/main/resources/query.config"};
         start(arr);
     }
 

@@ -146,6 +146,8 @@ public class ReturnedPost {
 	}
 	
 	public void set(String attributeName, Object val){
+		if(val == null)
+			return;
 		switch(attributeName){
 			case "postId" : setPostId(val.toString()); break;
 			case "authorId" : setAuthorId(val.toString()); break;
@@ -153,14 +155,14 @@ public class ReturnedPost {
 			case "title" : setTitle(val.toString()); break;
 			case "images" : setImages((ArrayList<String>) val); break;
 			case "videos" :  setVideos((ArrayList<String>) val); break;
-			case "commentsCount" : setCommentsCount(Integer.parseInt(val.toString())); break;
-			case "timestamp" : setTimestamp(Long.parseLong(val.toString())); break;
-			case "isCompanyPost" : setCompanyPost(Boolean.getBoolean(val.toString())); break;
+			case "commentsCount" : setCommentsCount(((Number) val).intValue()); break;
+			case "timestamp" : setTimestamp(((Number) val).longValue()); break;
+			case "isCompanyPost" : setCompanyPost((Boolean) val); break;
 			case "authorName" : setAuthorName(val.toString()); break;
 			case "authorProfilePictureUrl" : setAuthorProfilePictureUrl(val.toString()); break;
 			case "likers" : setLikers(val);; break;
 			case "headline" : setHeadline(val.toString()); break;
-			case "liked" : setLiked(Boolean.getBoolean(val.toString())); break;
+			case "liked" : setLiked((Boolean) val); break;
 		}
 	}
 
