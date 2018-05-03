@@ -21,14 +21,14 @@ public class AddLikeToCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likerId", "commentId"});
+        validateArgs(new String[]{"userId", "commentId"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
         String commentId = null;
         String likerId = null ;
-        if(request.get("likerId") != null)
-            likerId = request.get("likerId").getAsString();
+        if(request.get("userId") != null)
+            likerId = request.get("userId").getAsString();
         if(request.get("commentId") != null)
             commentId = request.get("commentId").getAsString();
 

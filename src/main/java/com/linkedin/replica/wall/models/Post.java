@@ -1,14 +1,9 @@
 package com.linkedin.replica.wall.models;
 import java.util.ArrayList;
-import java.util.Date;
-
-import com.arangodb.ArangoDB;
-import com.arangodb.entity.DocumentField;
 
 public class Post implements Comparable<Post>{
 
-
-    @DocumentField(DocumentField.Type.KEY)
+	private String _key;
     private String postId;
     private String authorId;
     private String text;
@@ -20,6 +15,7 @@ public class Post implements Comparable<Post>{
     private long timestamp;
     private boolean isCompanyPost;
     private String title;
+    private Integer weight;
 
     public Post(){
     }
@@ -79,6 +75,7 @@ public class Post implements Comparable<Post>{
 
     public void setPostId(String postId) {
         this.postId = postId;
+        this._key = postId;
     }
 
     public void setAuthorId(String authorId) {
@@ -112,6 +109,14 @@ public class Post implements Comparable<Post>{
     public long getTimestamp() { return timestamp; }
 
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
 
     @Override
     public String toString() {

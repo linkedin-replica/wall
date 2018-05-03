@@ -22,14 +22,14 @@ public class DeleteLikeFromPostCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likerId", "postId"});
+        validateArgs(new String[]{"userId", "postId"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
         String postId = null;
         String likerId = null ;
-        if(request.get("likerId") != null)
-            likerId = request.get("likerId").getAsString();
+        if(request.get("userId") != null)
+            likerId = request.get("userId").getAsString();
         if(request.get("postId") != null)
             postId = request.get("postId").getAsString();
 

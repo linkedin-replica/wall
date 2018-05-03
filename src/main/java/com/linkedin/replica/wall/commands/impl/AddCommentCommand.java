@@ -23,12 +23,12 @@ public class AddCommentCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"authorId", "parentPostId", "text"});
+        validateArgs(new String[]{"userId", "parentPostId", "text"});
 
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
-        String authorId = request.get("authorId").getAsString();
+        String authorId = request.get("userId").getAsString();
         String parentPostId = request.get("parentPostId").getAsString();
         String text = request.get("text").getAsString();
         Long timestamp = System.currentTimeMillis();

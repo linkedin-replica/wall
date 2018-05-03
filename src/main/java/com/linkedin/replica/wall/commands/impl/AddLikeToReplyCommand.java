@@ -22,14 +22,14 @@ public class AddLikeToReplyCommand extends Command{
         WallHandler dbHandler = (WallHandler) this.dbHandler;
 
         // validate that all required arguments that are passed
-        validateArgs(new String[]{"likerId", "replyId"});
+        validateArgs(new String[]{"userId", "replyId"});
 
         // call dbHandler to get error or success message from dbHandler
         JsonObject request = (JsonObject) args.get("request");
         String replyId = null;
         String likerId = null ;
-        if(request.get("likerId") != null)
-            likerId = request.get("likerId").getAsString();
+        if(request.get("userId") != null)
+            likerId = request.get("userId").getAsString();
         if(request.get("replyId") != null)
             replyId = request.get("replyId").getAsString();
 

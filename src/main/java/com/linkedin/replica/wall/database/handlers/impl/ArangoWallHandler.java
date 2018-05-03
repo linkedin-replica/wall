@@ -48,7 +48,7 @@ public class ArangoWallHandler implements WallHandler {
     public boolean addBookmark(String userId, String postId) throws ArangoDBException {
         String query = " FOR user in " + usersCollection
                 + " FILTER user._key == @userId\t"
-                + "UPDATE user WITH { bookmarks : PUSH(user.bookmarks, @postId) } IN " + usersCollection;
+                + "UPDATE user WITH { bookmarkedPosts : PUSH(user.bookmarkedPosts, @postId) } IN " + usersCollection;
         Map<String, Object> bindVars = new MapBuilder().put("userId", userId).get();
         bindVars.put("postId", postId);
         arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
@@ -64,7 +64,7 @@ public class ArangoWallHandler implements WallHandler {
     public boolean deleteBookmark(String userId, String postId) throws ArangoDBException {
         String query = " FOR user in " + usersCollection
                 + " FILTER user._key == @userId\t"
-                + "UPDATE user WITH { bookmarks : REMOVE_VALUE(user.bookmarks, @postId) } IN " + usersCollection;
+                + "UPDATE user WITH { bookmarkedPosts : REMOVE_VALUE(user.bookmarkedPosts, @postId) } IN " + usersCollection;
         Map<String, Object> bindVars = new MapBuilder().put("userId", userId).get();
         bindVars.put("postId", postId);
         arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
@@ -518,7 +518,8 @@ public class ArangoWallHandler implements WallHandler {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.add(Calendar.WEEK_OF_MONTH, -period);
-		bindVars.put("minTimestamp", calendar.getTime().getTime());
+        System.out.println(userId);
+        bindVars.put("minTimestamp", calendar.getTime().getTime());
 	
 		ArangoCursor<BaseDocument> cursor = arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
 		ArrayList<ReturnedPost> returnedList = new ArrayList<ReturnedPost>();
@@ -547,12 +548,12 @@ public class ArangoWallHandler implements WallHandler {
 
 		DatabaseConnection.init();
 		ArangoWallHandler handler = new ArangoWallHandler();
-//		System.out.println(handler.getNewsFeed("1", 10));
+		System.out.println(handler.getNewsFeed("1", 10));
 //		System.out.println(handler.getPosts("12", 10));
 //		System.out.println(handler.getArticle("4", "1"));
 //		System.out.println(handler.getComments("1", "1", 10));
 //		System.out.println(handler.getReplies("1", "1", 10));
-		System.out.println(handler.getBookmarks("1", 10));
+//		System.out.println(handler.getBookmarks("1", 10));
 		DatabaseConnection.getInstance().closeConnections();
 
 //		Properties properties = new Properties();
