@@ -53,6 +53,8 @@ public class DatabaseConnection {
      */
     private void instantiateArrangoDB(){
         arangoDB =  new ArangoDB.Builder()
+                .host(config.getArangoConfig("arangodb.host"),
+                        Integer.parseInt(config.getArangoConfig("arangodb.port")))
                 .user(config.getArangoConfig("arangodb.user"))
                 .password(config.getArangoConfig("arangodb.password"))
                 .build();
